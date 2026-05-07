@@ -180,7 +180,7 @@ curl -s "$SYTELINE_BASE_URL/load/VC_SLCoitems?properties=CoNum&filter=Stat%20%3D
 
 ## Gotchas
 
-- **Token per request:** Tokens may expire under heavy use. Fetch a fresh token before every individual request, especially in script loops.
+- **Token reuse:** Tokens are session-based, not timer-based. Reuse the same token across batch requests until the session is destroyed or the server rejects it. If a long-running script starts getting unauthorized responses, obtain a new token and continue; in some environments, infrastructure or session timeouts may interrupt long batches, but that is environment-specific rather than normal token expiry.
 - **n8n "Run Once for All Items" vs. per-item:** Code nodes in "Run Once for All Items" mode collect all input items before running. If you need per-item processing downstream, return an array of items (not a single item with an array inside).
 - **Empty batch guard:** Always check `Items.length > 0` (or `MoreRowsExist`) before entering the loop — posting an empty `Changes` array is harmless but wastes a round trip.
 - **Rate limiting:** The IDO API doesn't advertise rate limits, but hammering hundreds of requests per second can stress the server. Add a short delay (50–200ms) between requests if the server starts returning timeouts.
