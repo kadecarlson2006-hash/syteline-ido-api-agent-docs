@@ -83,7 +83,7 @@ Method: GetUserInformation
 Type:   Extension Class - Standard Method
 ```
 
-> **MethodType values** (from `IdoMethods.MethodType`): `2` = Stored Procedure, `3` = Extension Class (.NET), `0` = System/internal. Use this to programmatically detect which methods have been converted from SP to extension class as part of Infor's database code-out initiative.
+> **MethodType values** (from `IdoMethods.MethodType`, verified against the pilot): `0` = Stored Procedure, `2` = Extension Class (.NET), `1` = Custom Load Method. Use this to programmatically detect which methods have been converted from SP to extension class as part of Infor's database code-out initiative.
 
 There are also **Custom Load Methods** (stored procedures that provide custom data loading for LoadCollection).
 

@@ -27,7 +27,7 @@ All examples assume `$TOKEN` is set (see [01_AUTHENTICATION.md](01_AUTHENTICATIO
 
 > **Field name gotchas on IdoProperties:** The correct property names are `PropertyName` (not `PropName`), `ColumnName` (not `BoundColumn`). Writable properties have `IsReadOnly = null` or `"0"`; read-only = `"1"`. Derived properties have `ColumnName = null`.
 
-> **MethodType values on IdoMethods:** `2` = Stored Procedure (most common), `3` = .NET Extension Class method, `0` = System/internal method. Note: the `StoredProcedure` property does **not** exist on `IdoMethods` — querying it returns `"Property StoredProcedure not found"`. Filter by `MethodName` instead.
+> **MethodType values on IdoMethods** (verified against the pilot): `0` = Stored Procedure (most common), `2` = .NET Extension Class method, `1` = Custom Load Method. Note: the `StoredProcedure` property does **not** exist on `IdoMethods` — querying it returns `"Property StoredProcedure not found"`. Filter by `MethodName` instead.
 
 4. **It's okay to try things.** The agent user is scoped to read-only introspection. An exploratory LoadCollection or Invoke that fails will return a clear error message, not break anything. However, **ask the user before executing methods that modify data** (Insert, Update, Delete, or Invoke on methods that change state) — those should use the automation user if configured.
 
