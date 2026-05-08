@@ -71,7 +71,7 @@ class PilotClient:
         filter: str | None = None,
         recordcap: int = 10,
     ) -> dict[str, Any]:
-        """LoadCollection on a meta-IDO (read-only)."""
+        """LoadCollection on a meta-IDO (read-only). Retries once on session-deleted."""
         params: dict[str, str] = {"recordcap": str(recordcap)}
         if properties:
             params["properties"] = properties
@@ -79,16 +79,24 @@ class PilotClient:
             params["filter"] = filter
         qs = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
         url = f"{self._config.base_url}/load/{ido}?{qs}"
-        req = urllib.request.Request(
-            url,
-            method="GET",
-            headers={"Authorization": self._ensure_token()},
-        )
-        with urllib.request.urlopen(req, timeout=self._timeout) as resp:
-            data = json.loads(resp.read())
-        if not data.get("Success"):
+
+        for attempt in (0, 1):
+            req = urllib.request.Request(
+                url,
+                method="GET",
+                headers={"Authorization": self._ensure_token()},
+            )
+            with urllib.request.urlopen(req, timeout=self._timeout) as resp:
+                data = json.loads(resp.read())
+            if data.get("Success"):
+                return data
+            msg = (data.get("Message") or "").lower()
+            if attempt == 0 and "session" in msg and "deleted" in msg:
+                # Session invalidated server-side — drop cached token and retry once.
+                self._token = None
+                continue
             raise PilotError(f"LoadCollection on {ido} failed: {data.get('Message')}")
-        return data
+        raise PilotError(f"LoadCollection on {ido} failed after retry")
 
     def ido_exists(self, name: str) -> bool:
         data = self.load(
