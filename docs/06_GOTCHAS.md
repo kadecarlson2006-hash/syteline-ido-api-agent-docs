@@ -168,6 +168,34 @@ Mixing these up returns `405`.
 
 ---
 
+## Database Table Name Conventions
+
+### The `_mst` suffix
+
+SQL table names in `SqlColumns` and the underlying database use a `_mst` suffix (e.g., `itemprice_mst`, not `itemprice`). The IDO layer strips this suffix — so `IdoTables` references the table as `itemprice` while `SqlColumns` has `itemprice_mst`.
+
+When querying `SqlColumns` to find primary keys or column metadata, always add `_mst` to the table name:
+
+```bash
+# Correct — includes _mst suffix
+curl -s "$SYTELINE_BASE_URL/load/SqlColumns?properties=derShadowColumnName,isPrimaryKey&filter=tableName%20%3D%20N'itemprice_mst'&recordcap=0" \
+  -H "Authorization: $TOKEN"
+
+# Wrong — no results
+curl -s "...&filter=tableName%20%3D%20N'itemprice'..."
+```
+
+### IDO name casing
+
+IDO names are case-sensitive in some environments. Always verify the exact casing via `IdoCollections` before using an IDO name. For example, `SLJobmatls` (lowercase 'm') is correct — not `SLJobMatls`.
+
+```bash
+curl -s "$SYTELINE_BASE_URL/load/IdoCollections?properties=CollectionName&filter=CollectionName%20LIKE%20N'%25Jobmat%25'&recordcap=5" \
+  -H "Authorization: $TOKEN"
+```
+
+---
+
 ## Task Submission Errors
 
 ### "Task Name is invalid"

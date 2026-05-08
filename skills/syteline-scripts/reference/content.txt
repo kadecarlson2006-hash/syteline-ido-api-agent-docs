@@ -1,0 +1,6862 @@
+Netherlands (Dutch): 2004/3/2 32:2:23
+strDate = Application.DateTimeToString(strProp, "h:m:s")
+' Value of strDate by locale:
+'
+United States (English): 2:23:32
+'
+Germany (German): 2:23:32
+'
+Netherlands (Dutch): 2:23:32
+
+Infor Mongoose Application and Form Development | 436
+
+Reference
+
+DefaultData method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Replaces the component's current value with the component's default value.
+Syntax
+object.DefaultData( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid form component object.
+
+Remarks
+If the component has no default value defined, the current value is cleared.
+Example
+Sub Main()
+ThisForm.Components("OutputFormatDescGridCol").DefaultData()
+End Sub
+
+Delete method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Marks the current record in the specified IDO collection as deleted and returns a Boolean value indicating
+whether the operation was successful.
+Syntax
+object.Delete( )
+Part
+
+Description
+
+Infor Mongoose Application and Form Development | 437
+
+Reference
+
+object
+
+Required. A reference to an IDO collection object.
+
+Remarks
+The return value:
+•
+•
+
+TRUE indicates the object is marked as deleted.
+FALSE indicates the object is not marked as deleted.
+
+The actual deletion does not take place until the IDO collection data is saved. If the current object is
+marked for deletion already, this method unmarks it.
+Example
+Sub Main()
+ThisForm.PrimaryIDOCollection.Delete()
+End Sub
+
+DeleteFromFileServer method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Deletes a file from a file server.
+Syntax
+DeleteFromFileSever( string fileSpec, string servername, string logicalFold
+erName, out string errorMessage )
+where:
+•
+•
+•
+•
+
+fileSpec is the name of the file to delete.
+servername is the file server on which the file is located.
+logicalFolderName is the name of the logical folder on the file server where the file is located.
+errorMessage is the error message to be returned if the file cannot be successfully deleted.
+
+Infor Mongoose Application and Form Development | 438
+
+Reference
+
+DeleteGridRows method (WinStudio scripts)
+Applies To
+IWSFormComponents interface, unbound grid components
+Definition
+Deletes rows from an unbound grid component.
+Syntax
+object.DeleteGridRows( integer1, integer2 )
+Part
+
+Description
+
+object
+
+Required. The name of a valid grid component.
+
+integer1
+
+Required. An integer indicating the first row to delete. Row 0 is the row of
+column titles at the top of the grid component. Row 1 is the first data row.
+
+integer2
+
+Required. An integer indicating the number of rows to delete.
+
+Remarks
+This method cannot delete row 0 (the header row).
+If this method deletes the current row, the GetGridCurrentCol method returns the index for the column
+that was current in the deleted row and the GetGridCurrentRow method returns the index of the deleted
+row. To avoid this result, your application must set a new current row. The SetGridCurrentCell method
+sets both the current row and the current column.
+Example
+Sub Main()
+Dim oGrid As IWSFormComponent
+oGrid = ThisForm.Components( "MrpPlanviewTempsGrid" )
+' Delete the first two rows
+oGrid.DeleteGridRows (1, 2)
+' Delete rows 4 through 6
+ThisForm.Components( "MrpPlanviewTempsGrid" ).DeleteGridRows(4, 3)
+ThisForm.Components( "MrpPlanviewTempsGrid" ).IDOCollection.NotifyDe
+pendentsToRefresh("")
+End Sub
+
+Infor Mongoose Application and Form Development | 439
+
+Reference
+Related Topics
+GetGridCurrentCol method on page 491
+GetGridCurrentRow method on page 492
+GetGridRowCount method on page 493
+InsertGridRows method on page 555
+SetGridCurrentCell method on page 625
+
+DeleteListBoxString method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, List component type objects
+Definition
+Deletes an entry in a designated list box (List component type).
+Syntax
+object.DeleteListBoxString( integer )
+Part
+
+Description
+
+object
+
+Required. A reference to a List component type object.
+
+integer
+
+Required. The zero-based index number of the entry being deleted.
+
+Example
+Sub Main()
+Dim oListBox As IWSFormComponent
+Dim iCurrentRow As Integer
+Dim iCounter As Integer
+Dim strListBox As String
+Dim bSuccess As Boolean
+Dim iReturn As Integer
+Dim iRow As Integer
+oListBox = ThisForm.Components("list1")
+'Check to verify that a list item is selected.
+'If not, display a message and exit.
+iCurrentRow = oListBox.GetListBoxCurSel
+If iCurrentRow = -1 Then
+Application.ShowMessage("No list item selected!")
+Exit Sub
+End If
+'Display list box properties.
+
+Infor Mongoose Application and Form Development | 440
+
+Reference
+
+Application.ShowMessage("Number of items: " & oListBox.GetListBox
+Count().ToString() _
+& vbLf & "Current selection: " & (iCurrentRow + 1).ToString() & vbLf
+& _
+"Text: " & oListBox.GetListBoxText(iCurrentRow))
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("The following are the currently defined
+events:" _
+& vbLf & strListBox)
+'Set list box to second entry.
+iRow = 1
+bSuccess = oListBox.SetListBoxCurSel(iRow)
+'Insert new items at the second position.
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 1")
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 2")
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+'Delete the rows just added.
+oListBox.DeleteListBoxString(iRow + 1)
+oListBox.DeleteListBoxString(iRow)
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+End Sub
+
+DiagnosticsLog method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Creates an entry in the diagnostics log file.
+
+Infor Mongoose Application and Form Development | 441
+
+Reference
+Syntax
+Application.DiagnosticsLog( string )
+Part
+
+Description
+
+string
+
+Required. The text to be entered in the log.
+
+Example
+Sub Main
+' Make an entry in the diagnostics log
+Application.DiagnosticsLog( "This is the actual log entry text." )
+End Sub
+
+DisableComponentUpdates method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Disables component updates for all bound grid column components in a specified IDO collection object.
+Syntax
+object.DisableComponentUpdates( )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+Remarks
+Before this method is executed, it returns a Boolean value indicating the prior status of bound grid
+component updates:
+•
+•
+
+TRUE indicates that component updates were previously enabled.
+FALSE indicates that component updates were previously disabled.
+
+Example
+Sub Main()
+ThisForm.PrimaryIDOCollection.DisableComponentUpdates()
+End Sub
+
+Infor Mongoose Application and Form Development | 442
+
+Reference
+
+DisplayMessage method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Displays a message box. The text of the message can be constructed, in whole or in part, from
+substitution keywords that are translated into text.
+Syntax
+object.DisplayMessage( string1, string2 )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid component object.
+
+string1
+
+Required. The text of the message to be displayed. The string can include the
+following substitution keywords:
+• %V or %v: The component's value.
+• %L or %l: The component's label.
+• %1 - %9: Items in string2.
+
+string2
+
+Required. A comma-delimited list of items referenced by the %1 - %9 substitution
+keywords in string1.
+If no substitution keywords are used in string1, use an empty string ("") for this
+string.
+
+Remarks
+Before displaying the message contained in string1, Windows client searches string1 for substitution
+keywords and replaces them with the corresponding data. The data for %V and %L is found in the
+component object. The data for %1 - %9 is found in string2.
+Example
+Sub Main()
+Dim oGrid As IWSFormComponent
+oGrid =
+ThisForm.Components("StringTableNameGridCol")
+oGrid.DisplayMessage("%1 %L %2
+%V.", "The selected, is")
+End Sub
+
+Infor Mongoose Application and Form Development | 443
+
+Reference
+
+EmailFilesFromFileServerAsAttachment method (WinStudio scripts)
+Applies to
+FileServerExtension IDO
+Description
+Sends email as attachment from file server.
+Syntax
+Application.FileServer.EmailFilesFromFileServerAsAttachment(out
+string1,string2,string3,string4,string5,string6,string7,string8,string9,string10,string11,Boolean1,Boolean2)
+where:
+Part
+
+Description
+
+string1
+
+Required. The name of the translatable string that contains the error message for
+the method.
+
+string2
+
+Required. The name of the file server to be used.
+
+string3
+
+Required. The name of the logical folder to be used.
+
+string4
+
+Required. The path to the file. For a single file pass, you can include the file name
+along with the file path.
+
+string5
+
+Optional. Alternative names for a file pass, separated by commas, or pipe symbol
+(|).
+
+string6
+
+Required. Email addresses of all intended primary (To:) recipients must be separated by semi-colons (;).
+
+string7
+
+Optional. Text for the Subject field of the generated email.
+
+string8
+
+Optional. Text for the Body field of the generated email.
+
+string9
+
+Optional. Email addresses for any intended secondary (Cc:) recipients. Multiple
+recipients must be separated by semi-colons (;).
+
+string10
+
+Optional. Email address for any intended "blind" secondary (Bcc:) recipients.
+Multiple recipients must be separated by semi-colons (;).
+
+string11
+
+Optional. Email addresses for "Reply to:" recipients. Multiple recipients must be
+separated by semi-colons (;).
+
+Boolean1
+
+Optional. True specifiesthat the email is to be formatted as HTML. False
+specifies that the email is to be formatted as plain text.
+
+Boolean2
+
+Optional. True specifies that the email includes an attachment. False specifies
+that there is no attachment.
+
+Infor Mongoose Application and Form Development | 444
+
+Reference
+Remarks
+This method is invoked by the Call Method event action type (AES).
+Example
+public void EmailFileScript()
+{
+var fileName = ThisForm.Components["FileNamesListEd
+it"].Text.Split('.').ToList();
+string errorMessage;
+Application.FileServer.EmailFilesFromFileServerAsAttachment(
+out errorMessage,
+ThisForm.Components["ServerNameEdit"].Text,
+ThisForm.Components["SelectLogicalFolderCombo"].Text,
+ThisForm.Components["FileSpecJSON"].Text,
+ThisForm.Components["FileNamesListEdit"].Text.Split(',').ToList(),
+ThisForm.Components["ToEmailListEdit"].Text,
+ThisForm.Components["SubjectEdit"].Text,
+ThisForm.Components["BodyEdit"].Text,
+ThisForm.Components["CCEmailListEdit"].Text,
+ThisForm.Components["BCCEmailListEdit"].Text,
+ThisForm.Components["FromEmailListEdit"].Text,
+ThisForm.Components["HtmlFormatFlagEdit"].Text == "1",
+ThisForm.Components["EmbeddedEdit"].Text == "1",
+);
+ThisForm.Components["InfoBarEdit"].Text = errorMessage;
+}
+
+EnableComponentUpdates method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Enables component updates for all bound grid column components in the specified IDO collection
+object.
+Syntax
+object.EnableComponentUpdates( )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+Infor Mongoose Application and Form Development | 445
+
+Reference
+Remarks
+This method overrides any prior state of bound grid column component updates.
+Example
+Sub Main()
+ThisForm.PrimaryIDOCollection.EnableComponentUpdates()
+End Sub
+
+ExecuteExpression method (WinStudio scripts)
+Applies to
+IWSForm interface
+Description
+Executes an expression and returns the evaluated value of the expression
+Syntax
+object.ExecuteExpression( string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid form object.
+
+string
+
+Required. Specifies the expression.
+
+Remarks
+The return value is a string that contains the evaluated value of the expression.
+Example
+result = ThisForm.ExecuteExpression( “IF( V(VarTest) == 1, STRINGS(sYes),
+STRINGS(sNo)” )
+
+Infor Mongoose Application and Form Development | 446
+
+Reference
+
+ExpandNumSortedChar method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Pads a numeric or alphanumeric string with spaces or zeroes.
+Syntax
+Application.ExpandNumSortedChar( string, integer )
+Part
+
+Description
+
+string
+
+Required. The original string before it has been padded.
+
+integer
+
+Required. The length the string is to be when it has been padded.
+
+Remarks
+This method appends spaces to the left of a string of numerals. With the string 23 and a length parameter
+of 5, the method returns " 23".
+The method inserts zeroes between the alphabetic and numeric parts of a string of the type abc999.
+With the string D23 and a length parameter of 5, the method returns D0023.
+Strings expanded in this way can be sorted like numbers.
+Example
+Sub Main
+Dim Length As Integer
+Dim CustNum As String
+Dim CustSeq As String
+CustNum = ThisForm.Variables("CustNumV").Value
+CustSeq = ThisForm.Variables("CustSeqV").Value
+' Ensure CustNum is properly expanded
+If ThisForm.PrimaryIDOCollection.IsPropertyNumSortedChar("CustNum")
+Then
+Length = ThisForm.PrimaryIDOCollection.GetPropertyLength("CustNum")
+If (Length > 0 And CustNum <> "") Then
+CustNum = Application.ExpandNumSortedChar(CustNum, Length)
+End If
+End If
+End Sub
+
+Infor Mongoose Application and Form Development | 447
+
+Reference
+
+ExportBlob method (WinStudio scripts)
+Applies To
+IWSIDOProperty interface
+Definition
+Retrieves a binary large object (BLOB), such as a graphic image, from a specified item of a collection
+and writes it to a file.
+Syntax
+object.ExportBlob( string )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection item object.
+
+string
+
+Required. The name of an operating system file to which the BLOB is to be
+written. This string must include a path. The path can be relative to the directory
+containing WinStudio.exe.
+This method does not create directories.
+
+Remarks
+This method is now deprecated and available only with item objects. Instead of this method, you should
+generally try to use the ExportCurrentObjectPropertyAsBlob or ExportObjectPropertyAsBlob method.
+Example
+Sub Main()
+Dim FileName As String
+FileName = "C:\Temp\Splash_VBA_TEST.BMP"
+ThisForm.PrimaryIDOCollection.Item(4).Properties("myItem").Export
+Blob(FileName)
+End Sub
+
+ExportCollection method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+
+Infor Mongoose Application and Form Development | 448
+
+Reference
+Definition
+Exports the contents of a designated IDO collection to a file.
+Parallels the Form menu option Export to File.
+Syntax
+object.ExportCollection( Boolean1, string, Boolean2 )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection.
+
+Boolean1
+
+Required. Boolean value that indicates how the output is to be delimited:
+• TRUE means that the output is to be tab-delimited.
+• FALSE means that the output is to be comma-delimited.
+
+string
+
+Required. The path and name of the output file.
+If you do not specify a full path, the path is relative to the file in which WinStudio.exe is installed.
+This method does not create directories.
+
+Boolean2
+
+Required. Boolean value that indicates whether record caps are to be ignored or
+honored:
+• TRUE signifies that the system is to ignore any record cap and return all
+records in the collection. This effectively overrides (for this action) any record
+cap set for the system or by the user.
+• FALSE signifies that the system is to return only the number of records
+specified by any record caps in effect on the user's system.
+
+Example
+Sub Main()
+ThisForm.PrimaryIDOCollection.ExportCollection(False, "c:\mytemp\Ex
+port.csv", False)
+End Sub
+
+ExportCurrentObjectPropertyAsBlob method
+Applies To
+IWSIDOCollection interface
+
+Infor Mongoose Application and Form Development | 449
+
+Reference
+Definition
+Retrieves a binary large object (BLOB), such as a graphic image, from the currently active record of a
+collection and writes it to a file.
+Syntax
+object.ExportCurrentObjectPropertyAsBlob( string1, string2 )
+Part
+
+Description
+
+object
+
+Required. A reference to the current IDO collection object.
+
+string1
+
+Required. The name of a binary property in the collection.
+
+string2
+
+Required. The name of the file to which the BLOB is to be written.
+This string must include a path. The path can be relative to the directory
+containing WinStudio.exe.
+
+Remarks
+The difference between this method and the ExportObjectPropertyAsBlob method is that this one
+references the currently active object, and ExportObjectPropertyAsBlob acts on an object in a specified
+(usually other) row.
+This method does not create directories.
+If the currently active object does not contain any BLOB data, then this method does nothing and does
+not automatically generate an error message.
+Caution: This method does not warn you before overwriting files. This means that, if you already
+have a file by the same name as that in string2, this method overwrites it without warning.
+Example
+Sub Main()
+Dim PropertyName As String
+Dim FileName As String
+PropertyName = "blob_column"
+FileName = "C:\Temp\appGraphics\earth.png"
+ThisForm.PrimaryIDOCollection.ImportCurrentObjectPropertyAsBlob(Proper
+tyName, FileName)
+FileName = "C:\Temp\ExportBlob.png"
+ThisForm.PrimaryIDOCollection.ExportCurrentObjectPropertyAsBlob(Proper
+tyName, FileName)
+End Sub
+
+Infor Mongoose Application and Form Development | 450
+
+Reference
+
+ExportToFileServerFromCollection method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Exports a file from a specified IDO collection and saves it to a file server.
+Syntax
+ExportToFileServerFromCollection( string formDefName, string collectionid,
+string propertyFrom, string serverTo, string fileSpec, int rowIndex, out
+string errorMessage )
+where:
+•
+•
+•
+•
+•
+•
+•
+
+formDefName is the internal name (not caption) of the form to which the file is being exported.
+collectionid is name of the IDO collection into which the file is to be exported.
+propertyTo is the name of the property to which the file is to be exported.
+serverTo is the file server to which the requested file is to be exported.
+fileSpec is the name of the requested file.
+rowIndex the number of the record to which the file is to be exported.
+errorMessage is the error message to be returned if the export is not successful.
+
+Remarks
+To export the file from an IDO collection's BLOB property, include this argument after the serverFrom
+argument:
+string logicalFolderName
+
+ExportObjectPropertyAsBlob method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Retrieves a binary large object (BLOB), such as a graphic image, from an object in a specified row of
+a collection and writes it to a file.
+Syntax
+object.ExportObjectPropertyAsBlob( string1, integer, string2 )
+
+Infor Mongoose Application and Form Development | 451
+
+Reference
+
+Part
+
+Description
+
+object
+
+Required. An expression that evaluates to the name of an IDO collection object.
+
+string1
+
+Required. The name of a binary property in the collection.
+
+integer
+
+Required. Indicates the row in which the specified object exists.
+The row number is zero-based. So, for example, if you want to export the BLOB
+data from the third row, you must use 2 for this integer
+
+string2
+
+Required. The name of the file to which the BLOB is to be written.
+This string must include a path. The path can be relative to the directory containing WinStudio.exe.
+
+Remarks
+The difference between this method and the ExportCurrentObjectPropertyAsBlob method is that this
+method acts on an object in a specified (usually other) row, and ExportCurrentObjectPropertyAsBlob
+references the currently active object.
+This method does not create directories.
+Example
+Sub Main()
+Dim PropertyName As String
+Dim FileName As String
+PropertyName = "blob_column"
+FileName = "C:\Temp\appGraphics\filter.png"
+ThisForm.PrimaryIDOCollection.ImportObjectPropertyAsBlob(PropertyName,
+4, FileName)
+FileName = "C:\Temp\ExportBlob.png"
+ThisForm.PrimaryIDOCollection.ExportObjectPropertyAsBlob(PropertyName,
+4, FileName)
+End Sub
+
+FileExists method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Checks for the existence of a requested file.
+
+Infor Mongoose Application and Form Development | 452
+
+Reference
+Syntax
+FileExists( string fileSpec, string servername, string logicalFolderName,
+out string errorMessage );
+where:
+•
+•
+•
+•
+
+fileSpec is the name of the requested file.
+servername is the file server on which the requested file is expected.
+logicalFolderName is the name of the logical folder on the file server where the requested file is
+expected to be.
+errorMessage is the error message to be returned if the requested file is not found.
+
+FindForm method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Returns a Visual Basic object that references the specified form.
+Syntax
+varObject = Application.FindForm( string )
+Part
+
+Description
+
+varObject
+
+Required. A Visual Basic variable that is defined as an object and that
+references the form object.
+
+string
+
+Required. The name of the form.
+
+Remarks
+The specified form must be open in WinStudio or must be accessible from a form that is open. However,
+the form does not have to have focus.
+The Visual Basic Set instruction assigns an object reference to a variable.
+Example
+Sub Main
+Dim oForm As IWSForm
+oForm = Application.FindForm("ReportOptions")
+Application.ShowMessage(oForm.Caption & "is open.")
+End Sub
+
+Infor Mongoose Application and Form Development | 453
+
+Reference
+
+First method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Navigates to the first object in a specified IDO collection (the top entry) and returns a Boolean value
+indicating whether the navigation was successful.
+Syntax
+object.First( )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the system navigated to the first object in the collection, and the index of the
+IDO collection was reset to 0.
+FALSE indicates that the system did not navigate to the first object, and the index was not reset.
+
+This method navigates objects in the IDO collection but does not set the focus of the form to the first
+object.
+Example
+This example assumes you are using a form with both primary and secondary collections. It navigates
+to the first record, first on the primary collection, and then on the secondary collection, both times
+displaying the same message afterward (assuming the navigation is successful in both cases).
+Note: You can tell that the navigation has been successful also by watching the current row indicator
+(pointer) for each collection.
+Sub Main()
+Dim oCache As IWSIDOCollection
+oCache = ThisForm.CurrentIDOCollection
+If oCache.First() Then
+Application.ShowMessage("The system navigated to the first record."
+_
+& vbLf & "The index number is now: " & _
+oCache.GetCurrentObjectIndex())
+Else
+Application.ShowMessage("Navigation failed!")
+End If
+ThisForm.CurrentIDOCollection = ThisForm.GetSecondaryIDOCollection(2)
+
+Infor Mongoose Application and Form Development | 454
+
+Reference
+
+oCache = ThisForm.CurrentIDOCollection
+If oCache.First() Then
+Application.ShowMessage("The system navigated to the first record."
+_
+& vbLf & "The index number is now: " & _
+oCache.GetCurrentObjectIndex())
+Else
+Application.ShowMessage("Navigation failed!")
+End If
+End Sub
+
+FocusToForm method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Shifts the focus from one form to another.
+Syntax
+Application.FocusToForm( string )
+Part
+
+Description
+
+string
+
+Required. The name of the form.
+
+Remarks
+The form receiving focus must be open.
+Example
+Sub Main
+Application.FocusToForm( "BGTaskDefinitions" )
+End Sub
+
+Infor Mongoose Application and Form Development | 455
+
+Reference
+
+FontDescriptorFromFont method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Takes a Font data type as input and returns the value as a font descriptor string.
+A "font descriptor" is a string consisting of a list of fourteen comma-separated values. For more
+information about this value, see the "Remarks" section.
+Syntax
+Application.FontDescriptorFromFont( Font.font )
+Part
+
+Description
+
+font
+
+Required. Name of a valid Font data type.
+
+Remarks
+The return value is a string consisting of a list of fourteen comma-separated values that define the font,
+using this format:
+Size,0,0,0,Weight,Italic,Underline,Strikethrough,0,0,0,0,0,FontFamily
+where:
+List item:
+
+Consists of:
+
+Size
+
+A decimal value representing the point size.
+
+Weight
+
+Range from 0 (non-bold) to 700 (bold).
+
+Italic
+
+0 = Normal text 1 = Italicized text.
+
+Underline
+
+0 = Text not underlined. 1 = Text underlined.
+
+Strikethrough
+
+0 = Normal text. 1 = Text struck through.
+
+FontFamily
+
+Name of the font (family) to be used.
+
+This method must be used in conjunction with another method, such as SetGridRowColFont,
+SetGridRowColFontByColumnName, or any other method that requires a font descriptor as input. It
+allows you to construct the font descriptor from a Font data type.
+When using this method, you must include the following comment above the Imports section in any
+global or form script:
+'//<Ref>System.Drawing.dll</Ref>
+
+Infor Mongoose Application and Form Development | 456
+
+Reference
+
+Example
+Sub Main()
+Dim FontDesc As String
+Dim newFont As Font
+FontDesc = Application.GetBaseFontDescriptor()
+newFont = Application.FontFromFontDescriptor( FontDesc )
+If not IDONull.IsNull(newFont) Then
+newFont = new Font( newFont, FontStyle.Bold )
+FontDesc = Application.FontDescriptorFromFont( newFont )
+End If
+ThisForm.Components("FormCollectionGrid").SetGridRowColFont( 3, 4,
+FontDesc, True )
+End Sub
+
+FontFromFontDescriptor method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Takes a font descriptor string as input and returns the value as a Font data type.
+A "font descriptor" is a string consisting of a list of fourteen comma-separated values.
+Syntax
+Application.FontFromFontDescriptor( string )
+Part
+
+Description
+
+string
+
+Required. Consists of fourteen comma-separated values:
+Size,0,0,0,Weight,Italic,Underline,Strikethrough,0,0,0,0,0,FontFamily
+For more information about these values, see "Settings" below.
+
+Settings
+Setting
+
+Description
+
+Size
+
+A decimal value representing the point size.
+
+Weight
+
+Range from 0 (non-bold) to 700 (bold).
+
+Infor Mongoose Application and Form Development | 457
+
+Reference
+
+Italic
+
+0 = Normal text.
+1 = Italicized text.
+
+Underline
+
+0 = Text not underlined.
+1 = Text underlined.
+
+Strikethrough
+
+0 = Normal text.
+1 = Text struck through.
+
+FontFamily
+
+Name of the font (family) to be used.
+
+Remarks
+The return value is a Font data type matching the font descriptor string.
+This method must be used in conjunction with another method that requires a Font data type as input.
+It allows you to construct the Font data type from a font descriptor string.
+When using this method, you must include the following comment above the Imports section in any
+global or form script:
+'//<Ref>System.Drawing.dll</Ref>
+Example
+Dim FontDesc As String
+Dim newFont As Font
+FontDesc = Application.GetBaseFontDescriptor()
+newFont = Application.FontFromFontDescriptor( FontDesc )
+If not IDONull.IsNull(newFont) Then
+newFont = new Font( newFont, FontStyle.Bold )
+FontDesc = Application.FontDescriptorFromFont( newFont )
+End If
+ThisForm.Components("FormCollectionGrid").SetGridRowColFont( 3, 2,
+FontDesc, True )
+
+ForceRepaint method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Repaints a specified component.
+
+Infor Mongoose Application and Form Development | 458
+
+Reference
+Syntax
+object.ForceRepaint( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid component object.
+
+Example
+Sub Main()
+ThisForm.Components("FormCollectionGrid").ForceRepaint
+End Sub
+
+GaugeAddColorRange method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+This method adds a color range to a gauge component, using line elements to define the color range
+attributes.
+Syntax
+Dim colorRangeName As ColorRange
+colorRangeName.attributeX = valueX
+gauge.GaugeAddColorRange( colorRangeName )
+Part
+
+Description
+
+colorRangeName
+
+Required. Specifies the name by which the color range is to be identified.
+
+attributeX
+
+Optional. Specifies the name of a color range attribute.
+
+valueX
+
+One required for each attribute specified. Specifies the value to be assigned to
+attirbuteX.
+
+Remarks
+You should declare and name the each color range and its attributes before you attempt to use this
+method to add the color range to the gauge. It is also a good practice to employ the
+GaugeClearColorRanges method before you declare and use this one.
+
+Infor Mongoose Application and Form Development | 459
+
+Reference
+You can use this method to define multiple color ranges.
+For a complete list and description of the color range attributes available for scripting, see Specifying
+color ranges for gauges on page 1158.
+Example
+In this example, a GaugeClearColorRanges method is invoked first, to clear any color ranges that might
+currently be defined for the gauge component. Following that, three color ranges are declared, their
+attribute values assigned, and an instance of GaugeAddColorRange is invoked for each range.
+This example is given in Visual Basic.
+gauge.GaugeClearColorRanges()
+Dim r1 As ColorRange
+Dim r2 As ColorRange
+Dim r3 As ColorRange
+r1.MinValue = 0
+r1.MaxValue = 20
+r1.Code = "0000FF"
+gauge.GaugeAddColorRange(r1)
+r2.MinValue = 21
+r2.MaxValue = 60
+r2.Code = "00FF00"
+gauge.GaugeAddColorRange(r2)
+r3.MinValue = 61
+r3.MaxValue = 100
+r3.Code = "FF0000"
+gauge.GaugeAddColorRange(r3)
+
+GaugeAddTrendpoint method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+This method adds a trend point to a gauge component, using line elements to define the trend point
+attributes.
+Syntax
+Dim trendpointName As Trendpoint
+
+Infor Mongoose Application and Form Development | 460
+
+Reference
+trendpointName.attributeX = valueX
+gauge.GaugeAddTrendpoint( trendpointName )
+Part
+
+Description
+
+trendpointName
+
+Required. Specifies the name by which the trend point is to be identified.
+
+attributeX
+
+Optional. Specifies the name of a trend point attribute.
+
+valueX
+
+One required for each attribute specified. Specifies the value to be assigned to
+attirbuteX.
+
+Remarks
+You should declare and name the trend point and its attributes before you attempt to use this method
+to add the trend point to the gauge. It is also a good practice to employ the GaugeClearTrendpoints
+method before you declare and use this one.
+You can use this method to define multiple trend points.
+For a complete list and description of the trend point attributes available for scripting, see Specifying
+trend point settings for gauges on page 1203.
+Example
+This example shows how the trend point should first be defined/declared and the attributes specified
+before the trend point is actually added to the gauge.
+This example is given in Visual Basic.
+gauge.GaugeClearTrendpoints()
+Dim trendpoint As Trendpoint
+trendpoint.StartValue = 7
+trendpoint.Color = "FFFFFF"
+trendpoint.Dashed = True
+trendpoint.DisplayValue = "Target"
+gauge.GaugeAddTrendpoint(trendpoint)
+
+GaugeClearColorRanges method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+This method clears all color ranges from a gauge component.
+
+Infor Mongoose Application and Form Development | 461
+
+Reference
+Syntax
+gauge.GaugeClearColorRanges( )
+Remarks
+This method can be helpful when you want to add or replace color ranges on a gauge component. Use
+this method to clear existing color ranges before adding the new ones.
+Example
+In this example, the GaugeClearColorRanges method is being used to make sure that existing color
+ranges are removed from the gauge before three new ones are drawn.
+This example is given in Visual Basic.
+gauge.GaugeClearColorRanges()
+Dim r1 As ColorRange
+Dim r2 As ColorRange
+Dim r3 As ColorRange
+r1.MinValue = 0
+r1.MaxValue = 20
+r1.Code = "0000FF"
+gauge.GaugeAddColorRange(r1)
+r2.MinValue = 21
+r2.MaxValue = 60
+r2.Code = "00FF00"
+gauge.GaugeAddColorRange(r2)
+r3.MinValue = 61
+r3.MaxValue = 100
+r3.Code = "FF0000"
+gauge.GaugeAddColorRange(r3)
+
+GaugeClearTrendpoints method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+This method clears all trend points from a gauge component.
+Syntax
+gauge.GaugeClearTrendpoints( )
+
+Infor Mongoose Application and Form Development | 462
+
+Reference
+Remarks
+This method can be helpful when you want to add trend points to a gauge. Use this method to clear
+existing trend points before adding the new ones.
+Example
+In this example, the GaugeClearTrendpoints method is being used to make sure that existing trend
+points are removed from the gauge before a new one is rendered.
+This example is given in Visual Basic.
+
+gauge.GaugeClearTrendpoints()
+Dim trendpoint As Trendpoint
+trendpoint.StartValue = 7
+trendpoint.Color = "FFFFFF"
+trendpoint.Dashed = True
+trendpoint.DisplayValue = "Target"
+gauge.GaugeAddTrendpoint(trendpoint)
+
+GaugeGetAlertValue method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Returns the value of the alert for a Critical Number-bound gauge.
+Syntax
+object.GaugeGetAlertValue()
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Remarks
+The return value is a string containing the overridden alert value on the Critical Number gauge. If this
+value is blank, the gauge uses the alert value from the Critical Numbers Setup form.
+
+Infor Mongoose Application and Form Development | 463
+
+Reference
+
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetAlert
+Value)
+End Sub
+
+GaugeGetAsOfDate method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Gets the AsOfDate for a Critical Number bound Gauge.
+Syntax
+object.GaugeGetAsOfDate()
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Remarks
+The return value is a string containing the date by which the critical number will be calculated.
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetAsOfDate)
+End Sub
+
+GaugeGetCaptionFormat method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+
+Infor Mongoose Application and Form Development | 464
+
+Reference
+Definition
+Gets the Caption Format for a Critical Number bound Gauge.
+Syntax
+object.GaugeGetCaptionFormat()
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Remarks
+The return value is a string containing the caption format setting. Valid values are:
+•
+•
+•
+•
+
+Long: The description from the Critical Numbers Setup form is used
+Short: The short description from the Critical Numbers Setup form is used
+Default: Either the long or short description is used based on the gauge type
+None: The caption can be manually set on the gauge
+
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetCaption
+Format)
+End Sub
+
+GaugeGetCriticalNumber nethod (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Returns the Critical Number to which the gauge is bound for a Critical Number-bound gauge.
+Syntax
+object.GaugeGetCriticalNumber()
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Infor Mongoose Application and Form Development | 465
+
+Reference
+Remarks
+The return value is an integer representing the Critical Number that is shown by the gauge.
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetCriti
+calNumber)
+End Sub
+
+GaugeGetDateRange method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Gets the current date range (All Dates, YTD, PTD, etc) of the gauge for a Critical Number-bound gauge
+that is bound to a date driven number.
+Syntax
+object.GaugeGetDateRange
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Remarks
+The return value is a string representing a date range over which the critical number is calculated.
+Date ranges are supported on IDO based critical numbers that have a date property filled in.
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetDat
+eRange)
+End Sub
+
+Infor Mongoose Application and Form Development | 466
+
+Reference
+
+GaugeGetDrilldown method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Returns the Drilldown that will be called on drill-down from the gauge for a Critical Number-bound
+gauge.
+Syntax
+object.GaugeGetDrilldown
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Remarks
+The return value is an integer that represents the critical number drilldown, which is called when the
+user double-clicks on the gauge. This drilldown must be associated to the critical number on the Critical
+Numbers Setup form.
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetDrill
+down)
+End Sub
+
+GaugeGetGoalValue method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Returns the goal value for a Critical Number-bound gauge.
+Syntax
+object.GaugeGetGoalValue
+Infor Mongoose Application and Form Development | 467
+
+Reference
+
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Remarks
+The return value is a string containing the overridden goal value on the Critical Number gauge. If this
+value is blank, the gauge will use the goal value from Critical Numbers Setup.
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetGoalVal
+ue)
+End Sub
+
+GaugeGetGroup method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Returns the current Group for a Critical Number-bound gauge that is bound to a critical number that
+accepts Group values.
+Syntax
+object.GaugeGetGroup
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Remarks
+The return value is a string containing the Group By value for which the critical number is calculated.
+Group By values are optional and are supported on IDO-based critical numbers that have a group by
+property specified.
+
+Infor Mongoose Application and Form Development | 468
+
+Reference
+
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetGroup)
+End Sub
+
+GaugeGetProperty method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Returns the value of a gauge component property as specified in the GaugeProperty enumeration.
+Syntax
+T GaugeGetProperty<T>( GaugeProperty.propertyName )
+Part
+
+Description
+
+T
+
+Required. Indicates the datatype of the property value being returned (string,
+int, float, etc.).
+
+<T>
+
+Required. Indicates a generic datatype parameter.
+
+propertyName
+
+Required. Specifies the name of the gauge property for which you want to retrieve
+the value.
+
+Remarks
+The GaugeProperty enumeration contains a value for each available gauge property.
+Examples
+For C#:
+IWSFormComponent gauge = ThisForm.Components("gauge1");
+string caption = gauge.GaugeGetProperty<string>(GaugeProperty.Caption);
+gauge.GaugeSetProperty(GaugeProperty.Caption, "Total");
+
+Infor Mongoose Application and Form Development | 469
+
+Reference
+
+For VB:
+Dim gauge As IWSFormComponent = ThisForm.Components("gauge1")
+Dim caption As String = gauge.GaugeGetProperty(Of String)(GaugeProperty.Cap
+tion)
+gauge.GaugeSetProperty(GaugeProperty.Caption, "Total");
+
+GaugeGetSubCaptionFormat method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Gets the Sub-Caption Format for a Critical Number-bound gauge.
+Syntax
+object.GaugeGetSubCaptionFormat
+Remarks
+The return value is a string containing the format of the sub-caption on the critical number gauge. Valid
+values are:
+•
+•
+•
+
+All: Show goal, alert, and actual values
+Actual: Show actual value
+None: Sub-caption can be set manually on the critical number gauge
+
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.Components("gauge1").GaugeGetSubCap
+tionFormat)
+End Sub
+
+Infor Mongoose Application and Form Development | 470
+
+Reference
+
+GaugeRedraw method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Forces a gauge component to redraw. A critical number gauge also recalculates the number prior to
+redrawing.
+Syntax
+object.GaugeRedraw
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeRedraw
+End Sub
+
+GaugeSetAlertValue method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the Alert value for a critical number bound gauge.
+Syntax
+object.GaugeSetAlertValue(string)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+string
+
+Required. A string that represents the new overridden alert value to use on the critical
+number gauge.
+
+Infor Mongoose Application and Form Development | 471
+
+Reference
+
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetAlertValue("500")
+End Sub
+
+GaugeSetAsOfDate method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the AsOfDate for a critical number bound gauge.
+Syntax
+object.GaugeSetAsOfDate(string)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+string
+
+Required. A string representing a date value by which the critical number should be
+calculated.
+
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetAsOfDate(ThisForm.Variables("AsOf
+Date").Value)
+End Sub
+
+GaugeSetCaptionFormat method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+
+Infor Mongoose Application and Form Development | 472
+
+Reference
+Definition
+Sets the Caption Format (None, Short, Long, Default) for a critical number bound gauge.
+Syntax
+object.GaugeSetCaptionFormat(string)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+string
+
+Required. A string that represents the new format for the gauge caption.
+
+Remarks
+Valid values are:
+•
+•
+•
+•
+
+Long: The description from the Critical Numbers Setup form is used
+Short: The short description from the Critical Numbers Setup form is used
+Default: Either the long or short description is used based on the gauge type
+None: The caption can be set manually on the gauge
+
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetCaptionFormat("Default")
+End Sub
+
+GaugeSetCriticalNumber method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the critical number for the gauge to show for a critical number bound gauge.
+Syntax
+object.GaugeSetCriticalNumber(int)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+Infor Mongoose Application and Form Development | 473
+
+Reference
+
+Part
+
+Description
+
+int
+
+Required. An integer indicating which critical number should be shown by the gauge.
+
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetCriticalNumber(1)
+End Sub
+
+GaugeSetDateRange method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the date range (All Dates, YTD, PTD, etc) of the Gauge for a Critical Number bound Gauge that
+is bound to a date driven number.
+Syntax
+object.GaugeSetDateRange(string)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+string
+
+Required. A gauge date range which is valid for the selected critical number.
+
+Remarks
+Gauge date ranges are available on IDO-based critical numbers that have a date property specified.
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetGaugeDateRange("YTD")
+End Sub
+
+Infor Mongoose Application and Form Development | 474
+
+Reference
+
+GaugeSetDrilldown method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the drilldown that is called during drilldown from the gauge for a critical number bound gauge.
+Syntax
+object.GaugeSetDrilldown(integer)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+integer
+
+Required. The number of the drilldown that is called when the user double clicks on the
+gauge.
+
+Remarks
+The new drilldown must already be associated with the critical number on the Critical Numbers Setup
+form.
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetDrilldown(5)
+End Sub
+
+GaugeSetGaugeType method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the Gauge Type for a gauge component.
+Syntax
+object.GaugeSetGaugeType(string)
+
+Infor Mongoose Application and Form Development | 475
+
+Reference
+
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+string
+
+Required. A valid gauge display type.
+
+Remarks
+Valid gauge display types are:
+•
+•
+•
+•
+•
+•
+•
+•
+•
+
+AngularGauge: Angular (Circular) Gauge
+HLinearGauge: Horizontal Linear Gauge
+Bulb
+Cylinder
+HLED: Horizontal LED
+Thermometer
+VLED: Vertical LED
+HBullet: Horizontal Bullet
+VBullet: Vertical Bullet
+
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetGaugeType("AngularGauge")
+End Sub
+
+GaugeSetGoalValue method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the goal value for a critical number bound gauge.
+Syntax
+object.GaugeSetGoalValue(string)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+string
+
+Required. A string that represents the new overridden goal value to use on the critical
+number gauge.
+
+Infor Mongoose Application and Form Development | 476
+
+Reference
+
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetGoalValue("250")
+End Sub
+
+GaugeSetGroup method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the current Group for a gauge that is bound to a critical number that accepts Group values.
+Syntax
+object.GaugeSetGroup(string)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+string
+
+Required. A valid value for the Group over which the critical number will be calculated.
+
+Remarks
+To configure IDO-based critical numbers to calculate by group, you can enter a group by property. For
+example, a sales number could be grouped by state. Using this method, a state (OH) could be passed
+into the critical number so it would only calculate for Ohio.
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetGroup("OH")
+End Sub
+
+Infor Mongoose Application and Form Development | 477
+
+Reference
+
+GaugeSetProperty method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+This method sets the value of a gauge property specified by the GaugeProperty enumeration to a
+designated value.
+Syntax
+GaugeSetProperty<T>( GaugeProperty.propertyName, T value )
+Part
+
+Description
+
+<T>
+
+Required. Indicates a generic datatype parameter.
+
+propertyName
+
+Required. Specifies the name of the gauge property for which you want to set
+the value.
+
+T
+
+Required. Specifies the datatype of the property being set (string, int, float, etc.).
+
+value
+
+Required. Specifies the value or a an expression that resolves to the value to
+which the property is to be set.
+
+Remarks
+The GaugeProperty enumeration contains a value for each available gauge property.
+Examples
+C#
+IWSFormComponent gauge = ThisForm.Components("gauge1");
+string caption = gauge.GaugeGetProperty<string>(GaugeProperty.Caption);
+gauge.GaugeSetProperty(GaugeProperty.Caption, "Total");
+VB
+Dim gauge As IWSFormComponent = ThisForm.Components("gauge1")
+Dim caption As String = gauge.GaugeGetProperty(Of String)(GaugeProperty.Cap
+tion)
+gauge.GaugeSetProperty(GaugeProperty.Caption, "Total");
+
+Infor Mongoose Application and Form Development | 478
+
+Reference
+
+GaugeSetSubCaptionFormat method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Sets the Sub-Caption Format (All, Actual, None) for a Critical Number-bound gauge.
+Syntax
+object.GaugeSetSubCaptionFormat(string)
+Part
+
+Description
+
+object
+
+Required. A reference to a valid gauge component object.
+
+string
+
+Required. A string setting the sub-caption format of the gauge.
+
+Remarks
+Valid sub-caption formats are:
+•
+•
+•
+
+All: Show goal, alert, and actual values
+Actual: Show actual value
+None: Sub-caption can be manually set on the critical number gauge
+
+Example
+Sub Main()
+ThisForm.Components("gauge1").GaugeSetSubCaptionFormat("Actual")
+End Sub
+
+GenerateEvent method (WinStudio scripts)
+Applies To
+IWSForm interface
+Definition
+Generates a standard event or a customized event for a specified form.
+
+Infor Mongoose Application and Form Development | 479
+
+Reference
+Syntax
+object.GenerateEvent( string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid form object.
+
+string
+
+Required. The name of the event.
+
+Examples
+Sub Main()
+Dim iReturn As Integer
+' Generate an event which refreshes the Form data
+iReturn = ThisForm.GenerateEvent("StdFormRefresh")
+Application.ShowMessage( "Refresh Complete" )
+End sub
+In this example, parameter 1 is the name of a component object, which indicates whether or not a
+record has been selected, and parameter 2 is the name of an event to be generated. The script loops
+through the IDO collection and generates an event for each selected record.
+Sub Main()
+On Error GoTo ErrorHandler
+Application.DiagnosticsLog("entering script")
+Dim CurrentObjectIndexSave As Integer
+Dim ReturnValue As Integer
+Dim SelectFlagName As String
+Dim SelectFlagValue As String
+Dim strEvent As String
+ReturnValue = 1
+CurrentObjectIndexSave = ThisForm.PrimaryIDOCollection.GetCurrentOb
+jectIndex()
+SelectFlagName = GetParameter(0)
+strEvent = GetParameter(1)
+For i As Integer = 0 To ThisForm.PrimaryIDOCollection.GetNumEntries 1
+SelectFlagValue = ThisForm.PrimaryIDOCollection.GetObjectProperty(Se
+lectFlagName, i)
+Application.DiagnosticsLog("i=" & i)
+Application.DiagnosticsLog("SelectFlagValue=" & SelectFlagValue)
+If SelectFlagValue = "1" Then
+ThisForm.PrimaryIDOCollection.SetCurrentObject(i)
+ThisForm.GenerateEvent(strEvent)
+End If
+Next
+ThisForm.PrimaryIDOCollection.SetCurrentObject(CurrentObjectIndexSave)
+GoTo NormalExit
+NormalExit:
+Application.DiagnosticsLog("exiting script normally")
+ReturnValue = 0
+Exit Sub
+
+Infor Mongoose Application and Form Development | 480
+
+Reference
+
+ErrorExit:
+Application.DiagnosticsLog("exiting script via ErrorExit")
+ReturnValue = 1
+Exit Sub
+ErrorHandler:
+Application.ShowMessage(Err.Description)
+ReturnValue = 1
+End Sub
+
+GetAllServerNames method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Retrieves a list of all file servers registered in the system.
+Syntax
+GetAllServerNames()
+
+GetBaseFontDescriptor method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Returns a font descriptor string that indicates the base font used by the application user interface.
+A "font descriptor" is a string consisting of a list of fourteen comma-separated values. For details on
+the font descriptor, see the "Remarks" section.
+Syntax
+Application.GetBaseFontDescriptor( )
+Remarks
+The return value is a string consisting of a list of fourteen comma-separated values that define the font,
+using the following format:
+
+Infor Mongoose Application and Form Development | 481
+
+Reference
+Size,0,0,0,Weight,Underline ,Italic,,Strikethrough,0,0,0,0,0,FontFamily
+where:
+List item:
+
+Consists of:
+
+Size
+
+A decimal value representing the point size.
+
+Weight
+
+Range from 0 (non-bold) to 700 (bold).
+
+Italic
+
+0 = Normal text.
+1 = Italicized text.
+
+Underline
+
+0 = Text not underlined.
+1 = Text underlined.
+
+Strikethrough
+
+0 = Normal text.
+1 = Text struck through.
+
+FontFamily
+
+Name of the font (family) to be used.
+
+Example
+Sub Main()
+Dim FontDesc As String
+Dim newFont As Font
+FontDesc = Application.GetBaseFontDescriptor()
+newFont = Application.FontFromFontDescriptor( FontDesc )
+If not IDONull.IsNull(newFont) Then
+newFont = new Font( newFont, FontStyle.Bold )
+FontDesc = Application.FontDescriptorFromFont( Font.newFont )
+End If
+ThisForm.Components("FormCollectionGrid").SetGridRowColFont( 3, 4,
+FontDesc, True )
+End Sub
+
+GetBaseFontFaceName method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Returns a string containing the name of the font family being used by the application user interface.
+
+Infor Mongoose Application and Form Development | 482
+
+Reference
+Syntax
+Application.GetBaseFontFaceName( )
+Example
+Dim Value As String
+Value = Application.GetBaseFontFaceName()
+Application.ShowMessage("The base font being used on this system is " &
+Value & ".")
+
+GetBlobFormat method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Takes a file extension as an argument and returns the BLOB format associated with that file extension.
+For example, the file extension "jpe" returns the BLOB format "jpeg".
+Syntax
+GetBlobFormat( string extension, out string errorMessage )
+where:
+•
+•
+
+extension is the file extension.
+errorMessage is the error message to be returned if the file extension is not found.
+
+GetComponentDesignTemplate method (WinStudio scripts)
+Applies To
+IWSFormWizard interface
+Definition
+Wizard form script to retrieve a component template.
+Remarks
+This method retrieves a component template, which can be then applied to the form definition.
+
+Infor Mongoose Application and Form Development | 483
+
+Reference
+Note: Script APIs defined in the IWSFormWizard interface are designed to be used within the wizard
+form type only.
+Example
+var template = Designer.FormWizard.GetComponentDesignTemplate( "<template
+Name" );
+var tmpDef = template.Definition;
+// Adjust template as needed:
+template.ApplyContainer( "<containerComp>" );
+template.ApplyPosition( new FormPosition( 5d, 5d ) );
+template.ApplySize( new FormSize( 100d, 10d ) );
+// tmpDef.LayoutAttributes = “...”
+newFormDef.ApplyTemplate( new FormDefTemplate
+{
+FormWizard = Designer.FormWizard,
+Template = template,
+
+GetCurrentComponentName method (WinStudio scripts)
+Applies To
+IWSForm interface
+Definition
+Returns the name of the component that currently has focus.
+Syntax
+object.GetCurrentComponentName( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid form object.
+
+Remarks
+The return value is a string containing the name of the current component.
+Note: This method does not return a component name when the method is called in response to a
+data change event on an edit box. When focus moves from the edit box containing changed data, the
+component is no longer the current component.
+
+Infor Mongoose Application and Form Development | 484
+
+Reference
+
+Example
+Sub Main()
+Dim strCompName As String
+strCompName = Application.FindForm("formName").GetCurrentComponentName()
+Application.ShowMessage(strCompName)
+End Sub
+
+GetCurrentObjectIndex method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns the index number of the current entry in a specified IDO collection. Read-only.
+Syntax
+object.GetCurrentObjectIndex( )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+Remarks
+The return value is an integer, 0 to n, where n is the total number of IDO collection entries for the
+specified IDO collection object.
+The current entry whose index is returned might or might not be the object with the current focus. This
+method returns the index of the currently selected row in whatever collection Windows client recognizes
+as the current collection. This method does not return the index of the object whose component has
+the focus as determined by the user.
+Example
+Sub Main()
+Dim iReturnValue As Integer
+Dim oCache As IWSIDOCollection
+ThisForm.CurrentIDOCollection = ThisForm.GetSecondaryIDOCollection(2)
+oCache = ThisForm.CurrentIDOCollection
+iReturnValue = oCache.GetCurrentObjectIndex()
+Application.ShowMessage("Current row number: " & (iReturnValue + 1))
+
+Infor Mongoose Application and Form Development | 485
+
+Reference
+
+oCache.First()
+iReturnValue = oCache.GetCurrentObjectIndex()
+Application.ShowMessage("Current row number: " & (iReturnValue + 1))
+End Main
+
+GetCurrentObjectProperty method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a string containing the value of a specified object property in an IDO collection.
+Syntax
+object.GetCurrentObjectProperty( string )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+string
+
+Required. The name of the object property.
+
+Remarks
+The return value is a string containing the value of the object property for the currently selected record.
+For this method, the return value for date and numeric values is based on the current user local settings
+(as compared with the GetCurrentObjectPropertyInternal on page 487 method, which uses WinStudio
+internal settings).
+Examples
+Sub Main()
+Dim ReturnValue As String
+ReturnValue = ThisForm.PrimaryIDOCollection.GetCurrentObjectProper
+ty("LanguageDesc")
+Application.ShowMessage("Object property value: " & ReturnValue)
+End Sub
+Sub Main()
+Application.ShowMessage("Object property value: " _
+& ThisForm.GetSecondaryIDOCollection(2).GetCurrentObjectProper
+ty("EventName"))
+End Sub
+
+Infor Mongoose Application and Form Development | 486
+
+Reference
+
+GetCurrentObjectPropertyBinaryLength method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns an integer indicating the length in bytes of the value of a property of the type binary large object
+(BLOB), such as a graphic image, in the current row of a collection.
+Syntax
+object.GetCurrentObjectPropertyBinaryLength( string )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+string
+
+Required. The name of a BLOB property in the collection.
+
+Remarks
+The return value is a long integer. If the property does not contain a value, the return value is zero.
+Example
+Sub Main()
+Dim myCol As IWSIDOCollection
+myCol = ThisForm.PrimaryIDOCollection
+Application.ShowMessage("The length of the object is " & _
+myCol.GetCurrentObjectPropertyBinaryLength("blob_column") & "
+bytes.")
+End Sub
+
+GetCurrentObjectPropertyInternal method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a string containing the value of a specified object property in an IDO collection.
+
+Infor Mongoose Application and Form Development | 487
+
+Reference
+Syntax
+object.GetCurrentObjectProperty( string )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+string
+
+Required. The name of the object property.
+
+Remarks
+The return value is a string containing the value of the object property for the currently selected record.
+For this method, the return value for date and numeric values is based on WinStudio internal settings
+(as compared with the GetCurrentObjectProperty on page 486 method, which uses local user settings).
+Examples
+Sub Main()
+Dim ReturnValue As String
+ReturnValue = ThisForm.PrimaryIDOCollection.GetCurrentObjectPropertyIn
+ternal("LanguageDesc")
+Application.ShowMessage("Object property value: " & ReturnValue)
+End Sub
+Sub Main()
+Application.ShowMessage("Object property value: " _
+& ThisForm.GetSecondaryIDOCollection(2).GetCurrentObjectPropertyIn
+ternal("EventName"))
+End Sub
+
+GetCurrentObjectPropertyUnmodified method (WinStudio scripts)
+Applies to
+IWSIDOCollection interface
+Description
+Returns a string that contains the original or unmodified value of a specified object property in an IDO
+collection.
+Syntax
+object.GetCurrentObjectPropertyUnmodified( string )
+
+Infor Mongoose Application and Form Development | 488
+
+Reference
+
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+string
+
+Required. The name of the object property.
+
+Remarks
+The return value is a string that contains the original or unmodified value of the object property for the
+currently selected record.
+Example
+ThisForm.Variables( "OriginalValue" ).Value = ThisForm.PrimaryIDOCollec
+tion.GetCurrentObjectPropertyUnmodified( "Description" );
+
+GetDisplayedObjectName method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns the collection name, which is displayed as the Actions menu name in the Windows client menu
+bar.
+Syntax
+object.GetDisplayedObjectName
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+The return value is a string containing the collection name of the IDO collection object. A collection
+name is assigned by the developer as part of the collection specification.
+If a collection name is not specified for a primary collection, the return value is primary collection.
+Similarly, the default return value for a subcollection is subcollection for <IDO name> and for a secondary
+collection, secondary collection n, where n is the number of the collection.
+
+Infor Mongoose Application and Form Development | 489
+
+Reference
+
+Example
+Sub Main()
+' Display name associated with the primary IDO collection.
+Application.ShowMessage(ThisForm.PrimaryIDOCollection.GetDisplayedOb
+jectName())
+' Display name associated with a secondary collection IDO collection.
+ThisForm.SetFocus("grid1")
+Application.ShowMessage(ThisForm.CurrentIDOCollection.GetDisplayedOb
+jectName())
+End Sub
+
+GetFiles method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Retrieves a list of files or objects in a folder.
+Syntax
+GetFiles( string fileSpec, string servername, string logicalFolderName,
+[GetFilesAction.action], out string errorMessage )
+where:
+•
+•
+•
+•
+•
+
+fileSpec is the name of the requested file.
+servername is the file server on which the files are located.
+logicalFolderName is the name of the logical folder on the file server where the files or objects are
+located.
+action specifies exactly what is to be returned in the list (see Remarks).
+errorMessage is the error message to be returned if no files or objects are found.
+
+Remarks
+The GetFilesAction argument specifies what the list is to consist of. Options include:
+•
+•
+•
+•
+•
+
+GetFilesAction.File – List of file names
+GetFilesAction.FileFullPath – List of file names with the relative paths
+GetFilesAction.Directory – List of directories
+GetFilesAction.DirectoryFullPath – List of directories with the relative paths
+GetFilesAction.DirectoryTreeFullPath – List of files and directories with their relative paths
+
+Infor Mongoose Application and Form Development | 490
+
+Reference
+If no GetFilesAction argument is included, this method simply returns the list of files in a folder.
+
+GetFormPage method (WinStudio scripts)
+Applies To
+IWSForm interface
+Definition
+Returns the index number of the currently active form page.
+Syntax
+object.GetFormPage( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid form object.
+
+Remarks
+The return value is an integer indicating the index number of the currently active form page. The index
+is zero-based.
+Note: Although it will work with any form, this method works most effectively with forms that have
+multiple pages, typically "wizard" forms.
+Example
+'Retrieve and display the index number for the active form page.
+Sub Main
+Dim iActiveFormPage As Integer
+iActiveFormPage = Application.FindForm("formName").GetFormPage()
+Application.ShowMessage(CStr(iActiveFormPage))
+End Sub
+
+GetGridCurrentCol method (WinStudio scripts)
+Applies To
+IWSFormComponents interface, unbound grid components and grid components bound to secondary
+collections
+
+Infor Mongoose Application and Form Development | 491
+
+Reference
+Definition
+Returns the index number of the current column in an unbound grid component or a grid component
+bound to a secondary collection.
+Syntax
+object.GetGridCurrentCol( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid grid component.
+
+Remarks
+The return value is an integer representing the index number for the current column in the grid
+component. The index is zero-based. Column 0 is the column of row numbers on the grid component.
+Example
+Sub Main()
+Dim oGrid As IWSFormComponent
+Dim iCurrentRow As Integer
+Dim iCurrentColumn As Integer
+Dim iRowCount As Integer
+oGrid = ThisForm.Components("grid1")
+iCurrentRow = oGrid.GetGridCurrentRow()
+iCurrentColumn = ThisForm.Components("grid1").GetGridCurrentCol()
+iRowCount = ThisForm.Components("grid1").GetGridRowCount()
+'Display row, column, and row count numbers in a message box.
+Application.ShowMessage("Row = " & iCurrentRow.ToString() & vbLf & _
+"Column = " & iCurrentColumn.ToString() & vbLf & _
+"Number of rows = " & iRowCount.ToString())
+End Sub
+
+GetGridCurrentRow method (WinStudio scripts)
+Applies To
+IWSFormComponents interface, unbound grid components and grid components bound to secondary
+collections
+Definition
+Returns the index number of the current row of an unbound grid component or a grid component bound
+to a secondary collection.
+
+Infor Mongoose Application and Form Development | 492
+
+Reference
+Syntax
+object.GetGridCurrentRow( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid grid component.
+
+Remarks
+The return value is an integer representing the index number for the current row in the grid component.
+The index number is zero-based. Row 0 is the row of column titles at the top of the grid. Row 1 is the
+first data row.
+If the DeleteGridRows method deletes the current row, the GetGridCurrentRow method returns the
+index for the row that was deleted.
+Example
+Sub Main()
+Dim oGrid As IWSFormComponent
+Dim iCurrentRow As Integer
+Dim iCurrentColumn As Integer
+Dim iRowCount As Integer
+oGrid = ThisForm.Components("grid1")
+iCurrentRow = oGrid.GetGridCurrentRow()
+iCurrentColumn = ThisForm.Components("grid1").GetGridCurrentCol()
+iRowCount = ThisForm.Components("grid1").GetGridRowCount()
+'Display row, column, and row count numbers in a message box.
+Application.ShowMessage("Row = " & iCurrentRow.ToString() & vbLf & _
+"Column = " & iCurrentColumn.ToString() & vbLf & _
+"Number of rows = " & iRowCount.ToString())
+End Sub
+
+GetGridRowCount method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, unbound grid components and grid components bound to secondary
+collections
+Definition
+Returns the number of rows in an unbound grid component or a grid component bound to a secondary
+collection.
+
+Infor Mongoose Application and Form Development | 493
+
+Reference
+Syntax
+object.GetGridRowCount( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid grid component.
+
+Remarks
+The return value is an integer indicating the number of rows in the grid component.
+Example
+Sub Main()
+Dim oGrid As IWSFormComponent
+Dim iCurrentRow As Integer
+Dim iCurrentColumn As Integer
+Dim iRowCount As Integer
+oGrid = ThisForm.Components("grid1")
+iCurrentRow = oGrid.GetGridCurrentRow()
+iCurrentColumn = ThisForm.Components("grid1").GetGridCurrentCol()
+iRowCount = ThisForm.Components("grid1").GetGridRowCount()
+'Display row, column, and row count numbers in a message box.
+Application.ShowMessage("Row = " & iCurrentRow.ToString() & vbLf & _
+"Column = " & iCurrentColumn.ToString() & vbLf & _
+"Number of rows = " & iRowCount.ToString())
+End Sub
+
+GetGridValue method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, grid components
+Definition
+Returns the value of a cell in a specified grid component.
+Syntax
+object.GetGridValue( integer1, integer2 )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid grid component.
+
+integer1
+
+Required. The row number.
+
+Infor Mongoose Application and Form Development | 494
+
+Reference
+
+integer2
+
+Required. The column number.
+
+Remarks
+The return value is a string containing the value of the cell contents at a particular row/column location.
+The index for the row and column numbers is not zero-based. In a grid, the first row is row 1, and the
+first column is column 1.
+Example
+Sub Main()
+Dim cellValue As String
+Dim curRow As Integer
+Dim curCol As Integer
+'Get the location and value of the selected cell.
+curRow = ThisForm.Components("grid1").GetGridCurrentRow()
+curCol = ThisForm.Components("grid1").GetGridCurrentCol()
+cellValue = ThisForm.Components("grid1"). _
+GetGridValue(curRow, curCol)
+'Display the value in a message box.
+Application.ShowMessage("The value of the cell is: " _
+& vbLf & vbLf & "
+" & cellValue)
+End Sub
+
+GetGridValueByColumnName method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, grid components
+Definition
+Returns the value of a cell in the specified grid component, using the column name to specify the
+column.
+Syntax
+object.GetGridValueByColumnName( integer, string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid grid component.
+
+integer
+
+Required. Integer indicating the row number.
+
+string
+
+Required. String indicating the name of the column.
+
+Infor Mongoose Application and Form Development | 495
+
+Reference
+Remarks
+The return value is a string containing the value of the designated cell.
+The index for the row number is not zero-based. In a grid, the first row is row 1.
+If the row number is 0, the caption of the grid column component is returned.
+Example
+Sub Main()
+Dim cellValue As String
+Dim curRow As Integer
+curRow = ThisForm.Components("grid1").GetGridCurrentRow()
+cellValue = ThisForm.Components("grid1"). _
+GetGridValueByColumnName(curRow, "gridColumn1")
+Application.ShowMessage("The event name for this row is: " _
+& vbLf & vbLf & "
+" & cellValue)
+End Sub
+
+GetLabelForProperty method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns the caption (label) of a form component bound to a specified IDO collection property. Read-only.
+Syntax
+object.GetLabelForProperty( string, Boolean )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection.
+
+string
+
+Required. The name of a property.
+
+Boolean
+
+Required. Selection criterion. Several components can be bound to the same
+property. WinStudio checks components in tab order and selects one based
+on the specified criterion.
+• TRUE: Retrieve the caption of the first nonhidden component that is bound
+to the property.
+• FALSE: Retrieve the caption of the first component that is bound to the
+property.
+
+Infor Mongoose Application and Form Development | 496
+
+Reference
+Remarks
+The return value is a string containing the caption of the component.
+Note: If the selected component is an edit box with no caption, its label is the first static label appearing
+before it in the tab order.
+Example
+Sub Main()
+Application.ShowMessage(ThisForm.CurrentIDOCollection.GetLabelForProp
+erty("LanguageDesc", True))
+End Sub
+
+GetListBoxCount method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, List component type objects
+Definition
+Returns the number of list items in a list box (List component type). Read-only.
+Syntax
+object.GetListBoxCount( )
+Part
+
+Description
+
+object
+
+Required. A reference to a List component type object.
+
+Remarks
+The return value is an integer indicating the number of items in the list.
+Note: This method does not work with other list source components, such as drop-down lists, combo
+boxes, or grid columns.
+Example
+Sub Main()
+Dim oListBox As IWSFormComponent
+Dim iCurrentRow As Integer
+Dim iCounter As Integer
+Dim strListBox As String
+
+Infor Mongoose Application and Form Development | 497
+
+Reference
+
+Dim bSuccess As Boolean
+Dim iReturn As Integer
+Dim iRow As Integer
+oListBox = ThisForm.Components("list1")
+'Check to verify that a list item is selected.
+'If not, display a message and exit.
+iCurrentRow = oListBox.GetListBoxCurSel
+If iCurrentRow = -1 Then
+Application.ShowMessage("No list item selected!")
+Exit Sub
+End If
+'Display list box properties.
+Application.ShowMessage("Number of items: " & oListBox.GetListBox
+Count().ToString() _
+& vbLf & "Current selection: " & (iCurrentRow + 1).ToString() & vbLf
+& _
+"Text: " & oListBox.GetListBoxText(iCurrentRow))
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("The following are the currently defined
+events:" _
+& vbLf & strListBox)
+'Set list box to second entry.
+iRow = 1
+bSuccess = oListBox.SetListBoxCurSel(iRow)
+'Insert new items at the second position.
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 1")
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 2")
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+'Delete the rows just added.
+oListBox.DeleteListBoxString(iRow + 1)
+oListBox.DeleteListBoxString(iRow)
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+End Sub
+
+Infor Mongoose Application and Form Development | 498
+
+Reference
+
+GetListBoxCurSel method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, List component type objects
+Definition
+Returns the index number of the currently selected item in a List type component. Read-only.
+Syntax
+object.GetListBoxCurSel( )
+Part
+
+Description
+
+object
+
+Required. A reference to a List component type object.
+
+Remarks
+The return value is an integer indicating the index number of the currently selected item in a list box
+component. If no entry is selected, the return value is -1. Index numbers are zero-based.
+Example
+Sub Main()
+Dim oListBox As IWSFormComponent
+Dim iCurrentRow As Integer
+Dim iCounter As Integer
+Dim strListBox As String
+Dim bSuccess As Boolean
+Dim iReturn As Integer
+Dim iRow As Integer
+oListBox = ThisForm.Components("list1")
+'Check to verify that a list item is selected.
+'If not, display a message and exit.
+iCurrentRow = oListBox.GetListBoxCurSel()
+If iCurrentRow = -1 Then
+Application.ShowMessage("No list item selected!")
+Exit Sub
+End If
+'Display list box properties.
+Application.ShowMessage("Number of items: " & oListBox.GetListBox
+Count().ToString() _
+& vbLf & "Current selection: " & (iCurrentRow + 1).ToString() & vbLf
+& _
+"Text: " & oListBox.GetListBoxText(iCurrentRow))
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+
+Infor Mongoose Application and Form Development | 499
+
+Reference
+
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("The following are the currently defined
+events:" _
+& vbLf & strListBox)
+'Set list box to second entry.
+iRow = 1
+bSuccess = oListBox.SetListBoxCurSel(iRow)
+'Insert new items at the second position.
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 1")
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 2")
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+'Delete the rows just added.
+oListBox.DeleteListBoxString(iRow + 1)
+oListBox.DeleteListBoxString(iRow)
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+End Sub
+
+GetListBoxText method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, List component type objects
+Definition
+Returns a string containing the contents of a designated list item in a list box (List type component).
+Syntax
+object.GetListBoxText( integer )
+Part
+
+Description
+
+object
+
+Required. A reference to a List component type object.
+
+Infor Mongoose Application and Form Development | 500
+
+Reference
+
+integer
+
+Required. A reference to the zero-based index number of the item in
+the list.
+
+Remarks
+The return value is a string containing the contents of the designated list item.
+Example
+Sub Main()
+Dim oListBox As IWSFormComponent
+Dim iCurrentRow As Integer
+Dim iCounter As Integer
+Dim strListBox As String
+Dim bSuccess As Boolean
+Dim iReturn As Integer
+Dim iRow As Integer
+oListBox = ThisForm.Components("list1")
+'Check to verify that a list item is selected.
+'If not, display a message and exit.
+iCurrentRow = oListBox.GetListBoxCurSel
+If iCurrentRow = -1 Then
+Application.ShowMessage("No list item selected!")
+Exit Sub
+End If
+'Display list box properties.
+Application.ShowMessage("Number of items: " & oListBox.GetListBox
+Count().ToString() _
+& vbLf & "Current selection: " & (iCurrentRow + 1).ToString() & vbLf
+& _
+"Text: " & oListBox.GetListBoxText(iCurrentRow))
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("The following are the currently defined
+events:" _
+& vbLf & strListBox)
+'Set list box to second entry.
+iRow = 1
+bSuccess = oListBox.SetListBoxCurSel(iRow)
+'Insert new items at the second position.
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 1")
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 2")
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+
+Infor Mongoose Application and Form Development | 501
+
+Reference
+
+'Delete the rows just added.
+oListBox.DeleteListBoxString(iRow + 1)
+oListBox.DeleteListBoxString(iRow)
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+End Sub
+
+GetListValue method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, list source components
+Definition
+Returns the value of a specified row and column in the list source for a component.
+Syntax
+object.GetListValue( integer1, integer2 )
+Part
+
+Description
+
+object
+
+Required. A reference to a list source component object.
+
+integer1
+
+Required. The row number of the list source.
+
+integer2
+
+Required. The column number of the list source.
+
+Remarks
+The return value is a string containing the value at the specified row and column.
+The index for both row and column numbers is zero-based.
+Example
+Sub Main()
+Dim iRow As Integer
+Dim iNumListRows As Integer
+Dim strGridColVal As String
+'Get the number of rows in the list.
+
+Infor Mongoose Application and Form Development | 502
+
+Reference
+
+iNumListRows = ThisForm.Components("list1").NumListRows
+'Loop through the list displaying the second column entry for each row.
+For iRow = 1 To iNumListRows
+strGridColVal = ThisForm.Components("list1").GetListValue(iRow, 1)
+Application.ShowMessage("Row " & iRow & " = " & strGridColVal)
+Next iRow
+End Sub
+
+GetMediaType method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Takes a file extension as an argument and returns the media type associated with that file extension.
+For example, the file extension "jpg" returns the media type "image/jpeg".
+Syntax
+GetMediaType( string extension, out string errorMessage )
+where:
+•
+•
+
+extension is the file extension.
+errorMessage is the error message to be returned if the file extension is not found.
+
+GetMediaTypeAndBlobFormat method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Takes a file extension as an argument and returns both the media type and the BLOB format associated
+with that file extension. The two values are separated by a pipe symbol (|).
+For example, the file extension "jpg" returns "image/jpeg|jpeg".
+Syntax
+GetMediaTypeAndBlobFormat( string extension, out string errorMessage )
+
+Infor Mongoose Application and Form Development | 503
+
+Reference
+where:
+•
+•
+
+extension is the file extension.
+errorMessage is the error message to be returned if the file extension is not found.
+
+GetModifiedSinceLoadOrValidation method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Returns a Boolean value indicating whether a specified component's value has been modified but not
+validated since it was loaded.
+Syntax
+object.GetModifiedSinceLoadOrValidation( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid component object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the component's value has been modified.
+FALSE indicates that the value has not been modified.
+
+Components are not validated when they are retrieved from the database and loaded into cache
+because they are validated when they are saved to the database. To determine whether a component's
+value has been modified but not yet validated, use this method. For example, if a user changes data
+in the component but remains in the component, this method returns TRUE.
+If the user changes data and moves away from the component and the component is set to validate
+immediately, the component's validators are run and this method returns FALSE.
+In both cases, if the component is part of a grid, the interface indicates that the component is modified
+because it has not been saved.
+Example
+Sub Main()
+If ThisForm.Components("StringTableNameGridCol"). _
+GetModifiedSinceLoadOrValidation() Then
+Application.ShowMessage("Field modified.")
+Else
+
+Infor Mongoose Application and Form Development | 504
+
+Reference
+
+Application.ShowMessage("Field not modified.")
+End If
+End Sub
+
+GetMoreRows method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Retrieves the next bunch of rows from the IDO server (if available) and appends or prepends them to
+the collection.
+Syntax
+success = object .GetMoreRows()
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+success
+
+Optional. A return value indicating whether any rows were added to the
+collection.
+
+Remarks
+This method should only be called after a Refresh or Leave Filter-In-Place action has been performed
+on the collection. This method is typically used in conjunction with the GetMoreRowsEnabled property
+and possibly the LoadInReverse property.
+With the default behavior (the LoadInReverse property set to False), using the initial Refresh action
+or exiting Filter-In-Place gets the top n rows, and this method retrieves batches of n rows in descending
+order, appending them to the collection. If the LoadInReverse property is set to True, the initial Refresh
+gets the last n rows, and this method retrieves batches of n rows in ascending order, prepending them
+to the collection.
+Example
+Sub Main()
+' Retrieve all primary collection rows from the server.
+ThisForm.PrimaryIDOCollection.Refresh
+While ThisForm.PrimaryIDOCollection.GetMoreRows()
+End While
+End Sub
+
+Infor Mongoose Application and Form Development | 505
+
+Reference
+
+GetNullableValue method (WinStudio scripts)
+Applies To
+•
+•
+•
+•
+
+IWSFormComponent interface
+IWSIDOProperty interface
+IWSVariable interface
+IGlobalScriptParm interface
+
+Definition
+Returns the value of an object as a given nullable data type.
+Syntax
+object.GetNullableValue( Of datatype ) ( )
+Part
+
+Description
+
+object
+
+Required. Reference to an object that can contain a null value.
+
+datatype
+
+Required. A data type that can contain a null value.
+For a list of valid data types, see the "Remarks" section.
+
+Remarks
+Valid data types for this method include:
+Boolean
+
+Double
+
+Integer
+
+String
+
+Byte
+
+Guid
+
+Long
+
+UInt16
+
+Char
+
+Int16
+
+SByte
+
+UInt32
+
+DateTime
+
+Int32
+
+Short
+
+UInt64
+
+Decimal
+
+Int64
+
+Single
+
+Example
+Dim MyDecimalValue As Nullable(Of Decimal) = _
+ThisForm.Variables("MyDecimalVar").GetNullableValue(Of Decimal)()
+If Not MyDecimalValue.HasValue Then
+Application.ShowMessage("MyDecimalVar has no value!")
+Else
+Application.ShowMessage("MyDecimalVar is " & MyDecimalValue.Val
+ue.ToString())
+End If
+
+Infor Mongoose Application and Form Development | 506
+
+Reference
+
+GetNumEntries method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns the number of records in a specified IDO collection. Read-only.
+Syntax
+object.GetNumEntries( )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+Remarks
+The return value is an integer indicating the number of records in the IDO collection.
+Example
+Sub Main()
+Dim SubColCache As IWSIDOCollection
+Dim i As Integer
+SubColCache = ThisForm.Components("LanguageDescGridCol").IDOCollection
+For i = 0 To (SubColCache.GetNumEntries() - 1)
+SubColCache.SetObjectProperty("LanguageDesc", i, "")
+Next i
+ThisForm.PrimaryIDOCollection.NotifyDependentsToRefresh("LanguageDesc")
+End Sub
+
+GetNumPages method (WinStudio scripts)
+Applies to
+IWSIDOCollection interface
+Description
+Returns the number of pages to be displayed in the page selection user interface
+Syntax
+object.GetNumPages( )
+
+Infor Mongoose Application and Form Development | 507
+
+Reference
+
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object
+
+Remarks
+The return value is an integer that indicates the number of pages in the IDO collection.
+Example
+ThisForm.PrimaryIDOCollection.GetNumPages()
+
+GetNumProperties method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns the number of properties in a specified collection. Read-only.
+Syntax
+object.GetNumProperties( )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+Remarks
+This method returns the total number of properties in a collection.
+The return value is a long integer indicating the number of properties in a collection.
+Note: You can use this number to loop through the properties in a collection. See the following "Example"
+section.
+This method counts the following properties:
+•
+•
+•
+•
+
+Properties bound to visible components on a form
+Properties bound to hidden components
+Key fields that are not bound to components but are needed by the IDO to execute a SELECT
+clause in a query
+The NoteExistsFlag property and the _ItemId property, which are available in all collections
+
+Infor Mongoose Application and Form Development | 508
+
+Reference
+
+Example
+Sub Main()
+Dim i As Integer
+Dim iNumEntries As Long
+Dim propertyMsg As String
+i = 0
+ThisForm.SetFocus("grid1")
+iNumEntries = ThisForm.CurrentIDOCollection.GetNumProperties()
+propertyMsg = ""
+Do While i < iNumEntries
+propertyMsg = propertyMsg & "
+Property " & (i + 1) & ": " & _
+ThisForm.CurrentIDOCollection.GetPropertyName(i) & vbLf
+i = i + 1
+Loop
+Application.ShowMessage("Total number of properties in this collection:
+" _
+& iNumEntries & vbLf & vbLf & "Properties are: " & vbLf & proper
+tyMsg)
+End Sub
+
+GetObjectForceUpdate method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the middle-tier processing of an object in the specified
+IDO collection is changed from a SQL INSERT operation to a SQL UPDATE operation.
+Syntax
+object.GetObjectForceUpdate( integer )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+integer
+
+Required. An integer indicating the index number of an object in the entries
+for the current IDO collection.
+
+Remarks
+A return value of:
+
+Infor Mongoose Application and Form Development | 509
+
+Reference
+•
+•
+
+TRUE indicates that the middle-tier processing was changed to UPDATE.
+FALSE indicates that the middle-tier processing was not changed to UPDATE.
+
+It is your responsibility to determine whether it is appropriate to change from an INSERT to an UPDATE
+operation. Neither WinStudio nor the middle tier performs error checking to determine whether using
+this method is appropriate.
+Example
+Sub Main()
+Dim bUpdate As Boolean
+Dim intIndex As Integer
+If ThisForm.PrimaryIDOCollection.IsCurrentObjectPropertyModi
+fied("StringTableName") Then
+intIndex = ThisForm.PrimaryIDOCollection.GetCurrentObjectIndex()
+bUpdate = ThisForm.PrimaryIDOCollection.GetObjectForceUpdate(intIn
+dex)
+If bUpdate Then
+Application.ShowMessage("GetObjectForceUpdate operation succeed
+ed.")
+Else
+Application.ShowMessage("GetObjectForceUpdate operation failed.")
+End If
+End If
+End Sub
+
+GetObjectProperty method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a string containing the value of an object property in the specified IDO collection.
+Syntax
+object.GetObjectProperty( string, integer )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+string
+
+Required. The name of the object property.
+
+integer
+
+Required. An integer indicating the index number of an object in the
+specified IDO collection.
+
+Infor Mongoose Application and Form Development | 510
+
+Reference
+Remarks
+The return value is a string containing the value of the object property.
+Example
+Sub Main()
+Dim SubColCache As IWSIDOCollection
+Dim ColCache As IWSIDOCollection
+Dim NewEntityCode As String
+Dim i As Integer
+SubColCache = ThisForm.Components(GetParameter(1)).IDOCollection
+ColCache = ThisForm.Components(GetParameter(0)).IDOCollection
+If ColCache.IsCurrentObjectModified Then
+For i = 0 To SubColCache.GetNumEntries - 1
+If SubColCache.IsObjectNew(i) Then
+' Loop through the cache entries and, if the row is a new row,
+place
+' the EntityCode value in that row into NewEntityCode
+NewEntityCode = SubColCache.GetObjectProperty("EntityCode",
+i)
+End If
+Next i
+End If
+End Sub
+
+GetObjectPropertyBinaryLength method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns the length in bytes of the value of a property of the type binary large object (BLOB), such as
+a graphic image, in a specified row in a collection.
+Syntax
+object.GetObjectPropertyBinaryLength( PropertyName, RowIndex )
+Part
+
+Description
+
+object
+
+Required. The name of a IDO collection object.
+
+PropertyName
+
+Required. A string representing the name of a BLOB property in the
+collection.
+
+Infor Mongoose Application and Form Development | 511
+
+Reference
+
+RowIndex
+
+Required. A long integer expressing a zero-based row index number
+in the collection.
+
+Remarks
+The return value is a long integer. If the property does not contain a value, the return value is zero.
+Example
+Sub Main()
+Dim myCol As IWSIDOCollection
+myCol = ThisForm.PrimaryIDOCollection
+Application.ShowMessage("The length of the object is " & _
+myCol.GetObjectPropertyBinaryLength("blob_column", 2) & " bytes.")
+End Sub
+
+GetObjectPropertyInternal method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a string containing the internal value of an object property in the specified IDO collection.
+Syntax
+object.GetObjectPropertyInternal( string, integer )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+string
+
+Required. The name of the object property.
+
+integer
+
+Required. An integer indicating the index number of an object in the
+specified IDO collection.
+
+Remarks
+The return value is a string containing the internal value of the object property.
+
+Infor Mongoose Application and Form Development | 512
+
+Reference
+
+Example
+Sub Main()
+Dim SubColCache As IWSIDOCollection
+Dim ColCache As IWSIDOCollection
+Dim NewEntityCode As String
+Dim i As Integer
+SubColCache = ThisForm.Components(GetParameter(1)).IDOCollection
+ColCache = ThisForm.Components(GetParameter(0)).IDOCollection
+If ColCache.IsCurrentObjectModified Then
+For i = 0 To SubColCache.GetNumEntries - 1
+If SubColCache.IsObjectNew(i) Then
+' Loop through the cache entries and, if the row is a new row,
+place
+' the EntityCode value in that row into NewEntityCode
+NewEntityCode = SubColCache.GetObjectPropertyInternal("Entity
+Code", i)
+End If
+Next i
+End If
+End Sub
+
+GetObjectPropertyUnmodified method (WinStudio scripts)
+Applies to
+IWSIDOCollection interface
+Description
+Returns a string that contains the original or unmodified value of an object property in the specified
+IDO collection
+Syntax
+object.GetObjectPropertyUnmodified( string, integer )
+Part
+
+Description
+
+object
+
+Required. A reference to an IDO collection object.
+
+string
+
+Required. The name of the object property.
+
+integer
+
+Required. An integer that indicates the row index number of an object in the
+specified IDO collection.
+
+Infor Mongoose Application and Form Development | 513
+
+Reference
+Remarks
+The return value is a string that contains the original or unmodified value of the object property.
+Example
+ThisForm.Variables( "OriginalValue" ).Value = ThisForm.PrimaryIDOCollec
+tion.GetObjectPropertyUnmodified( "Description", 0 );
+
+GetParameter method (WinStudio sripts)
+Applies To
+Global scripts
+Definition
+Returns the values of the input parameters from a global script.
+Syntax
+GetParameter( integer )
+Part
+
+Description
+
+integer
+
+Required. An integer indicating a parameter in the list of parameters for
+a script.
+
+Remarks
+A script's parameters are defined in a comma-delimited list. For example, an event handler uses a
+script called ScriptTest. The parameters of ScriptTest are enclosed in parentheses as in the following
+statement:
+
+ScriptTest(Parm Test, 23)
+
+Example
+Sub Main()
+Dim iParm As Integer
+Dim strParm As String
+strParm = GetParameter(0)
+iParm = GetParameter(1)
+Application.ShowMessage(strParm + " " + iParm.ToString())
+End Sub
+
+Infor Mongoose Application and Form Development | 514
+
+Reference
+
+GetPrinters method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+This string is used to get the list of available printers for any IDM file server.
+Syntax
+List<string> GetPrinters( string serverName, out string errorMessage );
+where:
+•
+•
+
+serverName is the name of the IDM file server.
+errorMessage is the error message to be returned if the system fail to provide the list of available
+printers.
+
+GetPropertyDefault method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a string containing the table column default value (in the SQL Server table) for the specified
+property.
+Syntax
+object.GetPropertyDefault( string )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+string
+
+Required. The name of the object property.
+
+Remarks
+The return value is a string containing the table column default value (if any) of the object property.
+
+Infor Mongoose Application and Form Development | 515
+
+Reference
+
+Example
+Sub Main()
+Dim strWarehouseDefault As String
+Dim iIndex As Integer
+strWarehouseDefault
+fault("Warehouse")
+
+= ThisForm.PrimaryIDOCollection.GetPropertyDe
+
+If strWarehouseDefault = "QA" Then
+iIndex = ThisForm.PrimaryIDOCollection.GetCurrentObjectIndex()
+ThisForm.PrimaryIDOCollection.SetObjectProperty( "Warehouse",
+iIndex, "INV")
+End If
+End Sub
+
+GetPropertyLength method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns an integer indicating the length of a property in a collection.
+Syntax
+object.GetPropertyLength( string )
+Part
+
+Description
+
+object
+
+Required. A collection object.
+
+string
+
+Required. The name of a collection property.
+
+Remarks
+If the property has no length specification, this method returns 0 (zero).
+Example
+Sub Main
+Dim Length As Integer
+Dim CustNum As String
+Dim CustSeq As String
+
+Infor Mongoose Application and Form Development | 516
+
+Reference
+
+CustNum = ThisForm.Variables("CustNumV").Value
+CustSeq = ThisForm.Variables("CustSeqV").Value
+' Ensure CustNum is properly expanded
+If ThisForm.PrimaryIDOCollection.IsPropertyNumSortedChar("CustNum")
+Then
+Length = ThisForm.PrimaryIDOCollection.GetPropertyLength("CustNum")
+If (Length > 0 And CustNum <> "") Then
+CustNum = Application.ExpandNumSortedChar(CustNum, Length)
+End If
+End If
+End Sub
+
+GetPropertyName method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns the name of a property, as specified by an integer, in a collection.
+Syntax
+object.GetPropertyName( long )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+long
+
+Required. A long integer corresponding to a property name. The first
+property name is associated with 0.
+
+Remarks
+The return value is a string containing the name of a property.
+The names of the following properties can be retrieved by means of the GetPropertyName method:
+•
+•
+•
+•
+
+Properties bound to visible components on a form
+Properties bound to hidden components
+Key fields that are not bound to components but are needed by the IDO to execute a SELECT
+clause in a query
+The NoteExistsFlag property and the _ItemId property, which are available in all collections
+
+The GetNumProperties method returns the total number of properties in a collection. You can use the
+number to loop through property names. The association between a property name and an integer is
+set by the IDO.
+
+Infor Mongoose Application and Form Development | 517
+
+Reference
+
+Example
+Sub Main()
+Dim i As Integer
+Dim iNumEntries As Long
+Dim propertyMsg As String
+i = 0
+ThisForm.SetFocus("grid1")
+iNumEntries = ThisForm.CurrentIDOCollection.GetNumProperties()
+propertyMsg = ""
+Do While i < iNumEntries
+propertyMsg = propertyMsg & "
+Property " & (i + 1) & ": " & _
+ThisForm.CurrentIDOCollection.GetPropertyName(i) & vbLf
+i = i + 1
+Loop
+Application.ShowMessage("Total number of properties in this collection:
+" _
+& iNumEntries & vbLf & vbLf & "Properties are: " & vbLf & proper
+tyMsg)
+End Sub
+
+GetSecondaryCollectionNumber method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns an integer indicating the status of a specified IDO collection object.
+Syntax
+object.GetSecondaryCollectionNumber()
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+The return value is one of the following integers:
+1
+
+The specified object is the primary IDO collection.
+
+2, 3, ... n
+
+The index or numeric value of a secondary IDO collection, where n is an integer.
+
+-2
+
+The specified object is a subcollection, not a secondary IDO collection.
+
+Infor Mongoose Application and Form Development | 518
+
+Reference
+
+-3
+
+The specified object has an invalid entry.
+
+Example
+Sub Main()
+Dim oCache As IWSIDOCollection
+Dim iValue As Integer
+oCache = ThisForm.Components("grid1").IDOCollection
+iValue = oCache.GetSecondaryCollectionNumber()
+If iValue = 1 Then
+Application.ShowMessage("The specified collection is the primary
+collection.")
+ElseIf iValue = -2 Then
+Application.ShowMessage("The specified collection is a subcollec
+tion, not a secondary collection.")
+ElseIf iValue = -3 Then
+Application.ShowMessage("The specified collection is an invalid
+entry.")
+Else
+Application.ShowMessage("The index number of the specified secondary
+collection is " _
+& iValue & ".")
+End If
+End Sub
+
+GetSecondaryIDOCollection method (WinStudio scripts)
+Applies To
+IWSForm interface, forms with secondary IDO collections
+Definition
+Returns a Visual Basic object that references the specified secondary IDO collection.
+Syntax
+varObject = object.GetSecondaryIDOCollection( integer )
+Part
+
+Description
+
+varObject
+
+Required. A Visual Basic variable that is defined as an object and that
+references the secondary IDO collection object being returned.
+
+object
+
+Required. Reference to a valid form object.
+
+integer
+
+Required. The index number of the secondary IDO collection.
+
+Infor Mongoose Application and Form Development | 519
+
+Reference
+
+Example
+Sub Main()
+Dim oSecColCache As IWSIDOCollection
+oSecColCache = ThisForm.GetSecondaryIDOCollection(2)
+Application.ShowMessage(oSecColCache.IsEOF.ToString())
+End Sub
+
+GetStringValue method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Returns the value of a string from a string name.
+Syntax
+Application.GetStringValue( string )
+Part
+
+Description
+
+string
+
+Required. The name of a string in the forms database.
+If the string does not exist in the Strings table, then the system displays this
+value as a literal.
+
+Example
+Assume the string name sHello has the value "Hello world!" This example, then, displays "Hello world!"
+in a message box.
+Sub Main()
+Dim Hello As String
+Hello = Application.GetStringValue("sHello")
+Application.ShowMessage(Hello)
+End Sub
+
+Infor Mongoose Application and Form Development | 520
+
+Reference
+
+GetSubCollection method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a specified object in a subcollection.
+Syntax
+varObject = object.GetSubCollection( string, long )
+Part
+
+Description
+
+varObject
+
+Required. A Visual Basic variable that is defined as an object and that references the object being returned from the subcollection.
+
+object
+
+Required. The name of a valid IDO collection object.
+
+string
+
+Required. The name of a subcollection. The subcollection name is the property name in the top-level collection.
+
+long
+
+Required. An index number corresponding to a row in the top-level collection.
+A value of -1 specifies the current row.
+
+Example
+Sub Main()
+Dim oCache As IWSIDOCollection
+Dim iNumEntries As Integer
+Dim iLoopCounter As Integer
+oCache = ThisForm.PrimaryIDOCollection.GetSubCollection("UserGroupMaps",
+-1)
+iNumEntries = oCache.GetNumEntries
+iLoopCounter = 0
+Do While iLoopCounter < iNumEntries
+If Not oCache.IsObjectTheAutoInsertRow(iLoopCounter) Then
+If oCache.IsObjectModified(iLoopCounter) = False Then
+Application.ShowMessage("Row " & (iLoopCounter + 1) & " has
+NOT been modified.")
+Else
+Application.ShowMessage("Row " & (iLoopCounter + 1) & " has
+been modified.")
+End If
+Else
+Application.ShowMessage("No more rows.")
+End If
+iLoopCounter = iLoopCounter + 1
+Loop
+End Sub
+
+Infor Mongoose Application and Form Development | 521
+
+Reference
+
+GetThemeClassNames method (WinStudio scripts)
+Applies to
+IWSForm interface
+Description
+This method is used to return a list of theme class names available for a component.
+Syntax
+GetThemeClassNames()
+Example
+GetThemeClassNames()
+
+GetUserPreferenceValue method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Retrieves the value of a WinStudio user preference setting.
+Syntax
+Application.GetUserPreferenceValue( string )
+Part
+
+Description
+
+string
+
+Required. Name of the user preference setting for which you want to retrieve the value.
+
+Remarks
+The return value is a string containing the value of the designated user preference setting or a Boolean
+value indicating the user preference setting.
+This table lists the user preference values for which you can request the value, along with the possible
+return values:
+
+Infor Mongoose Application and Form Development | 522
+
+Reference
+
+User Preference Value Names
+
+Possible Values
+
+BaseFormForeColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+BaseFormBackColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+NormalForegroundColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+NormalBackgroundColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+ProtectedForegroundColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+ProtectedBackgroundColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+RequiredForegroundColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+RequiredBackgroundColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+TBDForegroundColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+TBDBackgroundColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+InboxNewMessagesUseBoldFont
+
+Boolean:
+• 1 = TRUE (New messages use bold font face.)
+• 0 = FALSE (New messages do not use bold font
+face.)
+
+InboxNewMessagesUseBGColor
+
+Boolean:
+• 1 = TRUE (New messages use the normal background color.)
+• 0 = FALSE (New messages do not use the normal
+background color.)
+
+InboxNewMessagesBGColorDescriptor
+
+String using RGB format (rrR,ggG,bbB)
+
+Example
+Dim inboxNewMessagesUseBGColor As String
+Dim inboxNewMessagesBGColorDescriptor As String
+inboxNewMessagesUseBGColor = Application.GetUserPreferenceValue("In
+boxNewMessagesUseBGColor")
+inboxNewMessagesUseBoldFont = Application.GetUserPreferenceValue("In
+boxNewMessagesUseBoldFont")
+If (inboxNewMessagesUseBGColor = "1") Then
+inboxNewMessagesBGColorDescriptor = Application.GetUserPreferenceVal
+ue("InboxNewMessagesBGColorDescriptor")
+End If
+
+Infor Mongoose Application and Form Development | 523
+
+Reference
+
+GetValidatorsHaveRunSinceLoadFromSource method (WinStudio
+scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Returns a Boolean value indicating whether the validators for the specified component were run since
+the form was loaded.
+Syntax
+object.GetValidatorsHaveRunSinceLoadFromSource( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid form component object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the validators have been run.
+FALSE indicates that the validators have not been run.
+
+Example
+Sub Main()
+If ThisForm.Components("StringTableNameGridCol"). _
+GetValidatorsHaveRunSinceLoadFromSource() Then
+Application.ShowMessage("Field validated.")
+Else
+Application.ShowMessage("Field not validated.")
+End If
+End Sub
+
+GetValue method (WinStudio scripts)
+Applies To
+•
+•
+
+IWSFormComponent interface
+IWSIDOProperty interface
+
+Infor Mongoose Application and Form Development | 524
+
+Reference
+•
+•
+
+IWSVariable interface
+IGlobalScriptParm interface
+
+Definition
+Returns the value of an object as a given data type.
+Syntax
+object.GetValue( Of datatype ) ( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid component, preoprty, variable, or script.
+
+datatype
+
+Required. The data type of the object for which the value is being returned.
+For a list of valid data types, see the "Remarks" section.
+
+Remarks
+Valid data types for this method include:
+Boolean
+
+Double
+
+Integer
+
+String
+
+Byte
+
+Guid
+
+Long
+
+UInt16
+
+Char
+
+Int16
+
+SByte
+
+UInt32
+
+DateTime
+
+Int32
+
+Short
+
+UInt64
+
+Decimal
+
+Int64
+
+Single
+
+If the value of the object is null, this method attempts to return a meaningful default value; for example,
+an empty string for a string or 0 (zero) for a numeric value.
+Example
+Dim MyLongValue As Long = ThisForm.Components("MyLongComp").GetValue(Of
+Long)()
+If MyLongValue = 0 Then
+Application.ShowMessage("MyLongComp might contain zero or nothing.")
+End If
+
+Infor Mongoose Application and Form Development | 525
+
+Reference
+
+GetValueOf<Datatype> method (WinStudio scripts)
+Applies To
+•
+•
+•
+•
+
+IWSFormComponent interface
+IWSIDOProperty interface
+IWSVariable interface
+IGlobalScriptParm interface
+
+Definition
+Returns the value of an object as a given non-reference data type.
+Syntax
+object.GetValueOf<Datatype>( ifNullValue )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid component, property, variable, or script.
+
+Datatype
+
+Required. The data type which the value must be when returned. For information about the valid data types, see the "Remarks" section.
+
+ifNullValue
+
+Required. The value to be returned if the object's value is null. Must match
+the data type.
+
+Remarks
+There is a separate method signature for each data type. So, when deciding which version of this
+method to use, replace <Datatype> in the method name with the name of the appropriate data type.
+For example, to return the value of a string object, you would use GetValueOfString; to return the value
+of a long integer, you would use GetValueOfLong; and so forth.
+These are the valid data types for this method:
+Boolean
+
+Double
+
+Integer
+
+String
+
+Byte
+
+Guid
+
+Long
+
+UInt16
+
+Char
+
+Int16
+
+SByte
+
+UInt32
+
+DateTime
+
+Int32
+
+Short
+
+UInt64
+
+Decimal
+
+Int64
+
+Single
+
+Example
+Dim MyIntValue As Integer = _
+ThisForm.PrimaryIDOCollection(0)("MyProp").GetValueOfInteger(0)
+
+Infor Mongoose Application and Form Development | 526
+
+Reference
+
+Dim MyStrValue As String = _
+ThisForm.PrimaryIDOCollection(0)("MyProp").GetValueOfString("No value")
+
+GotoFormPage method (WinStudio scripts)
+Applies To
+IWSForm interface
+Definition
+Finds and displays a specified form page.
+Syntax
+object.GotoFormPage( integer )
+Part
+
+Description
+
+object
+
+Required. The name of a valid form object.
+
+integer
+
+Required. An integer indicating the number of the form page.
+
+Remarks
+Index numbers for form pages are zero-based.
+If you try to use this method with a form that does not have multiple pages, or you reference a page
+that does not exist, this method does nothing.
+Example
+Sub Main()
+' Since this method uses a zero-based index,
+' this brings up the second form page.
+Application.FindForm("formName").GotoFormPage(1)
+End Sub
+
+Infor Mongoose Application and Form Development | 527
+
+Reference
+
+GotoPage method (WinStudio scripts)
+Applies to
+IWSForm interface
+Description
+Refreshes collection with the corresponding data that is set based on page number
+Syntax
+object.GotoPage( integer )
+Part
+
+Description
+
+object
+
+Required. The name of a valid form object
+
+integer
+
+Required. An integer that indicates the page number
+
+Example
+ThisForm.PrimaryIDOCollection.GotoPage( pageNum )
+
+GraphDraw method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Redraws a graph component.
+Syntax
+GraphDraw( )
+Example
+Sub Main()
+'Forces the graph to redraw:
+
+Infor Mongoose Application and Form Development | 528
+
+Reference
+
+ThisForm.Components("graph1").GraphDraw()
+End Sub
+
+GraphEnableRuntimeButtons method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Enables or disables the run-time buttons (Copy/Save/Print) when hovering over the graph component.
+Syntax
+object.GraphEnableRuntimeButtons( Boolean )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Boolean
+
+Required. Determines whether the run-time buttons are enabled.
+• TRUE - Buttons are enabled.
+• FALSE - Buttons are disabled.
+
+Example
+Sub Main()
+'Disables the Copy, Save, and Print buttons.
+ThisForm.Components("graph1").GraphEnableRuntimeButtons(False)
+End Sub
+
+GraphEnableRuntimeProperties method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Enables or disables the context (right-click) menu option to open the Chart Properties dialog box.
+
+Infor Mongoose Application and Form Development | 529
+
+Reference
+Syntax
+object.GraphEnableRuntimeProperties( Boolean )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Boolean
+
+Required. Determines whether the Chart Properties context menu option is
+enabled.
+• TRUE - The menu option is enabled.
+• FALSE - The menu option is disabled.
+
+Example
+ThisForm.Components("graph1").GraphEnableRuntimeProperties(TRUE)
+
+GraphGetCollectionIndexFrom method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Returns the index of the starting collection currently drawn on the graph component as an integer.
+Syntax
+object.GraphGetCollectionIndexFrom( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Example
+iStartIndex = ThisForm.Components("graph1").GraphGetCollectionIndexFrom()
+
+Infor Mongoose Application and Form Development | 530
+
+Reference
+
+GraphGetCollectionIndexTo method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Returns an integer indicating the index of the ending collection currently drawn on the graph component.
+Syntax
+object.GraphGetCollectionIndexTo( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Example
+iEndIndex = ThisForm.Components("graph1").GraphGetCollectionIndexTo()
+
+GraphGetGraphType method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Returns an integer indicating the graph type currently applied to the graph component.
+Syntax
+object.GraphGetGraphType( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Infor Mongoose Application and Form Development | 531
+
+Reference
+Return Values
+The returned value indicates one of the supported graph types as indicated in the following list.
+Setting
+
+Description
+
+10
+
+2D column chart
+
+20
+
+3D column chart
+
+30
+
+2D line chart
+
+40
+
+2D area chart
+
+50
+
+2D bar chart
+
+60
+
+2D pie chart
+
+70
+
+3D pie chart
+
+80
+
+2D doughnut chart
+
+90
+
+3D doughnut chart
+
+100
+
+2D pareto chart
+
+110
+
+3D pareto chart
+
+120
+
+spline chart
+
+130
+
+area spline chart
+
+140
+
+2D waterfall chart
+
+150
+
+funnel chart
+
+160
+
+pyramid chart
+
+170
+
+spark line chart
+
+180
+
+spark column chart
+
+190
+
+multi-series 2D column chart
+
+200
+
+multi-series 3D column chart
+
+210
+
+multi-series line chart
+
+220
+
+multi-series 2D bar chart
+
+230
+
+multi-series 3D bar chart
+
+240
+
+multi-series area chart
+
+250
+
+marimekko chart
+
+260
+
+zoom line chart
+
+270
+
+2D scroll column chart
+
+280
+
+2D scroll line chart
+
+290
+
+2D scroll area chart
+
+Infor Mongoose Application and Form Development | 532
+
+Reference
+
+Setting
+
+Description
+
+300
+
+2D stacked column chart
+
+310
+
+3D stacked column chart
+
+320
+
+2D stacked bar chart
+
+330
+
+3D stacked bar chart
+
+340
+
+2D stacked area chart
+
+350
+
+multi-series spline chart
+
+360
+
+multi-series spline area chart
+
+370
+
+multi-series logarithmic 2D column chart
+
+380
+
+multi-series logarithmic line chart
+
+390
+
+multi-series inverse area chart
+
+400
+
+multi-series inverse 2D column chart
+
+410
+
+multi-series inverse line chart
+
+420
+
+2D radar chart
+
+430
+
+multi-series step line chart
+
+440
+
+multi-series 2D combination chart
+
+450
+
+multi-series 3D combination chart
+
+460
+
+multi-series 3D column line chart
+
+Example
+iGraphType = ThisForm.Components("graph1").GraphGetGraphType()
+
+GraphGetSupportedGraphTypes method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+
+Infor Mongoose Application and Form Development | 533
+
+Reference
+Definition
+Returns a list of strings, indicating the numeric value and description of supported graph types. The
+list is of the class System.Collections.Generic.List(Of String).
+Syntax
+object.GraphGetSupportedGraphTypes( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Settings
+The returned value indicates one of the supported graph types as indicated in the following list.
+Setting
+
+Description
+
+10
+
+2D column chart
+
+20
+
+3D column chart
+
+30
+
+2D line chart
+
+40
+
+2D area chart
+
+50
+
+2D bar chart
+
+60
+
+2D pie chart
+
+70
+
+3D pie chart
+
+80
+
+2D doughnut chart
+
+90
+
+3D doughnut chart
+
+100
+
+2D pareto chart
+
+110
+
+3D pareto chart
+
+120
+
+spline chart
+
+130
+
+area spline chart
+
+140
+
+2D waterfall chart
+
+150
+
+funnel chart
+
+160
+
+pyramid chart
+
+170
+
+spark line chart
+
+180
+
+spark column chart
+
+190
+
+multi-series 2D column chart
+
+200
+
+multi-series 3D column chart
+
+Infor Mongoose Application and Form Development | 534
+
+Reference
+
+Setting
+
+Description
+
+210
+
+multi-series line chart
+
+220
+
+multi-series 2D bar chart
+
+230
+
+multi-series 3D bar chart
+
+240
+
+multi-series area chart
+
+250
+
+marimekko chart
+
+260
+
+zoom line chart
+
+270
+
+2D scroll column chart
+
+280
+
+2D scroll line chart
+
+290
+
+2D scroll area chart
+
+300
+
+2D stacked column chart
+
+310
+
+3D stacked column chart
+
+320
+
+2D stacked bar chart
+
+330
+
+3D stacked bar chart
+
+340
+
+2D stacked area chart
+
+350
+
+multi-series spline chart
+
+360
+
+multi-series spline area chart
+
+370
+
+multi-series logarithmic 2D column chart
+
+380
+
+multi-series logarithmic line chart
+
+390
+
+multi-series inverse area chart
+
+400
+
+multi-series inverse 2D column chart
+
+410
+
+multi-series inverse line chart
+
+420
+
+2D radar chart
+
+430
+
+multi-series step line chart
+
+440
+
+multi-series 2D combination chart
+
+450
+
+multi-series 3D combination chart
+
+460
+
+multi-series 3D column line chart
+
+Example
+Dim supportedTypeList As System.Collections.Generic.List(Of String)
+supportedTypeList=ThisForm.Components("graph1").GraphGetSupported
+GraphTypes()
+
+Infor Mongoose Application and Form Development | 535
+
+Reference
+
+GraphLockGraphObjects method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+For more information, see About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Locks or unlocks graph objects during run time.
+Syntax
+object.GraphLockGraphObjects( Boolean )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Boolean
+
+Required. Determines whether graph objects are locked during run time.
+• TRUE - Graph objects are locked.
+• FALSE - Graph objects are unlocked.
+
+Example
+ThisForm.Components("graph1").GraphLockGraphObjects( True )
+
+GraphNext method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+For more information, see About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Redraws the graph component with the next set of collection values, according to the number of X-axis
+limits defined on the component.
+
+Infor Mongoose Application and Form Development | 536
+
+Reference
+Syntax
+object.GraphNext( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Example
+ThisForm.Components("graph1").GraphNext()
+
+GraphPrevious method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Redraws the graph component with the previous set of collection values, according to the number of
+X-axis limits defined on the component.
+Syntax
+object.GraphPrevious( )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+Example
+ThisForm.Components("graph1").GraphPrevious()
+
+Infor Mongoose Application and Form Development | 537
+
+Reference
+
+GraphSetCollectionToGraph method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Specifies the IDO collection to use for the graph.
+Syntax
+object.GraphSetCollectionToGraph( collectionType )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+collectionType
+
+Required. See the "Settings" section.
+
+Settings
+The collectionType is of the class Mongoose.Scripting.wsGraphIDOCollection. These collection types
+are available:
+Setting
+
+Description
+
+wsGraphIDOCollection.ActiveFormCurrentIDOCollection
+
+Current IDO collection of the current form
+
+wsGraphIDOCollection.LinkedParentFormCurrentIDOCollection
+
+Current IDO collection of the linked parent
+form
+
+wsGraphIDOCollection.ModalParentFormCurrentIDOCollection
+
+Current IDO collection of the modal parent
+form
+
+Example
+ThisForm.Components("graph1").GraphSetCollectionToGraph( _
+wsGraphIDOCollection.ActiveFormCurrentIDOCollection)
+ThisForm.Components("graph1").GraphDraw()
+
+Infor Mongoose Application and Form Development | 538
+
+Reference
+
+GraphSetDataSeriesColors method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the color scheme for the data series.
+Syntax
+object.GraphSetDataSeriesColors( colorList )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+colorList
+
+Required. Of the class System.Collections.Generic.List(Of String).
+
+Remarks
+Colors are defined in RGB (Red,Green,Blue) string format. The system accepts numbers in the range
+0-255 for each RGB value.
+If an invalid RGB string value is given, the system ignores the color specification.
+The system interprets an empty string as an RGB value of 0,0,0.
+Example
+Dim seriesColors As System.Collections.Generic.List(Of String) = _
+New System.Collections.Generic.List(Of String)
+seriesColors.Add("255,0,0")
+' Red
+seriesColors.Add("255,255,0") ' Yellow
+seriesColors.Add("0,0,255")
+' Blue
+ThisForm.Components("graph1").GraphSetDataSeriesColors( seriesColors )
+ThisForm.Components("graph1").GraphDraw()
+
+GraphSetGraphType method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Infor Mongoose Application and Form Development | 539
+
+Reference
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the graph type.
+Syntax
+object.GraphSetGraphType( integer )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+integer
+
+Required. Use one of the integer values from the following table.
+
+Settings
+This table lists and describes valid values for the graph type.
+Setting
+
+Description
+
+10
+
+2D column chart
+
+20
+
+3D column chart
+
+30
+
+2D line chart
+
+40
+
+2D area chart
+
+50
+
+2D bar chart
+
+60
+
+2D pie chart
+
+70
+
+3D pie chart
+
+80
+
+2D doughnut chart
+
+90
+
+3D doughnut chart
+
+100
+
+2D pareto chart
+
+110
+
+3D pareto chart
+
+120
+
+spline chart
+
+130
+
+area spline chart
+
+140
+
+2D waterfall chart
+
+150
+
+funnel chart
+
+160
+
+pyramid chart
+
+170
+
+spark line chart
+
+180
+
+spark column chart
+
+Infor Mongoose Application and Form Development | 540
+
+Reference
+
+Setting
+
+Description
+
+190
+
+multi-series 2D column chart
+
+200
+
+multi-series 3D column chart
+
+210
+
+multi-series line chart
+
+220
+
+multi-series 2D bar chart
+
+230
+
+multi-series 3D bar chart
+
+240
+
+multi-series area chart
+
+250
+
+marimekko chart
+
+260
+
+zoom line chart
+
+270
+
+2D scroll column chart
+
+280
+
+2D scroll line chart
+
+290
+
+2D scroll area chart
+
+300
+
+2D stacked column chart
+
+310
+
+3D stacked column chart
+
+320
+
+2D stacked bar chart
+
+330
+
+3D stacked bar chart
+
+340
+
+2D stacked area chart
+
+350
+
+multi-series spline chart
+
+360
+
+multi-series spline area chart
+
+370
+
+multi-series logarithmic 2D column chart
+
+380
+
+multi-series logarithmic line chart
+
+390
+
+multi-series inverse area chart
+
+400
+
+multi-series inverse 2D column chart
+
+410
+
+multi-series inverse line chart
+
+420
+
+2D radar chart
+
+430
+
+multi-series step line chart
+
+440
+
+multi-series 2D combination chart
+
+450
+
+multi-series 3D combination chart
+
+460
+
+multi-series 3D column line chart
+
+Infor Mongoose Application and Form Development | 541
+
+Reference
+
+Example
+'Setting the graph type to "2D Area Chart"
+ThisForm.Components("graph1").GraphSetGraphType(10)
+ThisForm.Components("graph1").GraphDraw()
+
+GraphSetMainTitleFontDescriptor method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the font for the graph's main title.
+Syntax
+object.GraphSetMainTitleFontDescriptor( string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+string
+
+Required. Consists of fourteen comma-separated values:
+Size,0,0,0,Weight,Italic,Underline,Strikethrough,0,0,0,0,0,FontFamily
+For more information about these values, see the "Settings" section.
+
+Settings
+Setting
+
+Description
+
+Size
+
+A decimal value representing the point size.
+
+Weight
+
+Range from 0 (non-bold) to 700 (bold).
+
+Italic
+
+0 = Normal text. 1 = Italicized text.
+
+Underline
+
+0 = Text not underlined. 1 = Text underlined.
+
+Strikethrough
+
+0 = Normal text. 1 = Text struck through.
+
+FontFamily
+
+Name of the font to be used.
+
+Infor Mongoose Application and Form Development | 542
+
+Reference
+
+Example
+Dim fontDescriptor As String = "16,0,0,0,700,0,0,0,0,0,0,0,0,Arial"
+'
+16-point bold Arial
+ThisForm.Components("graph1").GraphSetMainTitleFontDescriptor(fontDescrip
+tor)
+ThisForm.Components("graph1").GraphDraw()
+
+GraphSetMainTitleText method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the text for the main title of the graph.
+Syntax
+object.GraphSetMainTitleText( string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+string
+
+Required. The text for the main title.
+
+Example
+ThisForm.Components("graph1").GraphSetMainTitleText("My New Title")
+ThisForm.Components("graph1").GraphDraw()
+
+GraphSetOtherTitleFontDescriptor method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+
+Infor Mongoose Application and Form Development | 543
+
+Reference
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the font for other titles found in the graph (titles found on the X- and Y-axes).
+Syntax
+object.GraphSetMainTitleFontDescriptor( string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+string
+
+Required. Consists of fourteen comma-separated values:
+Size,0,0,0,Weight,Italic,Underline,Strikethrough,0,0,0,0,0,FontFamily
+For more information about these values, see the "Settings" section.
+
+Settings
+Setting
+
+Description
+
+Size
+
+A decimal value representing the point size.
+
+Weight
+
+Range from 0 (non-bold) to 700 (bold).
+
+Italic
+
+0 = Normal text.
+1 = Italicized text.
+
+Underline
+
+0 = Text not underlined.
+1 = Text underlined.
+
+Strikethrough
+
+0 = Normal text.
+1 = Text struck through.
+
+FontFamily
+
+Name of the font to be used.
+
+Example
+Dim fontDescriptor As String = _
+"12,0,0,0,700,0,0,0,0,0,0,0,0,Times New Roman"
+' 12-point bold Times
+New Roman
+ThisForm.Components("graph1").GraphSetMainTitleFontDescriptor(fontDescrip
+tor)
+ThisForm.Components("graph1").GraphDraw()
+
+Infor Mongoose Application and Form Development | 544
+
+Reference
+
+GraphSetPropertiesToGraph method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the IDO properties to graph.
+Syntax
+object.GraphSetPropertiesToGraph( propertyList )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+propertyList
+
+Required. A list of the class System.Collections.Generic.List(Of String).
+
+Example
+Dim propsToGraph As System.Collections.Generic.List(Of String) = _
+New System.Collections.Generic.List(Of String)
+propsToGraph.Add("property01")
+propsToGraph.Add("property02")
+ThisForm.Components("graph1").GraphSetPropertiesToGraph(propsToGraph)
+
+GraphSetXAxisLabelProperty method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the IDO collection property to be used for X-axis labels.
+
+Infor Mongoose Application and Form Development | 545
+
+Reference
+Syntax
+object.GraphSetXAxisLabelProperty( string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+string
+
+Required. The name of an IDO property.
+
+Example
+ThisForm.Components("graph1").GraphSetXAxisLabelProperty("property01")
+ThisForm.Components("graph1").GraphDraw()
+
+GraphSetXAxisTitleText method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the text for the X-axis label.
+Syntax
+object.GraphSetXAxisTitleText( string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+string
+
+Required. The text for the X-axis label.
+
+Example
+ThisForm.Components("graph1").GraphSetXAxisTitleText("My X-Axis Title")
+ThisForm.Components("graph1").GraphDraw()
+
+Infor Mongoose Application and Form Development | 546
+
+Reference
+
+GraphSetXLimit method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the number of data points (number of IDO collection rows) on the X-axis.
+Syntax
+object.GraphSetXLimit( integer )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+integer
+
+Required. The number of data points to be represented and displayed
+at one time.
+
+Example
+ThisForm.Components("graph1").GraphSetXLimit(8)
+ThisForm.Components("graph1").GraphDraw()
+
+GraphSetYAxisTitleText method (WinStudio scripts)
+Note: This topic applies to the graphing tool, which is supported for backward compatibility. We
+recommend that, if you want to add charts or gauges to a form, use the newer FusionCharts tool instead.
+See About charts and gauges on page 183.
+Applies To
+IWSFormComponent interface, graph objects
+Definition
+Sets the text for the Y-axis label.
+
+Infor Mongoose Application and Form Development | 547
+
+Reference
+Syntax
+object.GraphSetYAxisTitleText( string )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid graph component object.
+
+string
+
+Required. The text to be displayed as the y-axis label.
+
+Example
+ThisForm.Components("graph1").GraphSetYAxisTitleText("My Y-Axis Title")
+ThisForm.Components("graph1").GraphDraw()
+
+GridApplyThemeClass method (WinStudio scripts)
+Applies to
+IWSForm interface
+Description
+This method is used to apply theme class to an individual grid cell of a specific column or row
+Syntax
+GridApplyThemeClass(string columnName,<FuncrowName,string> fnThemeClassSelector)
+where rowName is a single string parameter for the name of the row the theme class is applied to.
+Example
+GridApplyThemeClass(string columnName,Func<IWSIDORow, string> fnThemeClass
+Selector)
+
+GridScrollDown method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+
+Infor Mongoose Application and Form Development | 548
+
+Reference
+Definition
+This method allows the user to scroll down through a set of records one page at a time.
+Syntax
+object.GridScrollDown()
+Part
+
+Description
+
+object
+
+Required. A reference to a form or form component object.
+
+Remarks
+This method can be used only with Grid components and then only if the No Scroll component property
+is set to True. If the No Scroll component property is set to False, this method does nothing.
+Example
+Sub Main()
+ThisForm.Components("MyGridComponent").GridScrollDown()
+End Sub
+
+GridScrollUp method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+This method allows the user to scroll up through a set of records one page at a time.
+Syntax
+object.GridScrollUp()
+Part
+
+Description
+
+object
+
+Required. A reference to a form or form component object.
+
+Remarks
+This method can be used only with Grid components and then only if the No Scroll component property
+is set to True. If the No Scroll component property is set to False, this method does nothing.
+
+Infor Mongoose Application and Form Development | 549
+
+Reference
+
+Example
+Sub Main()
+ThisForm.Components("MyGridComponent").GridScrollUp()
+End Sub
+
+Related Topics
+About Grid components on page 195
+About VerticalGrid and VerticalGridElement components on page 212
+GridScrollDown method (WinStudio scripts) on page 548
+VerticalGridScrollUp method (WinStudio scripts) on page 695
+VerticalGridScrollDown method (WinStudio scripts) on page 694
+
+GridSetColumnLayout method (WinStudio scripts)
+Applies to
+IWSFormComponent interface
+Description
+This method allows user to set the visibility, order, and width of a grid column on a form.
+Syntax
+object.GridSetColumnLayout( string )
+where string is ColumnName_1:ColumnWidthOrA_1; ColumnName_2:ColumnWidthOrA_2
+Part
+
+Description
+
+object
+
+Required. A reference to a form or grid component object.
+
+string
+
+Required. A string that consists of semicolon-delimited pairs. Each pair is colondelimited into two parts:
+• ColumnName: The name of the column component within the grid.
+• ColumnWidthOrA: Either the desired width of column in Char units or the letter
+"A" to set the column as auto-fit to its data.
+Note: Column widths are in Char units, the same units used by default for column width settings in the designer window.
+
+Infor Mongoose Application and Form Development | 550
+
+Reference
+Remarks
+This method can be called from any event handler in the form’s life cycle in which the grid and other
+form components exist and can be modified.
+This method is typically called in any of these events:
+•
+
+The StdFormPredisplay event, which covers the initial load of data to the form (assuming the form
+loads with data, unlike Filter in Place mode)
+• The StdObjectSelectCurrentCompleted event, which fires with each new record selection (by click,
+keyboard, or Previous/Next commands)
+• Button, ComboBox, and Menu item's primary event, when you arrange for multiple column layouts
+for the same grid. For example, a set of menu items can each call GridSetColumnLayout with a
+different input string, to effectively create a Views menu for the grid.
+Note:
+• This method can be used only with horizontal grid components.
+• When the grid’s Stretch Columns setting is True, this function will work as normal with one
+exception: the right-most visible column will stretch to fill the remaining space of the grid.
+• When Autofit is used on a column, the column’s width will change while scrolling vertically in the
+grid and will cause the columns to adjust to the currently visible content.
+Example
+Sub NarrowPropertiesView()
+Dim layout as String = "PropertyNameGridCol:20;ColumnNameGrid
+Col:20;DataTypeGridCol:A"
+ThisForm.Components("PropertiesGrid").GridSetColumnLayout(layout)
+End Sub
+
+ImportBlob method (WinStudio scripts)
+Applies To
+IWSIDOProperty interface
+Definition
+Retrieves a binary large object (BLOB), such as a graphic image, from a file and loads it in a specified
+item of a collection.
+Syntax
+object.ImportBlob( string )
+Part
+
+Description
+
+Infor Mongoose Application and Form Development | 551
+
+Reference
+
+object
+
+Required. An expression that evaluates to the name of an IDO collection object
+(item).
+
+string
+
+Required. The name of an operating system file containing the BLOB. This
+string must include the path. The path can be relative to the directory containing
+WinStudio.exe.
+
+Remarks
+Deprecated. Now available only with item objects. Instead of this method, you should generally try to
+use the ImportCurrentObjectPropertyAsBlob or ImportObjectPropertyAsBlob method.
+Example
+Sub Main()
+Dim FileName As String
+FileName = "C:\Temp\Splash_VBA_TEST.BMP"
+ThisForm.PrimaryIDOCollection.CurrentItem.Properties("myItem").Im
+portBlob(FileName)
+End Sub
+
+ImportCurrentObjectPropertyAsBlob method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Retrieves a binary large object (BLOB), such as a graphic image, from a file and loads it into the
+currently active property of a collection.
+Syntax
+object.ImportBlob( propertyName, fileName )
+Part
+
+Description
+
+object
+
+Required. An expression that evaluates to the name of an IDO collection
+object.
+
+propertyName
+
+Required. The name of a Binary property in the collection.
+
+fileName
+
+Required. The name of the file containing the BLOB. FileName must include the path. The path can be relative to the directory containing WinStudio.exe.
+
+Infor Mongoose Application and Form Development | 552
+
+Reference
+Remarks
+The difference between this method and the ImportObjectPropertyAsBlob on page 554 method is that
+this one imports the BLOB to the currently active object, and ImportObjectPropertyAsBlob imports the
+BLOB to an object from a specified (other) row.
+Example
+This example imports a BLOB from a bitmap file named Splash.BMP into a property named Photo and
+then exports it to a temporary file named Splash_VBA_TEST.BMP.
+Sub Main()
+Dim PropertyName As String
+Dim FileName As String
+PropertyName = "Photo"
+FileName = ".\res\Splash.BMP"
+ThisForm.PrimaryIDOCollection.ImportCurrentObjectPropertyAsBlob( Prop
+ertyName, FileName )
+FileName = "C:\Temp\Splash_VBA_TEST.BMP"
+ThisForm.PrimaryIDOCollection.ExportCurrentObjectPropertyAsBlob( Prop
+ertyName, FileName )
+End Sub
+
+ImportFromFileServerToCollection method (WinStudio scripts)
+Applies to
+Document (file) operations
+Description
+Retrieves a file from a file server and imports it into a specified IDO collection.
+Syntax
+ImportFromFileServerToCollection( string formDefName, string collectionid,
+string propertyTo, string serverFrom, string fileSpec, int rowIndex, out
+string errorMessage )
+where:
+•
+•
+•
+•
+•
+•
+
+formDefName is the internal name (not caption) of the form to which the file is being imported.
+collectionid is name of the IDO collection into which the file is to be imported.
+propertyTo is the name of the property to which the file is to be imported.
+serverFrom is the file server on which the requested file is located.
+fileSpec is the name of the requested file.
+rowIndex the number of the record to which the file is to be imported.
+
+Infor Mongoose Application and Form Development | 553
+
+Reference
+•
+
+errorMessage is the error message to be returned if the import is not successful.
+
+Remarks
+To import the file to an IDO collection's BLOB property, include this argument after the serverFrom
+argument:
+string logicalFolderName
+
+ImportObjectPropertyAsBlob Method
+Applies To
+IWSIDOCollection interface
+Definition
+Imports a binary large object (BLOB), such as a graphic image, from a file and loads it in a specified
+property of a collection.
+Syntax
+object.ImportBlob (PropertyName, RowNumber, FileName)
+Part
+
+Description
+
+object
+
+Required. An expression that evaluates to the name of an IDO collection
+object.
+
+PropertyName
+
+Required. The name of a Binary property in the collection.
+
+RowNumber
+
+Required. An integer indicating the row into which the property is to be
+imported.
+
+FileName
+
+Required. The name of the file containing the BLOB. FileName must include the path. The path can be relative to the directory containing WinStudio.exe.
+
+Remarks
+The difference between this method and the ImportCurrentObjectPropertyAsBlob on page 552 method
+is that this one imports to an object in a specified (other) row, and ImportCurrentObjectPropertyAsBlob
+imports the BLOB to the currently active object.
+
+Infor Mongoose Application and Form Development | 554
+
+Reference
+
+Example
+This example imports a bitmap from a file named Splash.BMP into a property named Photo in the
+fourth row of a collection and then exports it from that row to a temporary file named
+Splash_VBA_TEST.BMP.
+
+Sub Main()
+Dim PropertyName As String
+Dim FileName As String
+PropertyName = "Photo"
+FileName = ".\res\Splash.BMP"
+ThisForm.PrimaryIDOCollection.ImportObjectPropertyAsBlob( PropertyName,
+4, FileName )
+FileName = "C:\Temp\Splash_VBA_TEST.BMP"
+ThisForm.PrimaryIDOCollection.ExportObjectPropertyAsBlob( PropertyName,
+4, FileName )
+End Sub
+
+InsertGridRows method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, unbound grid components
+Definition
+Inserts one or more rows into an unbound grid component.
+Syntax
+object.InsertGridRows( integer1, integer2 )
+Part
+
+Description
+
+object
+
+Required. A reference to a valid grid component.
+
+integer1
+
+Required. The number of the first row to be inserted.
+Row 0 is the row of column titles at the top of the grid component. Row
+1 is the first data row.
+
+integer2
+
+Required. The number of rows to insert.
+
+Infor Mongoose Application and Form Development | 555
+
+Reference
+
+Example
+Sub Main()
+Dim oGrid As IWSFormComponent
+Dim iInsertAt As Integer
+Dim iNumRows As Integer
+iInsertAt = 1
+iNumRows = 3
+oGrid = ThisForm.Components( "MrpPlanviewTempsGrid" )
+oGrid.InsertGridRows( iInsertAt, iNumRows )
+Application.DiagnosticsLog(iNumRows.ToString() & _
+" rows inserted at " & iInsertAt.ToString() & "." )
+End Sub
+
+InsertListBoxString method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, list source components
+Definition
+Inserts a new entry into a list and returns an integer indicating where the new entry was inserted.
+Syntax
+object.InsertListBoxString( integer, string )
+Part
+
+Description
+
+object
+
+Required. A reference to a list source component object.
+
+integer
+
+Required. A reference to a zero-based index number of the new entry's
+row.
+
+string
+
+Required. The text to be inserted as the new list entry.
+
+Remarks
+If the new list entry is inserted successfully, the return value is the same as the index row number you
+requested ( integer ). If the insertion is unsuccessful, the return value is -1.
+Example
+Sub Main()
+Dim oListBox As IWSFormComponent
+
+Infor Mongoose Application and Form Development | 556
+
+Reference
+
+Dim iCurrentRow As Integer
+Dim iCounter As Integer
+Dim strListBox As String
+Dim bSuccess As Boolean
+Dim iReturn As Integer
+Dim iRow As Integer
+oListBox = ThisForm.Components("list1")
+'Check to verify that a list item is selected.
+'If not, display a message and exit.
+iCurrentRow = oListBox.GetListBoxCurSel
+If iCurrentRow = -1 Then
+Application.ShowMessage("No list item selected!")
+Exit Sub
+End If
+'Display list box properties.
+Application.ShowMessage("Number of items: " & oListBox.GetListBox
+Count().ToString() _
+& vbLf & "Current selection: " & (iCurrentRow + 1).ToString() & vbLf
+& _
+"Text: " & oListBox.GetListBoxText(iCurrentRow))
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("The following are the currently defined
+events:" _
+& vbLf & strListBox)
+'Set list box to second entry.
+iRow = 1
+bSuccess = oListBox.SetListBoxCurSel(iRow)
+'Insert new items at the second position.
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 1")
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 2")
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+'Delete the rows just added.
+oListBox.DeleteListBoxString(iRow + 1)
+oListBox.DeleteListBoxString(iRow)
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+End Sub
+
+Infor Mongoose Application and Form Development | 557
+
+Reference
+
+InvalidateList method (WinStudio scripts)
+Applies To
+IWSFormComponent interface
+Definition
+Marks the list associated with a list source component as invalid.
+Syntax
+object.InvalidateList
+Part
+
+Description
+
+object
+
+Required. A reference to a list source component object.
+
+Remarks
+Calling this method guarantees that the list in a list source component will be reconstructed the next
+time the user accesses the list. List source components include the following component types:
+•
+•
+•
+•
+
+Combo boxes (ComboBox)
+Drop-down lists (DropList)
+List boxes (List)
+Grid columns (GridColumn)
+
+In list boxes, this method reverts the list to its original state.
+Example
+Sub Main()
+Dim oListBox As IWSFormComponent
+Dim iCurrentRow As Integer
+Dim iCounter As Integer
+Dim strListBox As String
+Dim bSuccess As Boolean
+Dim iReturn As Integer
+Dim iRow As Integer
+oListBox = ThisForm.Components("list1")
+'Check to verify that a list item is selected.
+'If not, display a message and exit.
+iCurrentRow = oListBox.GetListBoxCurSel
+If iCurrentRow = -1 Then
+Application.ShowMessage("No list item selected!")
+Exit Sub
+End If
+'Display list box properties.
+Application.ShowMessage("Number of items: " & oListBox.GetListBox
+Count().ToString() _
+
+Infor Mongoose Application and Form Development | 558
+
+Reference
+
+& vbLf & "Current selection: " & (iCurrentRow + 1).ToString() & vbLf
+& _
+"Text: " & oListBox.GetListBoxText(iCurrentRow))
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("The following are the currently defined
+events:" _
+& vbLf & strListBox)
+'Set list box to second entry.
+iRow = 1
+bSuccess = oListBox.SetListBoxCurSel(iRow)
+'Insert new items at the second position.
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 1")
+iReturn = oListBox.InsertListBoxString(iRow, "New Row Entry 2")
+'Display contents of list box.
+strListBox = ""
+For iCounter = 0 To oListBox.GetListBoxCount() - 1
+strListBox = strListBox & (iCounter + 1).ToString() & " " & _
+oListBox.GetListBoxText(iCounter) & vbLf
+Next iCounter
+Application.ShowMessage("Current list: " & vbLf & strListBox)
+oListBox.InvalidateList()
+End Sub
+
+IsBOF method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object is the first (or top) entry in the specified
+IDO collection.
+Syntax
+object.IsBOF( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Infor Mongoose Application and Form Development | 559
+
+Reference
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates the current object is the top entry.
+FALSE indicates the current object is not the top entry.
+
+Example
+Sub Main()
+Dim bIsLast As Boolean
+Dim bIsFirst As Boolean
+bIsFirst = ThisForm.CurrentIDOCollection.IsBOF()
+bIsLast = ThisForm.CurrentIDOCollection.IsEOF()
+If bIsLast = True Then
+Application.ShowMessage("The selected object is the last item.")
+ElseIf bIsFirst = True Then
+Application.ShowMessage("The selected object is the first item.")
+Else
+Application.ShowMessage("The selected object is not first or
+last.")
+End If
+End Sub
+
+IsCollectionModified method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the specified IDO collection object's data has been modified.
+Syntax
+object.IsCollectionModified( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates the object has been modified.
+FALSE indicates the object has not been modified.
+
+Infor Mongoose Application and Form Development | 560
+
+Reference
+
+Example
+Sub Main()
+Dim subCol As IWSIDOCollection
+subCol = ThisForm.PrimaryIDOCollection()
+If subCol.IsCollectionModified() Then
+Application.ShowMessage("The primary collection has been modified
+without saving.")
+Else
+Application.ShowMessage("The collection has not been modified.")
+End If
+End Sub
+
+IsCurrentObjectAutoInsertedAndUnmodified method (WinStudio
+scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object is in the automatically inserted row (the
+autoinsert row) in a grid and its data is unmodified.
+Syntax
+object.IsCurrentObjectAutoInsertedAndUnmodified( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the current object is in the autoinsert row and that its data is unmodified.
+FALSE indicates that either the current object is not in the autoinsert row, that its data has been
+modified, or both.
+Note: This method works only for grid component objects, such as grid columns, and not for the grid
+objects themselves.
+If the specified IDO collection has the focus, use this method. If the specified IDO collection might not
+have the focus, use the IsObjectAutoInsertedAndUnmodified on page 573 method.
+
+Infor Mongoose Application and Form Development | 561
+
+Reference
+
+Example
+Sub Main()
+Dim colObject As IWSIDOCollection
+colObject = ThisForm.Components(GetParameter(0)).IDOCollection
+If colObject.IsCurrentObjectAutoInsertedAndUnmodified() Then
+Application.ShowMessage("The object has been auto-inserted and is
+unmodified.")
+Else
+Application.ShowMessage("The object is either not an auto-insert
+row" _
+& vbLf & "or it has been modified.")
+End If
+End Sub
+
+IsCurrentObjectDeleted method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object in the specified IDO collection is marked
+for deletion.
+Syntax
+object.IsCurrentObjectDeleted( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates the current object is marked for deletion.
+FALSE indicates that the current object is not marked for deletion.
+
+If the specified IDO collection has the focus, use this method. If the specified collection might not have
+the focus, use the IsObjectDeleted on page 574 method.
+
+Infor Mongoose Application and Form Development | 562
+
+Reference
+
+Example
+Sub Main()
+If ThisForm.PrimaryIDOCollection.IsCurrentObjectDeleted() Then
+ThisForm.Components("comboBox1").Enabled() = False
+Else
+ThisForm.Components("comboBox1").Enabled() = True
+End If
+End Sub
+
+IsCurrentObjectInvalid method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object in the specified IDO collection is in an
+error state.
+Syntax
+object.IsCurrentObjectInvalid( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the current object has an error.
+FALSE indicates that the current object does not have an error.
+
+If the specified IDO collection has focus, use this method. If the specified IDO collection might not have
+focus, use the IsObjectInvalid method.
+Example
+Sub Main()
+Dim SubColCache As IWSIDOCollection
+Dim bValue As Boolean
+
+Infor Mongoose Application and Form Development | 563
+
+Reference
+
+SubColCache = ThisForm.Components(GetParameter(0)).IDOCollection
+bValue
+
+= SubColCache.IsCurrentObjectInvalid()
+
+' If the current object is in an error state, test to see if it has
+been modified.
+If bValue Then
+' If the current object has been modified, mark the current object
+as unmodified.
+If SubColCache.IsCurrentObjectModified() Then
+SubColCache.SetCurrentObjectModified(FALSE)
+End If
+End If
+End Sub
+
+IsCurrentObjectModified method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the data in the current object in the specified IDO collection
+has been modified.
+Syntax
+object.IsCurrentObjectModified( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the current object has been modified by entering or changing data.
+FALSE indicates that the current object has not been modified.
+
+If the specified IDO collection has the focus, use this method. If the specified IDO collection might not
+have the focus, the IsObjectModified on page 576 method.
+
+Infor Mongoose Application and Form Development | 564
+
+Reference
+
+Example
+Sub Main()
+If ThisForm.PrimaryIDOCollection.IsCurrentObjectModified() Then
+ThisForm.Components("PaymentTypeCombo").Text = "CASH"
+End If
+End Sub
+
+IsCurrentObjectNew method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object in the specified IDO collection is marked
+as new.
+Syntax
+object.IsCurrentObjectNew( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the current object is marked as new.
+FALSE indicates that the current object is not marked as new.
+
+If the specified IDO collection has the focus, use this method. If the specified IDO collection might not
+have the focus, use the IsObjectNew method.
+Example
+Sub Main()
+If ThisForm.PrimaryIDOCollection.IsCurrentObjectNew() Then
+ThisForm.Components("PaymentTypeCombo").Text = "CC"
+End If
+End Sub
+
+Infor Mongoose Application and Form Development | 565
+
+Reference
+
+IsCurrentObjectNewAndUnmodified method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object in a specified IDO collection is marked
+as new and has not been modified.
+Syntax
+object.IsCurrentObjectNewAndUnmodified( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the current object is marked as new and has not been modified.
+FALSE indicates that either the current object is not marked as new or it has been modified.
+
+If the specified IDO collection has the focus, use this method. If the specified IDO collection might not
+have the focus, use the IsObjectNewAndUnmodified on page 577 method.
+Example
+Sub Main()
+If ThisForm.PrimaryIDOCollection.IsCurrentObjectNewAndUnmodified()
+Then
+ThisForm.Components("PaymentTypeCombo").Text = ""
+End If
+End Sub
+
+IsCurrentObjectPropertyModified method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+
+Infor Mongoose Application and Form Development | 566
+
+Reference
+Definition
+Returns a Boolean value indicating whether the current object property in a specified IDO collection
+has been modified.
+Syntax
+object.IsCurrentObjectPropertyModified( string )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+string
+
+Required. The name of the object property.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the current object property has been modified.
+FALSE indicates that the current object property has not been modified.
+
+If the specified IDO collection has focus, use this method. If the specified IDO collection might not have
+focus, use the IsObjectPropertyModified on page 578 method.
+Example
+Sub Main()
+ReturnValue = "0"
+If (ThisForm.PrimaryIDOCollection.IsCurrentObjectPropertyModified(Get
+Parameter(0)) = True And
+ThisForm.PrimaryIDOCollection.GetCurrentObjectProperty(GetParame
+ter(0)) = "3" )
+ReturnValue = "1"
+End If
+End Sub
+
+IsCurrentObjectReadOnly method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object in a collection is read-only.
+
+Infor Mongoose Application and Form Development | 567
+
+Reference
+Syntax
+object.IsCurrentObjectReadOnly( )
+Part
+
+Description
+
+object
+
+The name of a valid IDO collection object.
+
+Remarks
+This method applies to an entire record (row), not just a single column or component within the grid.
+To get a row to be read-only, you must have:
+•
+•
+
+A property on the IDO with the Read-Only Record attribute selected.
+The value of that property on that row to be true.
+
+A return value of:
+•
+•
+
+TRUE indicates that the current object in the collection is read-only.
+FALSE indicates that the object is not read-only.
+
+If the specified IDO collection has focus, use this method. If the specified IDO collection might not have
+focus, use the IsObjectReadOnly method.
+Example
+Sub Main()
+If ThisForm.PrimaryIDOCollection.IsCurrentObjectReadOnly() Then
+Application.ShowMessage("This field is read-only.")
+End If
+End Sub
+
+IsCurrentObjectTheAutoInsertRow method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object in a specified IDO collection is the
+automatically inserted row (the autoinsert row) in a grid.
+Syntax
+object.IsCurrentObjectTheAutoInsertRow( )
+Part
+
+Description
+
+Infor Mongoose Application and Form Development | 568
+
+Reference
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the current object is the autoinsert row.
+FALSE indicates that the current object is not the autoinsert row.
+
+Use this method if the specified IDO collection has focus. If the specified IDO collection might not have
+focus, use instead the IsObjectTheAutoInsertRow method.
+Example
+Sub Main()
+Dim oCache As IWSIDOCollection
+Dim iNumEntries As Integer
+Dim iLoopCounter As Integer
+oCache = ThisForm.PrimaryIDOCollection.GetSubCollection("User
+GroupMaps", -1)
+iNumEntries = oCache.GetNumEntries
+iLoopCounter = 0
+Do While iLoopCounter < iNumEntries
+If oCache.IsCurrentObjectTheAutoInsertRow() = False Then
+If oCache.IsObjectModified(iLoopCounter) = False Then
+Application.ShowMessage("Row " & (iLoopCounter + 1) & " has NOT
+been modified.")
+Else
+Application.ShowMessage("Row " & (iLoopCounter + 1) & " has been
+modified.")
+End If
+Else
+Application.ShowMessage("This is the auto-insert row.")
+End If
+iLoopCounter = iLoopCounter + 1
+Loop
+End Sub
+
+IsCurrentUserAuthorizedToRunForm method (WinStudio scripts)
+Applies To
+IWSApplication interface
+Definition
+Returns a Boolean value indicating whether the current WinStudio user is authorized to run the specified
+form.
+
+Infor Mongoose Application and Form Development | 569
+
+Reference
+Syntax
+Application.IsCurrentUserAuthorizedToRunForm( string )
+Part
+
+Description
+
+string
+
+Required. The name of the form.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the user is authorized to run the form.
+FALSE indicates that the user is not authorized to run the form.
+
+Example
+Sub Main()
+Dim OKtoOpen As String
+OKtoOpen = Application.IsCurrentUserAuthorizedToRunForm("LanguageI
+Ds").ToString
+Application.ShowMessage("Authorized to view form? " & OKtoOpen)
+End Sub
+
+IsEOF method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether the current object is the last (or bottom) entry in a specified
+IDO collection.
+Syntax
+object.IsEOF( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+
+Infor Mongoose Application and Form Development | 570
+
+Reference
+•
+•
+
+TRUE indicates the current object is the last entry.
+FALSE indicates the current object is not the last entry.
+
+Example
+Sub Main()
+Dim bIsLast As Boolean
+Dim bIsFirst As Boolean
+bIsFirst = ThisForm.CurrentIDOCollection.IsBOF()
+bIsLast = ThisForm.CurrentIDOCollection.IsEOF()
+If bIsLast = True Then
+Application.ShowMessage("The selected object is the last item.")
+ElseIf bIsFirst = True Then
+Application.ShowMessage("The selected object is the first item.")
+Else
+Application.ShowMessage("The selected object is not first or
+last.")
+End If
+End Sub
+
+IsListBoxEntrySelected method (WinStudio scripts)
+Applies To
+IWSFormComponent interface, List component type objects
+Definition
+Returns a Boolean value indicating whether an entry in a list box (List type component) is the selected
+entry.
+Syntax
+object.IsListBoxEntrySelected( integer )
+Part
+
+Description
+
+object
+
+Required. A reference to a List component type object.
+
+integer
+
+Required. The zero-based index number of the list entry.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the entry is the selected entry.
+FALSE indicates that the entry is not the selected entry.
+
+Infor Mongoose Application and Form Development | 571
+
+Reference
+Note: This method does not work with other list source components, such as drop-down lists, combo
+boxes, or grid columns.
+Example
+Sub Main()
+If ThisForm.Components("list1").IsListBoxEntrySelected(3) Then
+Application.ShowMessage("That's the one. Good job!")
+Else
+Application.ShowMessage("Wrong selection! Try again.")
+End If
+End Sub
+
+IsNewInProgress method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether a New operation is in progress for a specified IDO collection.
+Syntax
+object.IsNewInProgress( )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that a New operation is in progress.
+FALSE indicates that a New operation is not in progress.
+
+Example
+Dim bValue As Boolean
+bValue = ThisForm.PrimaryIDOCollection.IsNewInProgress()
+If bValue Then
+' Perform some task if a New operation is in progress
+.
+.
+
+Infor Mongoose Application and Form Development | 572
+
+Reference
+
+.
+End If
+
+IsObjectAutoInsertedAndUnmodified method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether an object in a specified IDO collection is the automatically
+inserted row (the autoinsert row) and has been unmodified.
+Syntax
+object.IsObjectAutoInsertedAndUnmodified( integer )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+integer
+
+Required. The index number of an object in the entries for the current
+IDO collection.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the object is the autoinsert row and has not been modified (no data was
+entered or changed).
+FALSE indicates either that the object is not the autoinsert row, that it has been modified, or both.
+
+If the specified IDO collection might not have the focus, use this method. If the specified IDO collection
+has the focus, use the IsCurrentObjectAutoInsertedAndUnmodified method.
+Example
+Sub main()
+Dim oSubCol As IWSIDOCollection
+oSubCol = ThisForm.Components("SerialGrid").IDOCollection
+If oSubCol.NewEnabled = False Then
+Dim i As Integer
+i = oSubCol.GetCurrentObjectIndex
+If oSubCol.IsObjectAutoInsertedAndUnmodified(i) = True Then
+
+Infor Mongoose Application and Form Development | 573
+
+Reference
+
+oSubCol.SetObjectPropertyPlusModifyRefresh("UbSelect", i, "0")
+End If
+End If
+End Sub
+
+IsObjectDeleted method (WinStudio scripts)
+Applies To
+IWSIDOCollection interface
+Definition
+Returns a Boolean value indicating whether an object in a specified IDO collection object is marked
+for deletion.
+Syntax
+object.IsObjectDeleted( integer )
+Part
+
+Description
+
+object
+
+Required. The name of a valid IDO collection object.
+
+integer
+
+Required. The index number of an object in the entries for the current
+IDO collection.
+
+Remarks
+A return value of:
+•
+•
+
+TRUE indicates that the object is marked for deletion.
+FALSE indicates that the object is not marked for deletion.
+
+If the specified IDO collection might not have focus, use this method. If the specified IDO collection
+object has focus, use the IsCurrentObjectDeleted method.
+Example
+Sub main()
+Dim i As Integer
+i = ThisForm.PrimaryIDOCollection.GetCurrentObjectIndex()
+If ThisForm.PrimaryIDOCollection.IsObjectDeleted(i) Then
+Application.ShowMessage("This record will be deleted upon saving.")
+End If
+End Sub
+
+Infor Mongoose Application and Form Development | 574
+
+Reference
+
+IsObjectInvalid method (WinStudio scripts)

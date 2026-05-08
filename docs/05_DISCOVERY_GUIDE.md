@@ -15,15 +15,19 @@ All examples assume `$TOKEN` is set (see [01_AUTHENTICATION.md](01_AUTHENTICATIO
 
 3. **You can always fall back to the core meta-IDOs.** When you're stuck, these are the IDOs that describe the system itself:
 
-| Meta-IDO | What it tells you |
-|---|---|
-| `IdoCollections` | All IDO names, `AccessAs` (core vs custom) |
-| `IdoProperties` | Properties on any IDO — types, bound columns, expressions |
-| `IdoMethods` | Methods on any IDO — SP or extension class |
-| `IdoMethodParameters` | Method parameter names, types, sequence, direction |
-| `IdoTables` | Database tables backing any IDO, join relationships |
-| `SqlColumns` | Raw database columns, types, primary key flags |
-| `SqlTableKeys` | Constraints on database tables |
+| Meta-IDO | What it tells you | Key queryable properties |
+|---|---|---|
+| `IdoCollections` | All IDO names, `AccessAs` (core vs custom) | `CollectionName`, `AccessAs` |
+| `IdoProperties` | Properties on any IDO — types, bound columns, expressions | `PropertyName`, `DataType`, `ColumnName`, `ColumnTableAlias`, `PropertyClass`, `IsReadOnly` |
+| `IdoMethods` | Methods on any IDO — SP or extension class | `CollectionName`, `MethodName`, `MethodType` |
+| `IdoMethodParameters` | Method parameter names, types, sequence, direction | `Sequence`, `ParameterName`, `DataType`, `SpDataType`, `InputFlag`, `OutputFlag` |
+| `IdoTables` | Database tables backing any IDO, join relationships | `CollectionName`, `TableName`, `TableAlias`, `TableType`, `JoinType`, `JoinText` |
+| `SqlColumns` | Raw database columns, types, primary key flags | `tableName`, `derShadowColumnName`, `dataType`, `isPrimaryKey`, `primaryKeyPosition` |
+| `SqlTableKeys` | Constraints on database tables | |
+
+> **Field name gotchas on IdoProperties:** The correct property names are `PropertyName` (not `PropName`), `ColumnName` (not `BoundColumn`). Writable properties have `IsReadOnly = null` or `"0"`; read-only = `"1"`. Derived properties have `ColumnName = null`.
+
+> **MethodType values on IdoMethods:** `2` = Stored Procedure (most common), `3` = .NET Extension Class method, `0` = System/internal method. Note: the `StoredProcedure` property does **not** exist on `IdoMethods` — querying it returns `"Property StoredProcedure not found"`. Filter by `MethodName` instead.
 
 4. **It's okay to try things.** The agent user is scoped to read-only introspection. An exploratory LoadCollection or Invoke that fails will return a clear error message, not break anything. However, **ask the user before executing methods that modify data** (Insert, Update, Delete, or Invoke on methods that change state) — those should use the automation user if configured.
 
@@ -99,9 +103,9 @@ curl -s "$SYTELINE_BASE_URL/load/IdoProperties?properties=PropertyName,DataType,
 ```
 
 `PropertyClass` values:
-- Empty/0 = Bound to a database column
-- 1 = Derived (computed via SQL expression)
-- 3 = Subcollection (link to child IDO)
+- Empty/`0` = Bound to a database column (has a `ColumnName` and `ColumnTableAlias`)
+- `1` = Derived (computed via SQL expression; `ColumnName` is `null`)
+- `3` = Subcollection (link to child IDO; represents a one-to-many relationship)
 
 This is especially useful to **map SQL column names to IDO property names**. For example, the SQL column `unit_price1` on the `itemprice` table maps to the IDO property `UnitPrice1` on `SLItemprices`.
 
