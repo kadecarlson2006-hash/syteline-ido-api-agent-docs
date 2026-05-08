@@ -2,6 +2,50 @@
 
 ---
 
+## 2026-05-08 — Hermes Skills Validation Harness + In-House Doc Reconciliation
+
+**Request:** Ivan Velo submitted PR #1 (`hermes-crosscheck`) adding 51 Hermes Agent skills sourced from official Infor documentation, plus surgical edits to the in-house docs. Verify the skills' claims against the SL10 pilot at `http://s10dev.salinavortex.com` (config `Pilot_Vortx`) and reconcile any conflicts with our existing docs.
+
+**Discovery path:**
+
+1. **Built a read-only validation harness** under `validation/`. Extracts concrete IDO/method/table claims from skill text (REST URL patterns, .NET API calls, backticked identifiers, curated allowlist for prose mentions) and verifies each via meta-IDO LoadCollection queries against the pilot. Never calls `/invoke` or `/update` — method existence is verified by signature lookup against `IdoMethods` + `IdoMethodParameters`.
+
+2. **Classified skills into three tiers:**
+   - **A** (REST-API-validatable): 6 skills
+   - **B** (mention concrete IDOs/tables/methods): 16 skills
+   - **C** (forms/AES/scripts/UI — no REST API to validate against): 32 skills, harness skips them as reference-only
+
+3. **Ran Tier A+B (22 skills) across a 5-wide pool of `claude1`–`claude5`:** 11 PASS, 1 PARTIAL (a teaching example), 0 FAIL, 10 no-claims. The 0 FAILs is the headline — Ivan's skills, despite being sourced from Infor docs rather than our in-house playbook, hold up on the pilot.
+
+4. **Verified Ivan's in-house doc tweaks (commit `b68f309`) against pilot data.** Found two factual issues:
+   - `MethodType` values: he claimed `2`=SP, `3`=ExtClass; pilot data shows `0`=SP, `2`=ExtClass, `1`=Custom Load Method. The OG `05_DISCOVERY_GUIDE.md:130` had it right; his blockquote conflicted with itself. **Fixed.**
+   - "SLJobmatls (lowercase 'm') is correct, not SLJobMatls" — pilot has BOTH casings as distinct, separate IDOs (`SLJobMatlAlls`, `SLJobmatlCompliances`, `SLJobmatlJobs`, etc.). Softened to "casing matters, verify via `IdoCollections`."
+   - `_mst` suffix: duplicated existing `06_GOTCHAS.md` "## SQL Table Name Suffixes" section. Merged the better example into the existing section, removed the duplicate.
+
+**Deliverables:**
+
+- `validation/` — full harness + per-skill JSON results + auto-generated `MANIFEST.md`
+- `validation/skill-inventory.md` — Phase 1 inventory snapshot
+- `validation/RECONCILIATION.md` — Phase 3 findings and decisions
+- `docs/02_IDO_OVERVIEW.md`, `docs/05_DISCOVERY_GUIDE.md`, `docs/06_GOTCHAS.md` — corrections
+
+Run the harness yourself:
+```powershell
+cd D:/Projects/syteline-ido-api-agent-docs
+$env:SYTELINE_BASE_URL = "http://s10dev.salinavortex.com/IDORequestService/ido"
+$env:DEFAULT_SITE = "Pilot_Vortx"
+$env:SYTELINE_AGENT_USERNAME = "claude1"; $env:SYTELINE_AGENT_PASSWORD = "claude"
+uv run --no-project python validation/validate_all.py --skills-dir skills
+```
+
+**Result:** Skills are merge-ready against canonical. The doc reconciliation work is done. Tier C skills retained as reference material; not surfaced as MCP tools.
+
+**Notes:**
+- Watch for `"Your session has been deleted"` errors when running many parallel agent calls — the pilot occasionally invalidates a token mid-run. The harness handles this with a one-shot token refresh in `pilot_client.py`.
+- The validator deliberately stays narrow (lower-bound extraction). Future improvement: parse SKILL.md frontmatter for explicit `claims:` blocks so skills can self-declare what to check.
+
+---
+
 ## 2026-03-11 — Environment Validation, Doc Fixes, and IDO Introspection
 
 **Request:** Validate that the docs are sufficient for an agent to connect and introspect IDOs. Discovered and fixed several gaps through live testing.

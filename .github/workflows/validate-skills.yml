@@ -1,0 +1,41 @@
+name: validate-skills
+
+# Offline validation of skills/ on every PR that touches the catalog.
+#
+# This runs on hosted GitHub runners and CANNOT reach the SL10 pilot
+# (s10dev.salinavortex.com is internal DNS only). It runs the structural
+# checks the harness can do without network access:
+#
+#   1. Every skills/<name>/ has a SKILL.md with a parseable frontmatter block
+#   2. Frontmatter has the required fields (name, description)
+#   3. The claim extractor runs cleanly against every skill (catches regex
+#      changes that would crash the live harness)
+#
+# Live pilot validation must be run manually on the corporate network:
+#
+#   uv run --no-project python validation/validate_all.py --skills-dir skills
+
+on:
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'validation/**'
+      - 'docs/**'
+      - '.github/workflows/validate-skills.yml'
+  workflow_dispatch:
+
+jobs:
+  offline-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Lint skill frontmatter
+        run: python validation/ci_check_skills.py skills
+
+      - name: Dry-run claim extraction (no pilot calls)
+        run: python validation/ci_extract_only.py skills
