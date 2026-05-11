@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Syteline IDO Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <header class="border-b bg-white">
+      <div class="mx-auto max-w-screen-2xl px-4 py-3 flex items-center gap-4">
+        <h1 class="text-lg font-semibold">Syteline IDO Explorer</h1>
+        <span id="env-pill" class="text-xs bg-slate-100 border border-slate-200 rounded-full px-2 py-0.5">
+          connecting…
+        </span>
+        <div class="flex-1"></div>
+        <div class="flex items-center gap-2">
+          <select id="search-type" class="border rounded px-2 py-1 text-sm">
+            <option value="properties">Property name</option>
+            <option value="methods">Method name</option>
+            <option value="tables">Table name</option>
+          </select>
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Find IDOs by… e.g. Item"
+            class="border rounded px-2 py-1 text-sm w-64"
+          />
+          <button id="search-btn" class="bg-slate-900 text-white text-sm rounded px-3 py-1">
+            Search
+          </button>
+        </div>
+      </div>
+      <div id="search-results-wrap" class="hidden border-t bg-slate-50">
+        <div class="mx-auto max-w-screen-2xl px-4 py-3">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-sm font-medium text-slate-700" id="search-results-title"></h2>
+            <button id="search-close" class="text-xs text-slate-500 hover:text-slate-900">
+              Close
+            </button>
+          </div>
+          <div class="bg-white border rounded max-h-72 overflow-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-100 text-left">
+                <tr id="search-head"></tr>
+              </thead>
+              <tbody id="search-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-screen-2xl px-4 py-4 grid grid-cols-[320px_minmax(0,1fr)] gap-4">
+      <!-- Left: IDO list -->
+      <aside class="bg-white border rounded flex flex-col h-[calc(100vh-7rem)]">
+        <div class="p-3 border-b space-y-2">
+          <div class="flex items-center justify-between">
+            <h2 class="font-medium">IDOs</h2>
+            <span id="collections-count" class="text-xs text-slate-500">—</span>
+          </div>
+          <input
+            id="collections-filter"
+            type="text"
+            placeholder="Name contains…"
+            class="w-full border rounded px-2 py-1 text-sm"
+          />
+          <div class="flex gap-1 text-xs">
+            <button data-access="" class="access-chip chip-on">All</button>
+            <button data-access="BaseSyteLine" class="access-chip">Core</button>
+            <button data-access="Custom" class="access-chip">Custom</button>
+          </div>
+        </div>
+        <ul id="collections-list" class="flex-1 overflow-auto divide-y text-sm"></ul>
+      </aside>
+
+      <!-- Right: detail -->
+      <section id="detail" class="space-y-4">
+        <div id="detail-empty" class="bg-white border rounded p-8 text-center text-slate-500">
+          Select an IDO from the list to view its tables, properties, and methods.
+        </div>
+
+        <div id="detail-content" class="hidden space-y-4">
+          <!-- Overview -->
+          <div class="bg-white border rounded">
+            <div class="px-4 py-3 border-b flex items-center justify-between">
+              <div>
+                <h2 id="ov-name" class="text-base font-semibold">—</h2>
+                <p class="text-xs text-slate-500" id="ov-sub"></p>
+              </div>
+              <div id="ov-extended" class="text-xs"></div>
+            </div>
+          </div>
+
+          <!-- Tables -->
+          <div class="bg-white border rounded">
+            <div class="px-4 py-3 border-b flex items-center justify-between">
+              <h3 class="font-medium">Tables <span class="text-xs text-slate-500" id="tables-count"></span></h3>
+              <span class="text-xs text-slate-500">TableType: 3 = Primary, 0 = Secondary</span>
+            </div>
+            <div class="overflow-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-left">
+                  <tr>
+                    <th class="px-3 py-2">TableName</th>
+                    <th class="px-3 py-2">Alias</th>
+                    <th class="px-3 py-2">Type</th>
+                    <th class="px-3 py-2">JoinType</th>
+                    <th class="px-3 py-2">JoinText</th>
+                  </tr>
+                  <tr class="filter-row">
+                    <th><input data-field="TableName" /></th>
+                    <th><input data-field="TableAlias" /></th>
+                    <th><input data-field="TableType" /></th>
+                    <th><input data-field="JoinType" /></th>
+                    <th><input data-field="JoinText" /></th>
+                  </tr>
+                </thead>
+                <tbody id="tables-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Properties -->
+          <div class="bg-white border rounded">
+            <div class="px-4 py-3 border-b flex items-center justify-between flex-wrap gap-2">
+              <h3 class="font-medium">Properties <span class="text-xs text-slate-500" id="props-count"></span></h3>
+              <div class="flex gap-1 text-xs">
+                <button data-class="" class="prop-chip chip-on">All</button>
+                <button data-class="writable" class="prop-chip">Writable</button>
+                <button data-class="readonly" class="prop-chip">Read-only</button>
+                <button data-class="derived" class="prop-chip">Derived</button>
+                <button data-class="sub" class="prop-chip">Subcollection</button>
+              </div>
+            </div>
+            <div class="overflow-auto max-h-[600px]">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-left sticky top-0">
+                  <tr>
+                    <th class="px-3 py-2">PropertyName</th>
+                    <th class="px-3 py-2">DataType</th>
+                    <th class="px-3 py-2" title="0=Bound, 1=Derived, 3=Subcollection">Class</th>
+                    <th class="px-3 py-2">ColumnName</th>
+                    <th class="px-3 py-2">ColumnTableAlias</th>
+                    <th class="px-3 py-2">ReadOnly</th>
+                  </tr>
+                  <tr class="filter-row">
+                    <th><input data-field="PropertyName" /></th>
+                    <th><input data-field="DataType" /></th>
+                    <th><input data-field="PropertyClass" /></th>
+                    <th><input data-field="ColumnName" /></th>
+                    <th><input data-field="ColumnTableAlias" /></th>
+                    <th><input data-field="IsReadOnly" /></th>
+                  </tr>
+                </thead>
+                <tbody id="props-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Methods -->
+          <div class="bg-white border rounded">
+            <div class="px-4 py-3 border-b flex items-center justify-between">
+              <h3 class="font-medium">Methods <span class="text-xs text-slate-500" id="methods-count"></span></h3>
+              <span class="text-xs text-slate-500">MethodType: 0 = System, 2 = Stored Proc, 3 = Extension Class</span>
+            </div>
+            <div class="overflow-auto max-h-[400px]">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-left sticky top-0">
+                  <tr>
+                    <th class="px-3 py-2">MethodName</th>
+                    <th class="px-3 py-2">MethodType</th>
+                    <th class="px-3 py-2"></th>
+                  </tr>
+                  <tr class="filter-row">
+                    <th><input data-field="MethodName" /></th>
+                    <th><input data-field="MethodType" /></th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="methods-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Method parameters drawer -->
+    <div id="drawer" class="fixed inset-y-0 right-0 w-[520px] bg-white border-l shadow-xl hidden flex-col">
+      <div class="px-4 py-3 border-b flex items-center justify-between">
+        <div>
+          <h3 class="font-medium" id="drawer-title">Method parameters</h3>
+          <p class="text-xs text-slate-500" id="drawer-sub"></p>
+        </div>
+        <button id="drawer-close" class="text-slate-500 hover:text-slate-900">✕</button>
+      </div>
+      <div class="flex-1 overflow-auto p-3">
+        <table class="w-full text-sm">
+          <thead class="bg-slate-50 text-left">
+            <tr>
+              <th class="px-2 py-2">#</th>
+              <th class="px-2 py-2">Name</th>
+              <th class="px-2 py-2">Type</th>
+              <th class="px-2 py-2">SP Type</th>
+              <th class="px-2 py-2">Dir</th>
+            </tr>
+          </thead>
+          <tbody id="drawer-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-4 right-4 hidden bg-red-600 text-white text-sm rounded shadow px-3 py-2 max-w-md"></div>
+
+    <script src="app.js" type="module"></script>
+  </body>
+</html>

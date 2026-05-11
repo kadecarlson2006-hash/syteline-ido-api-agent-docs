@@ -2,6 +2,11 @@
 .env
 .env.local
 .env.*.local
+app/.env
+
+# Node
+node_modules/
+app/node_modules/
 
 # API Tokens
 token.json
