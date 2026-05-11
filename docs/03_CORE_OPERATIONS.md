@@ -422,3 +422,21 @@ When `Success: false`, log the full response body — `Message` often includes t
 | Insert/Update/Delete | `POST` | `/update/{IDO}` |
 
 **Common mistake:** Using POST for `/load` or GET for `/invoke` returns `405 Method Not Allowed`.
+
+---
+
+## Additional V2 API Capabilities
+
+Beyond the three core operations, the REST API V2 also supports:
+
+| Operation | HTTP Method | Endpoint | Purpose |
+|---|---|---|---|
+| Fire AES Event | POST | `/ido/aesevent/{IDO}` | Trigger Application Event System events |
+| Get Property Info | GET | `/ido/propertyinfo/{IDO}` | Retrieve property metadata (types, read-only, etc.) |
+| Download File | GET | `/ido/filestream/{IDO}` | Download a file stream from an IDO |
+| Upload File | POST | `/ido/filestream/{IDO}` | Upload a file stream to an IDO |
+| Download Doc Object | GET | `/ido/docobj/{IDO}` | Download a document object attachment |
+| Upload Doc Object | POST | `/ido/docobj/{IDO}` | Upload a document object attachment |
+| Get Configurations | GET | `/ido/configurations` | List available site configurations |
+
+These are less commonly needed for typical integration work but are available when required. See the Infor Mongoose IDO Integration with External Applications Guide for full details on request/response formats.

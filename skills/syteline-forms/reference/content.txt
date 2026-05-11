@@ -1,0 +1,4817 @@
+Web accessibility is a practice of breaking down barriers that prevent people with disabilities from
+effectively using a web application. These disabilities include, but are not limited to: visual impairments
+including blindness, users with less motor skills, auditory impairments, seizures caused by visual strobe
+or flashing effects, and cognitive impairments affecting a user’s memory and attention span. Users
+with visual impairments including blindness often use a keyboard instead of a mouse as their preferred
+input device, as well as text-to-speech / screen reader software to translate into speech what is visually
+presented in the browser. Using thoughtful design, a web application can be created or modified to
+allow users with disabilities the same comfort and ease-of-use as a user without disabilities. Mongoose
+administrators and form designers should design their applications and forms properly to create a
+user-friendly Mongoose web client experience for all.
+Beginning in Mongoose version 9.03, most common Mongoose web client navigation and form
+components are accessible by default. A person using a screen reader, such as Job Access With
+Speech (JAWS) or NonVisual Desktop Access (NVDA), to consume and read the application can
+navigate the application using a keyboard and use the base Mongoose forms and their components.
+Designers must make sure that screen readers can interpret and present pertinent information and
+make applications usable for vision-impaired users.
+Screen readers and browsers work together in tandem. The list of available software solutions for web
+users with disabilities is growing. You can use these tools to make your applications and forms accessible
+to users with disabilities by following the recommendations here and in the next topics.
+The best way to understand how these tools work is to try them firsthand. When you are developing
+your Mongoose application and forms, test your form with different combinations of browsers and
+assistive technologies before recommending to your users the ideal combination for users with disabilities
+to use your application with ease.
+
+Infor Mongoose Application and Form Development | 27
+
+Fundamentals
+
+About screen readers
+A screen reader is a type of user interface that interprets content on a screen and reads the environment
+aloud to the user. There are many options for screen readers of varying abilities and popularity. Two
+of the most popular are JAWS by Freedom Scientific and NVDA by NV Access.
+Screen reader technology relies on a combination of a web browser’s Accessibility API and Web
+Accessibility Initiative – Accessible Rich Internet Applications (WAI-ARIA) overrides to decipher the
+web application’s structure and content. An Accessibility API is built into a browser to expose public
+properties and methods to retrieve information about the Document Object Model (DOM) of a web
+application or page. WAI-ARIA consists of HTML tag attributes that provide the means to override the
+Accessibility API and provide meaning to content that the Accessibility API is unable to interpret. This
+is especially important with dynamic AJAX content and generic HTML tags like the <div> tag being
+used to house content, which does not indicate to the browser how it is being used or what type of
+content it contains. While all major web browsers base their Accessibility APIs on similar interpretations
+to the DOM, they sometimes deviate from one another. There are also differences between each
+browser’s support for WAI-ARIA. Therefore, different combinations of various screen readers and web
+browsers yield varying results. For this reason, it is important to understand that by applying best
+practices when creating a form, your chances of consistent usability increase.
+A web browser’s Accessibility API and support for WAI-ARIA provide the information for a screen reader
+to interpret and speak the content. Some screen reader vendors recommend a particular browser for
+use with their product. Freedom Scientific recommends using JAWS with Internet Explorer and NVDA
+recommends using Mozilla Firefox. However, JAWS and NVDA both provide support for most browsers.
+JAWS reads and interacts with the Mongoose web client best when using Firefox. For this reason, if
+using JAWS, design and test forms using Firefox.
+Browsers and screen readers release newer versions and apply updates, so these ideal combinations
+can change. Ultimately, it is up to end users to decide what combination works best for them.
+
+Runtime setup for best results with screen readers
+End users should set their User Preferences > Runtime Layout to Tabbed Form Layout instead of
+multiple document interface (MDI). Doing so provides the best experience for keyboarding between
+multiple forms and screen reader support.
+
+Best practices for designing more accessible forms
+To make your application more accessible, take note of these recommendations.
+•
+
+Make sure to always provide alternate text descriptions for static images and image-based buttons.
+These alternate text descriptions provide text-based descriptions for images/image-based buttons
+that users cannot view, whether because of a bad connection, an error in the image source, or the
+user is visually impaired and using a screen reader.
+The <image alt=" "> tag in HTML is usually used to provide this alternate text. But, in
+Mongoose-based applications, we do not have the ability to automatically generate or use these
+
+Infor Mongoose Application and Form Development | 28
+
+Fundamentals
+HTML tags. Instead, we provide these other mechanisms to add alternate text descriptions for
+static image objects, image-based buttons, and, potentially, for other components:
+•
+
+Add the descriptive text as the component's Caption property value.
+If you do not want this caption to be visible, set the Data Source > Formatting > Image and
+Text property to ImageOnly.
+
+•
+
+Add the descriptive text to the Help > ToolTip field.
+
+Disabled image-based buttons automatically have the word "Disabled" inserted into the alternate
+text value. This text is removed when the button is enabled.
+•
+
+•
+
+As much as possible, ensure that all form components have clear, descriptive labels. In Design
+Mode under the component properties for a selected component, you can add a non-visible label
+using the caption property that will be read aloud by the screen reader (see the previous item).
+You can specify a caption in several ways, including linking the component with another component
+(usually a Static component), that serves as the component’s label.
+You can use Static components to provide document structure as headings by employing the Is
+Web Heading property from the Specific Attributes section of the Component property sheet.
+Setting this boolean value to True does not change anything visually. What it does is add an ARIA
+role="heading" attribute to the HTML for the static component.
+
+•
+•
+•
+
+•
+
+Hyperlink text should make sense on its own. Avoid using “click here” or similar text.
+Do not convey content with colors, graphics or animations alone. Make sure you provide an
+alternative that can be interpreted by a screen reader.
+Provide instructions on how to use the form where needed, if possible. The form may not be as
+self-explanatory to a user who cannot see it. If not possible, make sure the online help is easy to
+access.
+Include context menus where possible. Shift+F10 provides to screen readers the same context
+menu as a mouse right-click, so visually impaired users can still make use of these menus.
+
+Designing for low-sighted users
+These recommendations can help low-sighted users use the Mongoose web client:
+•
+•
+•
+•
+•
+•
+
+Provide good contrast between backgrounds and foregrounds when choosing your color scheme.
+Choose colors that do not create eye strain.
+Use an adequate font size. Font size of 12pt or greater is ideal, and avoid using smaller than 10pt.
+Avoid the use of ALL CAPS. It can be difficult to read and screen readers can incorrectly interpret
+it.
+Line lengths that are too long or too short can be difficult to read.
+Hyperlinks should visually stand out from regular text.
+
+Designing for blind users
+Following these recommendations can help blind users use the Mongoose web client:
+•
+
+All content must be presented in a logical order. Visual users can quickly scan how a page is
+organized and zero in on the most important content. Blind users cannot see visual groupings on
+
+Infor Mongoose Application and Form Development | 29
+
+Fundamentals
+
+•
+•
+
+a page, so the form should be created with a logical flow that presents the most important content
+ahead of less important content.
+Images should have an alternate text explanation.
+Forms should be keyboard accessible. Check your form for logical keyboarding flow by testing it
+without using a mouse. Provide keyboard alternatives to mouse click events.
+
+Using the Web Designer
+About the Web Designer
+The Infor Mongoose Web Designer is a web client application designed to perform many of the same
+functions as Design Mode in the Windows ("smart") client. The Web Designer provides a limited means
+for form and application developers to create and modify both forms and global objects from the web
+client. The Web Designer is designed to look and behave much like its Design Mode counterpart.
+The Web Designer can be used to create and modify both forms and global objects, although it is
+slightly more limited than the Windows client Design Mode. For example:
+•
+•
+•
+
+You cannot use Diagram components on forms.
+There are no debugging capabilities in the built-in Script Editor, which is the only scripting tool
+available in the Web Designer.
+The Web Designer does not include the Object Viewer. Many of the Object Viewer’s functions,
+however, are still available in other parts of the Web Designer.
+
+The Web Designer has the Toolbox and Form/Component property sheets that look and perform much
+like they do in Design Mode. While the Web Designer does not include the Object Viewer, much of the
+same functionality of the Object Viewer is available from a new Details panel. This Details panel
+includes these primary areas of functionality, displayed on separate tabs:
+•
+•
+
+Collections – The Collections options that are on the Form property sheet in Design Mode have
+been moved to this tab in the Details panel. The functionality within this tab is identical.
+Components – This tab presents a grid view of the components on a form, similar to the Object
+Viewer. This display is read-only, but it allows you to view selected properties/attributes of multiple
+components at once. To modify the properties/attributes of a given component, you must use the
+Component property sheet.
+In addition, when you select a component in the Components tab, it becomes automatically
+selected in both the form design workspace and in the Component properties sheet.
+
+•
+
+Event Handlers – This tab displays information about any form event handlers defined for the
+form.
+The left side of the display is a list of the form event handlers. Each of these can be expanded to
+view basic information about the event handler.
+
+Infor Mongoose Application and Form Development | 30
+
+Fundamentals
+The right side of the display shows more detailed information about a selected event handler. You
+can use this right pane to create event handlers and to modify event handler properties and
+attributes.
+•
+
+Variables – This tab displays information about any variables defined for the application. Groups
+of variables are arranged by these criteria:
+• Persistent form variables
+• Temporary form variables
+• Persistent global variables
+• Temporary global variables
+The right side of the display shows more detailed information about a selected variable. You can
+use this right pane to create variables and to modify variable properties and attributes.
+
+•
+
+Design View Size – This tab displays information about the size of the form design area. It also
+allows you to change the size of the form's design view. This enables you to increase the size of
+the form design area, usually so you can see any components that might be hidden in the area
+outside the form's normal viewing area.
+See Changing the size of a form's viewing area on page 1211.
+
+About the Web Designer toolbar
+The Web Designer toolbar provides tools that help you:
+•
+•
+•
+•
+•
+•
+
+Align form components with respect to other components and to the design grid
+Resize components uniformly
+Adjust space between components uniformly
+Arrange components vertically or horizontally
+Undo and redo changes
+Launch the wizards that facilitate the creation of SQL tables, IDOs, and forms
+
+Most options on the toolbar require you to select more than one component. To select multiple
+components, hold down CTRL, and then click each component.
+Alignment options align selected components with whichever component has solid black squares for
+handles. After selecting all components to be aligned, click the one you want the others to align with.
+The handles of this component should be solid black, and all others should be black-outlined handles.
+The procedure for selecting components to be resized or spaced uniformly is similar.
+Icon tooltip
+
+Description
+
+New Form Definition
+
+Launches the Form Wizard Selection, which allows you to create forms,
+either new or as extensions of existing forms.
+
+Copy Form Definition
+
+Opens the Copy Form Definition dialog box, which allows you to copy
+an existing form definition into a new form.
+
+Delete Form Definition
+
+Launches the Select Form dialog box, which allows you to select a form
+definition for deletion.
+
+Align Left
+
+Aligns all selected components so their left edges line up.
+
+Infor Mongoose Application and Form Development | 31
+
+Fundamentals
+
+Icon tooltip
+
+Description
+
+Align Center
+
+Aligns all selected components so their horizontal centers line up.
+
+Align Right
+
+Aligns all selected components so their right edges line up.
+
+Align Top
+
+Aligns all selected components so their top edges line up.
+
+Align Middle
+
+Aligns all selected components so their vertical middles line up.
+
+Align Bottom
+
+Aligns all selected components so their bottom edges line up.
+
+Make Same Width
+
+Resizes all selected components so they are the same width.
+
+Make Same Height
+
+Resizes all selected components so they are the same height.
+
+Make Same Size
+
+Resizes all selected components so they are the same size.
+
+Space Horizontally
+
+Moves selected components so they are evenly spaced within the horizontal
+boundaries. This option uses the left edge of the leftmost component and
+the right edge of the rightmost component as the horizontal boundaries. It
+moves only the inner components, leaving the outer two components where
+they are.
+This option works only when three or more components are selected.
+
+Space Vertically
+
+Moves selected components so they are evenly spaced within the vertical
+boundaries. This option uses the top edge of the topmost component and
+the bottom edge of the bottommost component as the vertical boundaries.
+It moves only the inner components, leaving the outer two components
+where they are.
+This option works only when three or more components are selected.
+
+Undo
+
+Undoes the previous design action.
+To undo multiple actions, click this button repeatedly.
+
+Redo
+
+Repeats a design action that has been undone.
+To redo multiple actions, click this button repeatedly.
+
+Use of the Web Designer
+This group of topics provides procedures for the most common tasks you can perform with the Infor
+Mongoose Web Designer.
+•
+•
+•
+•
+•
+•
+•
+
+Launching the Web Designer on page 33
+Modifying an existing form on page 33
+Creating a form in the Web Designer on page 33
+Creating a form by extension on page 34
+Creating a bound component in the Web Designer on page 35
+Creating global objects in the Web Designer on page 35
+Modifying global objects in the Web Designer on page 41
+
+Infor Mongoose Application and Form Development | 32
+
+Fundamentals
+
+Launching the Web Designer
+To launch the Infor Mongoose Web Designer, you must first be logged in to the web client version of
+your Mongoose-based application.
+1
+
+In the web client menu bar, click the icon to open the Web Designer.
+This icon looks like a paint brush. When you hover over it, the text “Open designer in a new window”
+displays.
+
+2
+
+Optionally, if you are logging in with editing permissions of Site Developer, specify the editing scope
+that you want to use.
+If you ignore this step but later decide you want to change your editing scope, go to the Form menu
+and select Definition > Impersonate.
+
+The Web Designer opens in a new tab or window.
+
+Modifying an existing form
+Note: If you use a source control system, make sure you have the form checked out before you perform
+this procedure.
+1 Launch the Web Designer.
+2 In the Web Designer tab/window, open the form you want to modify.
+3 Make whatever modifications you want to make.
+Form modifications you can make include but are not limited to these:
+• Modify the form-level properties and attributes.
+• Add components.
+• Modify the properties and attributes of existing components.
+• Delete components.
+4
+5
+6
+
+Save your work.
+Close the Web Designer tab/window.
+In the regular web client tab/window, open the form and verify that your changes were made.
+
+Note: You might need to unload global form objects to see the changes.
+
+Creating a form in the Web Designer
+1
+2
+
+Launch the Web Designer.
+In the Web Designer menu bar, click the New Form Definition icon.
+This icon looks like a document with a plus sign in the center. When you hover over it, the text
+“New Form Definition” displays.
+The New Form Definition form opens to the Form Wizard Selection page.
+
+3
+
+Select the New Form option.
+
+Infor Mongoose Application and Form Development | 33
+
+Fundamentals
+For the procedure to create a form that is an extension of an existing form, see Creating a form by
+extension on page 34.
+4
+
+From the Category drop-down list, select one of these options:
+• Classic - This option includes most of the standard Mongoose form types.
+• NewData - This option launches a wizard that allows you to create IDOs and tables, optionally
+along with a form.
+Note: This wizard is used to create only MultiView, Grid Only, or Detail Only forms.
+
+5
+6
+
+From the Wizard drop-down list, select the type of form you want to create.
+Click OK.
+
+What happens from this point on depends on what type of form you are creating. Each type of form
+has its own wizard with its own procedure and its own topic.
+See one of these help topics:
+•
+•
+•
+•
+•
+•
+•
+•
+
+Creating a Build-from-Scratch form on page 93
+Creating a Detail Only form on page 66
+Creating a Grid Only form on page 63
+Creating a MultiView form on page 60
+Creating a Query form on page 71
+Creating a Report type form on page 78
+Creating a Tile form on page 89
+Creating a form with the Web Designer New Data Maintenance Wizard on page 108
+
+Creating a form by extension
+Note: This procedure applies to forms being created in the web client Web Designer. For the procedure
+to create a form by extension in Windows client, see Creating a form by extension on page 137 (in
+Windows client).
+To create a new form by extending an existing form using the Web Designer:
+1
+2
+
+In the web client, launch the New Form Wizard.
+In the Web Designer menu bar, click the New Form Definition icon.
+This icon looks like a document with a plus sign in the center. When you hover over it, the text
+“New Form Definition” displays.
+The New Form Definition form opens to the Form Wizard Selection page.
+
+3
+4
+5
+
+Select the Extend Form option.
+Click OK.
+In the next page, specify:
+• The name to assign to the new form
+• The form on which the new form is to be based (Base Form)
+• Optionally, a description of the new form
+Web Designer automatically provides a base description that you can change.
+
+Infor Mongoose Application and Form Development | 34
+
+Fundamentals
+•
+6
+7
+
+Optionally, set the new form to load when a request to open the base form is received (Replace
+Base Form)
+
+Click Next.
+Click Finish.
+Note: Unlike other form creation options, this type of form does not allow you to save a template.
+
+Web Designer then creates a copy of the base form, gives it the new name, and opens it in Design
+Mode.
+
+Creating a bound component in the Web Designer
+This procedure assumes that you have already launched the Web Designer and have opened the form
+for which you want to create a bound component.
+1
+
+Add the type of component you want to bind to the form.
+If the component already exists on the form, select it.
+
+2
+3
+4
+5
+
+In the Component property sheet, select Data Source > Binding Type.
+From the Binding Type drop-down list, select the type of binding to use for the component.
+Click the ellipsis (…) button for the Binding property.
+Use the editor form for the specified Binding Type to specify the properties and attributes for the
+component.
+Save your work.
+
+6
+
+Creating global objects in the Web Designer
+You can create any type of global object (except an image object) that is available in the Web Designer.
+The procedure to create each type of global object is slightly different, because each global object type
+has its own editor form.
+Image objects cannot be created in the Web Designer, but they can be imported.
+•
+•
+•
+•
+•
+•
+•
+•
+•
+•
+•
+
+Creating a Background Color object on page 36
+Creating a Component Class object on page 36
+Importing an Image object on page 37
+Creating a Property Class Extension object on page 37
+Creating a Script object on page 38
+Creating a Shortcut Menu object on page 38
+Creating a String object on page 38
+Creating a Theme object on page 39
+Creating a Validator object on page 40
+Creating a Variable object on page 40
+Creating a Web User Control Asset object on page 40
+
+Infor Mongoose Application and Form Development | 35
+
+Fundamentals
+
+Creating a Background Color object
+To ensure consistency and "same-look-and-feel" across a variety of forms and components, you can
+create and apply a set of "Background Color" global objects for the forms and components in your
+application. These color definition objects are created and maintained using the Edit Color dialog box.
+Once created, these color definition objects are available for use in both forms and components.
+Note: To adjust a color definition object without affecting the definition itself, apply the object to the
+form or component and then adjust it in the form or component property sheet (at which point it becomes
+a custom or modified definition). This procedure assumes that you already have at least one background
+color definition object created and available in the system.
+To create a color definition object:
+1
+
+With no form open, go into Design Mode.
+In the web client, this launches the Web Designer page.
+
+2
+3
+4
+5
+
+From the Edit menu, select Background Color.
+In the Edit Color dialog box, click New.
+In the Name field, type the name for the Background Color object.
+Click OK.
+The new color object displays in the color object list, prefixed (automatically) with "gbgc_".
+
+6
+7
+
+If the new color object is not selected, select it.
+From the Style drop-down list, select whether the Background Color object is to be a solid color
+(Color), a graduated blend between two colors (Gradient), or completely transparent/no color
+(None).
+If you selected Color or Gradient, use the first input field to the right of the Color field to specify
+the basic color in standard RGB format.
+For example, to specify solid red as the background color, you would enter 255,0,0.
+
+8
+
+The Color field and Preview panel both display the basic color.
+9
+
+Optionally, in the second input field to the right of the Color field, specify an alpha (transparency)
+setting between 0 and 255.
+The Preview panel changes to display the color with transparency setting.
+
+10 If you selected Gradient as the Style, specify the secondary color settings in the RGB and alpha
+fields, the same as you did for the basic color.
+11 If you selected Gradient as the Style, from the Direction drop-down list, select what direction you
+want to display the gradient transition.
+12 To save the new background color object, click OK.
+The system creates and saves the background color definition. If it has already been specified anywhere
+in the application, it is automatically applied.
+
+Creating a Component Class object
+1
+2
+
+Launch the Web Designer.
+Select Edit > Component Class.
+
+Infor Mongoose Application and Form Development | 36
+
+Fundamentals
+3
+4
+5
+
+In the lower left corner of the Component Classes editor, click the New (+) button.
+In the Name field of the New form, specify a name for the new Component Class object.
+Click OK.
+The new Component Class name displays in the list on the left panel, and the Properties panel
+on the right displays the property sheet for the new Component Class object.
+
+6
+
+In the property sheet, specify the properties and attributes to be used by the new Component Class
+object.
+Click OK.
+
+7
+
+Importing an Image object
+Using the Images form, you can import image files from another source to Mongoose. When you import
+an image file, you can either add it to the list of existing image files or replace a file that has already
+been imported.
+To import an image file for use within Mongoose:
+1
+2
+3
+
+Launch the Web Designer.
+From the Global Objects menu, select Image.
+Perform one of these actions:
+• To add a new file to the set of available image files, click New.
+• To replace an existing image file, select the file you want to replace, and then click Import.
+
+4
+
+In the Get Image for... form, perform one of these actions:
+• Click Select File and use the Open dialog box to select the file to import.
+• From another window, drag and drop the file to import onto the outlined space.
+
+5
+6
+
+Click Upload.
+In the Images form, click OK.
+
+Creating a Property Class Extension object
+1
+2
+3
+4
+5
+
+Launch the Web Designer.
+Select Edit > Property Class Extension.
+In the lower left corner of the Property Class Extensions editor, click the New (+) button.
+In the Name field of the New form, specify a name for the new Property Class Extension object.
+Click OK.
+The new Property Class Extension name displays in the list on the left panel, and the Properties
+panel on the right displays the property sheet for the new Property Class Extension object.
+
+6
+
+In the property sheet, specify the properties and attributes to be used by the new Property Class
+Extension object.
+To save the Property Class Extension as a new object, click OK.
+
+7
+
+Infor Mongoose Application and Form Development | 37
+
+Fundamentals
+
+Creating a Script object
+1
+2
+3
+4
+5
+
+Launch the Web Designer.
+Select Edit > Script.
+Click the New (+) button.
+In the Name field of the New form, specify a name for the new Script object.
+Click OK.
+The new Script name displays in the list on the left panel, and the Properties panel on the right
+displays the property sheet for the new Script object.
+
+6
+
+From the Script Language drop-down list specify whether the script is to be in Visual C# or Visual
+Basic.
+7 To write the script, click the ellipsis (…) button next to the Name field.
+8 Use the Script Editor to write your script code.
+9 Click Compile Result.
+10 If necessary, correct any errors and recompile.
+11 To save your script, click OK.
+12 In the Scripts editor, click OK.
+
+Creating a Shortcut Menu object
+1
+2
+3
+4
+5
+
+Launch the Web Designer.
+Select Edit > Shortcut Menu.
+Click the New (+) button.
+Specify a name for the new Shortcut Menu object in the Name field.
+Click OK.
+The new Shortcut Menu name displays in the list on the left panel, and the Properties panel on
+the right displays the property sheet for the new Shortcut Menu object.
+
+6
+7
+
+In the Properties panel, click the New (+) button.
+Specify a caption for the shortcut menu item in the Caption field.
+This caption determines how the menu item displays on the shortcut menu.
+We recommend the use of translatable strings for these captions.
+
+8
+
+From the Event To Generate drop-down list, select the event to be generated when the user
+selects this menu item.
+9 Repeat Steps 6–8 for each additional menu item to be on the menu.
+10 Click OK.
+
+Creating a String object
+1
+2
+
+Launch the Web Designer.
+Select Edit > String.
+
+Infor Mongoose Application and Form Development | 38
+
+Fundamentals
+3
+4
+
+Click the New (+) button.
+Specify a name for the new String object in the Name field.
+We recommend that you create the String object as a translatable string, using the standard
+Mongoose string-naming guidelines.
+
+5
+
+Click OK.
+The new String name displays in the list on the left panel, and the Properties panel on the right
+displays the property sheet for the new String object.
+
+6
+7
+
+Optionally, in the String Value field, modify the string to what the string is to display when used.
+Click OK.
+
+Creating a Theme object
+To create a theme:
+1
+2
+3
+4
+5
+
+Launch the Web Designer.
+Select Edit > Theme.
+In the lower left corner of the Themes editor, click the New (+) button.
+In the Name field of the New form, specify a name for the new theme.
+Click OK.
+The new theme displays in the list on the left panel, and the Properties panel on the right displays
+the property sheet for the new theme.
+
+6
+
+In the property sheet, specify the application-level theme settings:
+• Explorer style
+• Required field indicator
+• Group box style
+• Notebook style
+• Button animation
+• Default pinned explorer folder
+Use the drop-down lists to specify the desired attributes.
+
+7
+8
+
+Click the Edit button.
+In the Edit Styles dialog box, select the UI element that you want to modify and use the categories
+and attributes to:
+• Specify or add a font
+• Specify or delete the font size
+• Specify the font style
+• Change font and background colors
+• Show or hide toolbar buttons
+• Add a form or component type theme class
+• Delete a theme class
+
+9 Click OK twice.
+10 Click Save.
+
+Infor Mongoose Application and Form Development | 39
+
+Fundamentals
+11 Close the Web Designer.
+To see the changes made on the Theme Editor, you must return to the web client to ensure that the
+theme is selected, then log out and log in again to the web client.
+
+Creating a Validator object
+1
+2
+3
+4
+5
+
+Launch the Web Designer.
+Select Edit > Validator.
+Click the New (+) button.
+Specify a name for the new Validator object in the Name field.
+Click OK.
+The new Validator name displays in the list on the left panel, and the Properties panel on the right
+displays the property sheet for the new Validator object.
+
+6
+7
+
+In the property sheet, specify the properties and attributes to be used by the new Validator object.
+Click OK.
+
+Creating a Variable object
+1
+2
+3
+4
+5
+
+Launch the Web Designer.
+Select Edit > Variables.
+Click the New (+) button.
+Specify a name for the new Variable object in the Name field.
+Click OK.
+The new Variable object name displays in the list on the left panel, and the Properties panel on
+the right displays the property sheet for the new Variable object.
+
+6
+7
+
+In the property sheet, specify the properties and attributes to be used by the new Variable object.
+Click OK.
+
+Creating a Web User Control Asset object
+1
+2
+3
+4
+
+Launch the Web Designer.
+Select Edit > Web User Control Assets.
+Click the New (+) button.
+Specify a name for the new Web User Control Asset object in the Name field.
+To have the new asset created within a new or existing folder, type the entire path and file name
+here.
+For example, to have a new CSS file created inside a Mongoose folder, you would specify Mongoose
+/CSS/MyCssFile.css in the Name field.
+
+5
+
+Click OK.
+
+Infor Mongoose Application and Form Development | 40
+
+Fundamentals
+The new Web User Control Asset name is displayed in the list on the left panel, and the Properties
+panel on the right displays the property sheet for the new Web User Control Asset object.
+6
+7
+8
+
+Select the type of content that the new asset in the Content drop-down list.
+Click the ellipsis (…) button of the Contents field.
+Use the Edit Browser File form to define the Web User Control Asset object.
+Note: The Edit Browser File form displays different options, depending on what type of Content
+you specified.
+
+9
+
+Click OK.
+
+Modifying global objects in the Web Designer
+You can modify most global objects in the Web Designer. The exceptions are Image objects: You can
+only import, export, or delete these objects.
+The details vary slightly for each global object, but here is the basic procedure:
+1
+2
+3
+4
+
+If you are using a source control system, make sure you have the global object you want to modify
+checked out.
+Launch the Web Designer.
+From the Edit menu, select the type of global object you want to modify.
+In the global object editor form that opens, select the specific object to modify.
+Note: In most cases, this involves clicking the Design button on the Properties sheet. (This is the
+icon that looks like a pencil.)
+
+5
+6
+
+Modify the object as desired.
+Click OK.
+
+Diagnostics with the Web Designer
+This group of topics provides information about the availability and use of diagnostics tools with the
+Infor Mongoose Web Designer.
+•
+•
+
+Diagnostics tools in the web client on page 41
+Using diagnostics tools with the Web Designer on page 42
+
+Diagnostics tools in the web client
+The Infor Mongoose web client has limited diagnostics capabilities available when developing or
+modifying forms.
+The diagnostics tools associated with the Web Designer are set up in User Preferences in the web
+client. You have these options available:
+•
+
+You can enable or disable the diagnostics forms.
+Infor Mongoose Application and Form Development | 41
+
+Fundamentals
+•
+
+If enabled, you can specify what kinds of data to include in the diagnostics output:
+• System information or security data or both
+• Form-related data
+• Data related to IDO collections associated with the form
+• A variety of other miscellaneous data types
+
+You can use the diagnostics options only in the regular web client tab/window. Diagnostics output is
+not available from the Web Designer tab/window.
+
+Using diagnostics tools with the Web Designer
+To enable and use the diagnostics tools with the Web Designer:
+1
+2
+3
+
+In the web client, from the View menu, select User Preferences.
+In the left panel, select the Diagnostics option.
+In the right panel, select the types of data to include in the diagnostics output.
+You have these categories of data from which to choose:
+• General – System information and security data
+• Form – Initialization, events, call details, component, event handler, validator, and variable
+data
+• IDO Collections – Initialization, commands, update, load, and notification data
+• Others – Interpreter data
+
+4
+5
+6
+
+Close User Preferences (click OK).
+In the web client, from the View menu, select Diagnostics.
+Run the form or perform the operation for which you want to collect diagnostics data.
+
+Customizing Deployed Applications
+Customizing deployed Mongoose-based applications
+A developer can use Mongoose functionality to customize forms and global objects (including creation
+of new forms) in a deployed application.
+Customized objects are tagged in the forms database as versions different from vendor-supplied
+objects. WinStudio determines the version of a form or global object by using the editing scope of the
+developer who saves the form or global object.
+When a new vendor-supplied version of an application is to be installed, developers use Form Sync
+to preserve their customizations while updating their forms database with new vendor default versions.
+For more information, see the online help for Form Sync.
+
+Infor Mongoose Application and Form Development | 42
+
+Fundamentals
+To customize a deployed WinStudio application, developers need Basic, Full User, or Site Developer
+editing permissions. The application administrator assigns editing permission when the developer's
+user profile is created.
+Editing permissions determine the scope of customizations, including the developer's ability to use all
+the functions in Design Mode (or only a subset of those available) and the developer's ability to save
+customizations as a particular version in the forms database.
+•
+•
+
+Developers with Basic or Full User editing permissions create user versions for their own user IDs
+only.
+Developers with Site Developer editing permissions can create user versions for any user ID, group
+versions for an identified group, or site versions that are displayed to all users on the system. Site
+Developer editing permissions also allow developers to set up public and user folders in the Explorer.
+
+Customizing the Explorer
+In WinStudio, the Explorer window contains the following folders:
+•
+
+•
+
+•
+
+•
+
+Master Explorer: The All Forms folder is read-only and lists every form in the forms database.
+Other folders in the Master Explorer are created by the Vendor Developers who build a WinStudio
+application.
+Public Folders: Initially, the Public Folders folder is empty. When a WinStudio application is
+deployed, developers with Site Developer editing permissions can create public folders available
+to all users. For example, a form can be distributed to all users or to a group of users by copying
+it into a public folder.
+User Folders: User folders are created automatically by WinStudio when users log on. User folders
+mirror each user's My Folders folder and are displayed only to developers with Site Developer
+editing permissions. Site Developers can also edit user folders, and any changes are reflected in
+the user's My Folder folder. For example, a user can be sent a form by copying it into his or her
+user folder. The user sees the copied form in his or her My Folders folder.
+My Folders: The My Folders folder is created automatically by WinStudio when a user logs on.
+All users can display and modify their own My Folders folder. For example, users can create new
+subfolders within My Folders, can copy or delete forms in My Folders, and can change the caption
+of a form in My Folders. (The caption of the opened form is not affected.) Consequently, changes
+made to a user folder by a Site Developer are not secure because each user can subsequently
+modify his or her My Folders folder.
+
+Administration
+Customizations are stored in the forms database. When a new version of a WinStudio application is
+to be installed, developers can use Form Sync to preserve their customizations while updating the
+forms database with new vendor default versions.
+Several options in Form Sync affect the Explorer. Typically, customizers update the Master Explorer
+but retain their customizations in public folders, user folders, and each user's My Folders. After
+synchronization, customizers might need to revise public or user folders to reflect any new vendor
+default forms that did not exist previously. For more information, see the online help for Form Sync.
+
+Infor Mongoose Application and Form Development | 43
+
+Fundamentals
+
+Editing permissions
+This table lists and describes the levels of editing permissions that users can be assigned in Windows
+client.
+Editing permission level
+
+Customization permissions
+
+Explorer permissions
+
+None
+
+Cannot enter Design Mode.
+
+Used in deployed applications
+for most end users.
+
+Cannot make customizations to
+forms.
+
+Can view and use the Master
+Explorer and public folders.
+
+Basic
+
+Cannot create or delete forms.
+
+Used in deployed applications
+for minimal, personal customizations that affect only that user.
+
+Can make minimal changes to
+their own user version of a form.
+
+Full User
+
+Can enter Design Mode to make
+all customizations for only their
+own user versions.
+
+Used in deployed applications
+for more extensive personal
+customizations that affect only
+that user.
+Site Developer
+Used in deployed applications,
+usually only by system administrators, to affect changes at any
+level of editing scope.
+
+Cannot perform editing operations against global (non-form
+specific) objects, so Design
+Mode is disabled when no form
+is active.
+
+Cannot create new forms or
+delete existing forms.
+Can enter Design Mode and
+make any customizations for
+any user version, for any group
+version, or for a site version.
+Can create or delete forms.
+
+Can customize their own My
+Folders.
+Can view and use the Master
+Explorer and public folders.
+Can customize their own My
+Folders.
+
+Can view and use the Master
+Explorer and public folders.
+Can customize their own My
+Folders.
+Can view and use the Master
+Explorer.
+Can customize public folders,
+user folders, and their own My
+Folders.
+Can impersonate any user or
+group member and then view or
+edit the associated user or
+group versions.
+
+Vendor Developer
+Used to develop applications,
+usually by Infor, .Infor business
+partners, or other Mongoosebased application developers.
+
+Has acces to all the capabilities
+of Design Mode, including creating and deleting forms.
+All work is saved as a Vendor
+Default version.
+
+Can create and edit the Master
+Explorer.
+Can customize their own My
+Folders.
+Cannot view public or inidividual
+user folders.
+Cannot view user or group versions of forms, even if these are
+associated with the Vendor Developer's own user ID.
+
+Infor Mongoose Application and Form Development | 44
+
+Fundamentals
+
+About editing scope
+In Windows client, "editing scope" refers to the interaction between a developer's editing permission
+and the ability to save forms and global objects at a given level of the user-group-site hierarchy.
+•
+•
+
+To create an application, developers require Vendor developer editing permissions in order to
+create Vendor Default versions of forms and global objects in the forms database.
+To customize a deployed application, developers require Basic, Full User, or Site Developer editing
+permissions in order to create user, group, or site versions of forms and global objects.
+
+You can set your editing scope whether or not you are in Design Mode. After you edit at one level, you
+can change your editing scope to save customizations at another level.
+Note: Before you edit a form that you opened during the current session, be sure to close the form
+and remove it from memory. This procedure ensures that when you reopen the form under a different
+editing scope, the form is the version defined for the new editing scope in the forms database. Removing
+the form from memory is required because Windows client by default opens the locally cached version
+that was last closed, regardless of the current Site Developer impersonation.
+
+About version control in the forms database
+Initially, a forms database includes only the vendor-supplied forms, components, and global objects.
+All of these elements are tagged as Vendor Default versions in the forms database and constitute a
+Windows client application.
+Customizations made with Basic, Full User, or Site Developer editing permissions create versions for
+one user, for a group of users, or for all users at a site. A customized forms database can include more
+than one version of the same form or global object.
+Vendor Default version
+The Vendor Default version of a form or global object is tagged as version 0 in the database and is
+unaffected by future customizations because those changes are tagged and saved as other versions.
+Site version
+The Site version of a form or global object is a customized version that is accessed by all users at a
+customer site (unless it is superseded by a Group or User version). It is tagged as version 1 in the
+database.
+Group version
+A Group version of a form or global object is a customized version that is accessed by all users in a
+user group (unless it is superseded by a User version). It is tagged as version 2 in the database and
+has a unique group name.
+
+Infor Mongoose Application and Form Development | 45
+
+Fundamentals
+User version
+The User version of a form or global object is a customized version that is accessed by a single user.
+It is tagged as version 3 in the database and has a unique user name associated with it.
+
+Understanding which version is displayed
+If more than one version of a form or global object exists in the forms database, the user-group-site
+hierarchy (in combination with the user ID) determines which version is displayed.
+Version
+
+Description
+
+User
+
+This version displays to only one user.
+If it exists, a user version is always displayed and overrides any other
+version that exists.
+Note: Vendor developers do not see user versions.
+
+Group
+
+This version is displayed to only the users in one group.
+If no user version exists for any user in the group, the group version is
+displayed and overrides the Site and Vendor default versions.
+Note: Vendor developers do not see group versions.
+
+Site
+
+This version is displayed to all users at a site if no User or Group version
+exists. If User or Group versions exist, they override this one.
+This version overrides only the Vendor Default version.
+Note: Vendor developers do not see Site versions.
+
+Vendor Default
+
+This version is displayed to all users at a site only if no User, Group or
+Site version exists. All other versions of forms override this one.
+Note: Vendor developers can view only this version.
+
+Reverted forms and global objects
+You can revert a custom version of a form or global object to remove it from the forms database. The
+user-group-site hierarchy determines which version remains after you revert a version.
+Version Being Reverted
+
+Version That Remains and Is Displayed
+
+A user version
+
+A Group version is displayed (if one exists for the user ID).
+
+A group version
+
+A Site version is displayed (if one exists).
+
+A site version
+
+The Vendor default version is displayed. Vendor default versions cannot
+be removed.
+
+Infor Mongoose Application and Form Development | 46
+
+Fundamentals
+Note: We recommend that you create a backup of a form or global object before you revert it. If you
+have Site Developer editing permissions, you can copy a customized form to a new form name before
+you revert the form. Alternatively, with Form Sync, you can copy the form or global object to another
+forms database or create a SQL script that contains a definition of the form or object. For more
+information, see the help for Form Sync.
+
+Identifying your editing scope
+To identify your editing scope, from the Help menu, select About This Application. The dialog box
+identifies your user ID and what type of editing permissions you have.
+
+Identifying the version of a form, object, or global script
+To identify the version of a form, select Help > About This Form. The dialog box indicates whether
+the form is a vendor version, a site version, a group version, or a user version.
+In Design Mode, the version of an object displays as a property in the grid or in the caption of the dialog.
+The version is also indicated when you view or edit global scripts.
+
+Unload global form objects
+When you close a form, WinStudio keeps in memory the form and any associated global objects. If
+you have Site Developer editing permissions and change your editing scope by impersonating a different
+user, you must clear these forms and global objects from memory in order to display the versions that
+correspond to your new editing scope.
+The option to unload global objects is found on the Form menu, Definition submenu.
+Note: In addition to clearing form-related objects from memory, the Unload All Global Form Objects
+command can clear the IDO metadata cache. Clearing the cache is useful in IDO development with
+the IDO editing forms. You can enable this option in the User Preferences window.
+
+Infor Mongoose Application and Form Development | 47
+
+Themes
+
+Themes
+
+Opening the Theme Editor
+The Theme Editor is available in the Windows client and the web client.
+To open the Theme Editor in the Windows client, perform any of these actions:
+•
+
+•
+
+Select View > User Preferences. In the Runtime Layout tab, select a theme and click the Edit
+button.
+Note: This option is disabled for those with vendor developer editing permissions.
+In Design Mode, select the Edit > Theme.
+
+To open the Theme Editor in the web client, launch the Web Designer, then select Edit > Theme.
+
+Using the Theme Editor
+Using the Theme Editor in the Windows client
+Use the Theme Editor to create and modify themes, which change the look of your application
+environment.
+Note: Before you modify a theme, ensure that the theme is locked or checked out on your user account.
+To modify a theme in the Windows client:
+1
+2
+3
+4
+5
+
+Open the Theme Editor.
+Select the theme that you want to edit.
+Click Edit.
+In the left pane of the Styles tab, select UIElement, Form, FormComponent, or an individual
+component type that you want to edit.
+In the right pane, specify the component properties:
+• Specify the font
+• Delete a specified font
+• Specify or delete the font size
+• Specify the font style
+Infor Mongoose Application and Form Development | 48
+
+Themes
+•
+•
+•
+•
+•
+•
+
+Change font and background colors
+Change the required field indicator color
+Reset attributes to their original default values
+Show or hide toolbar buttons
+Add a form or component type theme class
+Delete a theme class
+
+When previews are available, the preview pane in the center displays the result of your edits.
+6
+
+Optionally, use the Options tab to make application-level theme settings:
+• Explorer style
+• Required field indicator
+• Group box style
+• Notebook style
+• Button animation
+• Default pinned explorer folder
+Use the drop-down lists to specify the desired attributes.
+
+7
+8
+
+Click OK.
+Click Done.
+
+Using the Theme Editor in the Web Designer
+Similar to the Windows client, you can create and modify themes in the Web Designer.
+Note: Before you modify a theme, ensure that the theme is locked or checked out on your user account.
+To modify a theme in the Web Designer:
+1
+2
+3
+4
+
+Launch the Web Designer.
+Select Edit > Theme.
+In the left pane of the Global Objects - Themes editor, select the theme that you want to modify.
+In the right pane of the Global Objects - Themes editor, click the Design button to modify
+application-level theme settings:
+• Explorer style
+• Required field indicator
+• Group box style
+• Notebook style
+• Button animation
+• Default pinned explorer folder
+Use the drop-down lists to specify the desired attributes.
+
+5
+
+Click the Edit button.
+Note: The Edit button is at the same location as the Design button.
+
+6
+
+In the Edit Styles dialog box, select the UI element that you want to modify and use the categories
+and attributes to:
+
+Infor Mongoose Application and Form Development | 49
+
+Themes
+•
+•
+•
+•
+•
+•
+•
+•
+7
+8
+9
+
+Specify or add a font
+Specify or delete the font size
+Specify the font style
+Change font and background colors
+Change the required indicator color
+Show or hide toolbar buttons
+Add a form or component type theme class
+Delete a theme class
+
+Click OK twice.
+Click Save.
+Close the Web Designer.
+
+To see the changes made on the Theme Editor, you must return to the web client to ensure that the
+theme is selected, then log out and log in again to the web client.
+
+Changing theme colors
+Changing theme colors in the Windows client
+You can set your own colors for fonts (foreground color), backgrounds, and required field indicators in
+the Theme Editor. The procedure to change colors is the same for every color specification.
+Note: Before you modify a theme, ensure that the theme is locked or checked out on your user account.
+To change theme colors in the Windows client:
+1
+2
+3
+4
+5
+6
+7
+
+Open the Theme Editor.
+Create a new theme or select the theme that you want to edit.
+Click Edit.
+Select the item in the tree pane that you want to edit.
+For components or levels where you can change the color, click the drop-down arrow in the field.
+The Theme Editor displays a color picker dialog box.
+Select one of these options:
+• None
+• Solid Color
+• Gradient
+Note: The Gradient option is not always available. If you select Gradient, there are additional
+controls at the bottom of the window that control the appearance of the gradient.
+
+8
+
+Change the R, G, B, and A controls as desired.
+These are standard RGBA values. You can set the numeric value, use sliders, or click in the color
+box to get the color you want.
+
+Infor Mongoose Application and Form Development | 50
+
+Themes
+9 Close the window.
+10 Click OK.
+11 Click Done.
+
+Changing theme colors in the Web Designer
+Similar to the Windows client, you can set the colors for fonts, backgrounds, and required field indicators
+in the Web Designer. The procedure to change colors is the same for every color specification.
+Note: Before you modify a theme, ensure that the theme is locked or checked out on your user account.
+To change theme colors in the Web Designer:
+1
+2
+3
+
+In the Global Objects - Themes form, select the theme that you want to modify.
+Click Design.
+Click Edit.
+Note: The Edit button is at the same location as the Design button.
+
+4
+5
+
+In the Edit Styles dialog box, select the UI element and category that you want to modify.
+In the attributes pane where you can change the color, select the ellipses (…) button.
+The color picker dialog box is displayed.
+
+6
+
+Select one of these options:
+• None
+• Solid
+• Gradient
+Note: The Gradient option is not always available. If you select Gradient, the gradient stops
+are displayed in a grid view and the offset (position) of stops are represented as 0 to 100.
+
+7
+
+Specify one of these color values:
+• RGBA color values
+• Hex color value (#AARRGGBB) under the color preview
+
+8
+9
+
+Click OK twice.
+Click Save.
+
+Infor Mongoose Application and Form Development | 51
+
+Themes
+
+Adding a theme class
+Adding a theme class in the Windows client
+A class is a reusable set of attributes that can be associated with a property, component, or theme
+element. You can use the Theme Editor to create and add classes as desired to facilitate reuse of
+these sets of attributes.
+Any theme classes you create become available for use with forms and components in Design Mode.
+The Add Class button is enabled only if Form or a specific form component type is selected.
+Note: Before you modify a theme, ensure that the theme is locked or checked out on your user account.
+To create and add a theme class in the Windows client:
+1
+2
+3
+4
+5
+
+Open the Theme Editor.
+Create a new theme or select the theme that you want to edit.
+Click Edit.
+Select Form or a specific form component type.
+Click the Add Class button.
+The Theme Editor creates a class entry with a temporary name as a subordinate entry in the tree
+view. The newly created class originally acquires the attributes from the form or form component
+type to which it is subordinate.
+
+6
+7
+
+Specify the name for the new class and press Enter.
+Specify the theme class attributes.
+The changes will be saved with the class and distributed to any element that uses this theme class.
+
+8
+9
+
+Click OK.
+Click Done.
+
+Adding a theme class in the Web Designer
+Similar to the Windows client, you can create or add theme classes in the Web Designer.
+Note: The Add button is enabled only if Form or a specific form component type is selected.
+To create or add a theme class in the Web Designer:
+1
+2
+3
+
+In the Global Objects - Themes form, select the theme that you want to modify.
+Click Design.
+Click Edit.
+Note: The Edit button is at the same location as the Design button.
+
+4
+
+In the Edit Styles dialog box, select Form or a specific form component type.
+
+Infor Mongoose Application and Form Development | 52
+
+Themes
+5
+6
+
+In the Class Name field, specify the name of the theme class.
+Click Add.
+Note: If the theme class name is valid, the tree view of elements will refresh. You must return to
+the element where the theme class is added.
+
+7
+
+Specify the theme class attributes.
+The changes will be saved with the class and distributed to any element that uses this theme class.
+
+8
+9
+
+Click OK twice.
+Click Save.
+
+Resetting theme attributes to default values
+To reset any changed attribute value in the Theme Editor to its default value:
+1
+2
+
+Select the item in the tree pane that you want to edit.
+For any property in the properties grid pane that you want to reset, right-click it and select Reset
+from the context menu.
+
+Infor Mongoose Application and Form Development | 53
+
+Working with Forms
+
+Working with Forms
+
+Understanding bound forms
+A form designed to retrieve and manipulate data in one or more IDO collections is referred to as a
+bound form. A collection is the result set returned by an IDO. The relationship between a form and an
+IDO is determined by specifying the collection to which the form is bound; the specification associates
+a form with the result set that is returned by a particular IDO.
+Just as a form may be bound to a collection, a form component may have a data binding. In the simplest
+case, a form component's data binding is a property from the IDO that returns data from the form's
+collection. This relationship means that the bound component can be used to display and edit the value
+of the data binding property of the currently selected IDO item.
+For example, a bound grid form on page 63 operates very much like a spreadsheet. A collection is
+queried into the form and displayed in a tabular format. You can delete, insert, or modify IDO items in
+the collection. These changes are committed to the database when you save the form.
+
+About unbound forms
+Some forms are not bound to collections.
+For example, a form can be used to collect some data that is then passed as a parameter to a method
+or procedure. Forms of this type are often used to generate reports. In these cases, form components
+are usually bound to variables.
+
+Creating forms
+This application provides a variety of ways for you to create your own forms, to suit your needs and
+purposes. Depending on the type of environment you are working in—whether "on-premises" or cloud,
+whether using the Windows ("smart") client or a web client—the tools and procedures you use to create
+your own forms varies somewhat. Your level of editing permissions also determines, to a greater or
+lesser extent, what forms you can create.
+
+Infor Mongoose Application and Form Development | 54
+
+Working with Forms
+Working in the cloud, using a web client
+In web-based environments, you have these options for creating forms:
+•
+•
+
+Use the New Form Definition wizard in the Web Designer.
+Use one of the Runtime Builder form wizards made available for use during runtime.
+These wizards typically create one type of form each. The forms created by the Runtime Builder
+might be more limited than the same form types created in the Web Designer.
+
+Working in the Windows ("smart") client
+In an on-premises environment, forms are created using Design Mode. Design Mode provides these
+tools for creating forms, and often their required tables and IDOs:
+•
+•
+•
+
+The New Form Wizard
+The New Data Maintenance Wizard
+The XML to IDO Wizard
+
+You can also use the Runtime Builder form wizards in the Windows client, without having to go into
+Design Mode.
+Forms created in a Windows client (on-premises environment) are typically created for use specifically
+with the Windows ("smart") client, although not necessarily. They can potentially be more complex and
+provide more functionality than forms created for web client use only.
+
+About the New Form Wizard
+Use the New Form Wizard to create forms. You can create forms that are either completely new or
+based on an existing form.
+To access this wizard, you must first be in Design Mode. To start the wizard once in Design Mode,
+select Form > Definition > New.
+On the first page of the wizard, specify whether you want to create a completely new form (Create new
+form) or a form based on an existing form (Extend existing form). When you click Next, the page you
+see next depends on which of these options you have selected.
+Form Types
+When creating a completely new form, you can create forms of these basic types:
+•
+•
+•
+•
+•
+•
+•
+•
+
+MultiView forms
+Query forms
+Grid Only forms
+Detail Only forms
+Report forms
+Form Only forms
+Tile forms
+Build from Scratch forms
+
+Infor Mongoose Application and Form Development | 55
+
+Working with Forms
+•
+
+Flex forms
+
+When you create a form based on an existing form, the new form is of the same type as the form on
+which it is based.
+
+Form Wizard Categories
+Use the Form Wizard Categories form to:
+•
+•
+•
+
+View information about the categories of form wizards that exist in Mongoose.
+View information about the form wizards that exist for each category.
+Designate form wizards as Runtime Builder forms.
+
+For the most part, the information displayed on this form is read-only. You can change it only if your
+Access As identifier matches the Access As identifier displayed on the fields of this form.
+
+Options for Form Wizard Categories form
+The Form Wizard Categories form displays information both about form wizard categories and about
+the form types in each category. These tables present descriptions about the information displayed.
+Categories
+The top section displays information information about the categories. The box on the left lists the
+categories. The section on the right lists information for whatever category is selected in that box:
+Field
+
+Description
+
+Category
+
+Name of the selected category
+
+Access As
+
+Access As identifier used to create the category
+
+Description
+
+Name of the string (in the Strings table) that contains the description for
+the category as displayed in the list box
+
+Image
+
+Filename of the image file that is used for the "icon" of the category in the
+list
+
+Wizards
+The bottom section displays information about the wizards for the form types belonging to each category.
+The box on the left lists the form wizards. The section on the right lists information for whatever form
+type is selected in that box:
+Field
+
+Description
+
+Category
+
+Name of the category to which the form wizard belongs
+
+Wizard
+
+Name of the form wizard (to create the form type)
+
+Infor Mongoose Application and Form Development | 56
+
+Working with Forms
+
+Field
+
+Description
+
+Access As
+
+Access As identifier used to create the form wizard
+
+Form
+
+Name of the form invoked when the wizard starts
+
+Description
+
+Name of the string (in the Strings table) that contains the description for
+the form wizard as displayed in the list box
+
+Image
+
+Filename of the image file that is used for the "icon" of the form wizard
+displayed in the list
+
+Runtime Builder
+
+When selected, indicates that the form wizard can be launched and used
+as a Runtime Builder form
+This can be used only if the Access As identifier for your configuration
+matches the Access As identifier displayed on this form.
+
+Form Categories and Form Wizards
+The Form Wizard Categories form provides the capability to create form wizards in a number of
+different categories. The tables in this topic list and describe first the categories of form wizards andn
+then the associated form wizards.
+Note: All of these form wizards can be designated as Runtime Builder forms, which means that they
+can be used in Runtime Mode to create forms without having to go into the Web Designer in the web
+client or Design Mode in the Windows client.
+Category
+
+Description and associated wizards
+
+Classic
+
+These form wizards allow you to create forms of the basic types that
+have long been in Mongoose-based applications:
+• MultiView
+• Query
+• Detail Only
+• Grid Only
+• Build from Scratch
+• Tile
+• Report
+
+External Data Source
+
+This category currently represents a single wizard, the Data Lake IDO
+Wizard.
+
+Flex
+
+This category currently represents a single wizard, the Basic Flex form
+type.
+
+Infor Mongoose Application and Form Development | 57
+
+Working with Forms
+
+Category
+
+Description and associated wizards
+
+Form Builder
+
+Form Builder forms are created from predesigned templates and layouts.
+Once the form is created, you can modify it as needed.
+This category currently hosts these form wizards:
+•
+
+•
+
+Full Form: Forms developed with this wizard option are responsive
+and might or might not include a grid component for navigation
+purposes.
+Widget: This form type is designed, usually, to be smaller and to
+®
+
+function within an Infor Ming.le environment. Widgets are typically
+simple, designed with a single purpose in mind.
+New Data
+
+This category currently hosts these form wizards:
+• Maintenance: This form wizard is similar to the traditional New
+Data Maintenance Wizard. It allows you to create IDOs, their tables,
+and optionally, a form, all in a single procedure.
+• XML to IDO: This form wizard also creates forms with IDOs and
+tables, typically using an imported Business Object Document
+(BOD).
+
+REST
+
+This category currently hosts a single form wizard, the REST API
+Wizard. This wizard allows you to create strongly-typed APIs with accompanying Swagger documentation.
+
+Classic forms
+The standard form types that have long been a part of the Mongoose framework are known as the
+"classic form" types. These include the MultiView, Query, Grid Only, Detail Only, Report, Form Only,
+and Tile form types.
+In a web client, most of these classic form types can now be created using form wizards. They can
+even be designated as Runtime Builder forms, which means you can create forms using these wizards
+in Runtime Mode, without having to go into the Web Designer (in the web client) or Design Mode (in
+the Windows client). Classic forms created in this way are more limited, however, than the forms created
+using the Web Designer or Design Mode.
+
+MultiView forms
+About MultiView forms
+A MultiView form is bound to an IDO collection, the records of which are displayed in a two-pane window
+separated by a splitter bar. The splitter bar can be either vertical or horizontal, but it is most commonly
+vertical.
+
+Infor Mongoose Application and Form Development | 58
+
+Working with Forms
+One pane - commonly the left pane - displays the collection's records in a grid. The other pane displays
+details for a single IDO record in the collection (the item currently selected in the grid).
+
+MultiView forms must contain a primary collection and can also contain one or more subcollections or
+secondary collections. Typically, the Grid View displays only the primary collection. When subcollections
+or secondary collections are included, the Detail View usually displays the primary collection in the
+upper part, and the lower portion displays the subcollection or secondary collection, often in a grid.
+
+Working in a MultiView form
+MultiView forms typically support filters, by allowing you either to activate Filter-in-Place or to launch
+an associated query form. Query forms can return their results to the form from which they are called.
+When working in a MultiView form, you can:
+•
+•
+•
+•
+•
+
+Navigate the collection by selecting items in the Grid View
+Edit data in either view
+Move the splitter bar to see more or less of either view
+Completely hide either view
+Save the state of the views and the relative position of the splitter bar when the form is closed
+
+The number of records that can be displayed at one time is controlled both by system-level and user-level
+settings.
+Creating MultiView forms
+There are a number of different ways you can create MultiView forms. The created MultiView form
+functions the same regardless of the method used to create it.
+These are the options for creating a MultiView form:
+•
+
+In a web client operating environment, you can use the Web Designer to create the form.
+
+Infor Mongoose Application and Form Development | 59
+
+Working with Forms
+•
+•
+
+In a Windows client (on-premises installation), you can use Design Mode.
+If the web client New Form Wizard - MultiView form has been designated as a Runtime Builder
+form and you have authorization to create Runtime Builder forms, you can use that option. In this
+case, the form wizard operates the same as the Web Designer option.
+
+Creating a MultiView form (Web Designer)
+Note: This procedure is a continuation of the procedure for creating forms in the Web Designer. For
+the procedure to create a MultiView form in Windows client Design Mode, see Creating a MultiView
+form (Design Mode) on page 62.
+To continue creating a MultiView form in the Web Designer:
+1
+2
+
+If you have not already done so, complete the steps in the topic Creating a form in the Web Designer
+on page 33 before continuing.
+In the Form Template > Name field, specify the name of the form.
+You can do this either by selecting the name of a form template from the drop-down list or by typing
+a new name in the field.
+Caution: Be warned that, if you specify an existing form template, the Web Designer will overwrite
+your existing form with the new blank one. Once you click Finish, the old version is gone.
+
+3
+4
+5
+6
+7
+
+Verify that the Form Type is MultiView.
+In the Form Layout drop-down list, select the position to be used for the grid part of the form.
+From the Device Type drop-down list, specify what type of device you are creating the form for.
+From the Data Source drop-down list, specify the IDO to use as the source of data for your form.
+Optionally, specify the name of the Query Form to be used in conjunction with your form.
+This can also be specified later.
+
+8
+
+Optionally, add any Comments you want to associate with the form.
+Note: Any comments you enter here do not display anywhere on the form. They are strictly for
+your information, perhaps to explain the reason the form was created or what it was created to do.
+
+9 Click Next.
+10 On the Properties page of the wizard, specify which properties should be included for the primary
+collection and represented in components on the form.
+11 Click Next.
+12 On the next page of the wizard, specify the order and attributes of each property you have included
+in the primary collection. You can specify these attributes:
+
+Infor Mongoose Application and Form Development | 60
+
+Working with Forms
+
+Option
+
+Description
+
+Caption
+
+Enter the text string to use as the caption/label for the property
+component on the form.
+The string can be a translatable string from the Strings table or
+a literal string value. Literal values are not translated for localized displays.
+Note: If you specify a translatable string that does not yet exist,
+the Web Designer does not prompt you to define it. You must
+remember to create the string, or the system uses the designation here as a literal value.
+
+Include
+
+To specify which properties are to be displayed in the Grid View,
+select this option. Any property not selected here does not display in the Grid View.
+
+Containment
+
+If the property component is to be contained on a particular
+form page or notebook tab, use this drop-down list to select the
+container to which it belongs.
+Note: To use this option, you must first define the form pages
+and/or notebooks that can be used as containers.
+
+Component Class
+
+If the property is to use a component class, use this field to
+specify which one.
+Note: The component class must exist before you can specify
+it here. Also, this option is not availble for Query forms.
+
+Component Class Parameters
+
+If the specified component class requires parameters, use this
+field to specify those parameters.
+
+Form Pages
+
+If the form is to use form pages, use this tab to add (+) or delete
+(-) form pages.
+
+Notebooks
+
+If the form is to use a notebook and notebook tabs, use this tab
+to add (+) or delete (-) the tabs. You can also optionally specify
+the caption for each tab.
+Finally, you can also use the up and down arrows to set the
+order in which the tabs should display.
+
+Order buttons
+
+For the specified properties, use the up and down arrows to
+move a selected property to the top, up one line, down one line,
+or to the bottom.
+For the form pages and notebooks, use the up and down arrows
+to change the order in which notebook tabs display.
+
+13 Click Next.
+14 If you want to save the template for the form (in case you want to later recreate the form without
+having to start from the beginning), select the Save Template option.
+15 Click Finish.
+
+Infor Mongoose Application and Form Development | 61
+
+Working with Forms
+The Web Designer creates the form and opens it ready for further design action. You can now add
+components and arrange them according to your needs.
+
+Creating a MultiView form (Design Mode)
+Note: This topic is for the creation of MultiView forms in Windows client Design Mode. For the procedure
+to create these forms in the Web Designer, see the alternate help topic Creating a MultiView form (Web
+Designer) on page 60.
+To create a multiview form:
+1
+2
+3
+
+In Design Mode, launch the New Form Wizard.
+On the first page of the wizard, select the Create new form option, and then click Next.
+On the next page, complete these required fields:
+• In the Name field, perform one of these actions:
+• Select from the drop-down list the name of an existing form to use as the basis for the new
+form.
+• Type a unique name for the new form.
+Form names must be unique.
+•
+•
+
+From the Form Type drop-down list, select MultiView.
+In the Form Layout field, specify where you want the Grid View to display.
+In a MultiView form, the grid most commonly displays on the left side.
+
+•
+4
+
+From the Data Source drop-down list, select an IDO to return the primary collection.
+
+Optionally, specify a default Device Type , a Query Form, and any comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+5
+6
+
+Click Next.
+In the next page of the wizard (Select Properties), specify the properties of the IDO that are to be
+used with components in the new form.
+See New Form Wizard, Select Properties page on page 946.
+
+7
+8
+
+Click Next.
+In the next page of the wizard (Properties), you can specify:
+• The order in which the properties are listed
+• The captions for properties/components
+• Any containment
+• Whether the property is to be included in the Grid View
+• What component class, if any, is to be applied to each property/component
+See New Form Wizard, Properties on page 945.
+
+9
+
+If one of the properties is a subcollection property, Windows client prompts you to identify the
+subcollection information.
+See New Form Wizard, Link Properties on page 944.
+
+10 Click Next.
+Windows client displays the Select Properties page of the wizard again.
+
+Infor Mongoose Application and Form Development | 62
+
+Working with Forms
+11 Specify the properties of the subcollection IDO that are to be used and displayed in the subcollection
+grid.
+12 Click Next .
+Windows client displays the Properties page of the wizard again.
+13 Specify the order, the captions, and any other desired subcollection information for each property.
+14 Click Next .
+15 Optionally, to create a template from the new form, select the Save Template option.
+See Creating, editing, and using form templates on page 144.
+16 Click Finish.
+Windows client then creates the form and displays a rough-draft version in Design Mode.
+
+Grid Only forms
+About Grid Only forms
+A Grid Only form consists of a single grid, bound to an IDO collection and displayed in a row-column
+table format. The Grid Only form has a primary collection only and cannot contain a subcollection or
+secondary collection. Usually, Grid Only forms have no filter criteria associated with them and are best
+suited for relatively small collections containing few properties.
+Creating Grid Only forms
+There are a number of different ways you can create Grid Only forms. The created Grid Only form
+functions the same regardless of the method used to create it.
+These are the options for creating a Grid Only form:
+•
+•
+•
+
+In a web client operating environment, you can use the Web Designer to create the form.
+In a Windows client (on-premises installation), you can use Design Mode.
+If the web client New Form Wizard - MultiView form has been designated as a Runtime Builder
+form and you have authorization to create Runtime Builder forms, you can use that option. In this
+case, the form wizard operates the same as the Web Designer option.
+
+Creating a Grid Only form (Web Designer)
+Note: This procedure is a continuation of the procedure for creating forms in the Web Designer. For
+the procedure to create a Grid Only form in the Windows client Design Mode, see Creating a Grid Only
+form (Design Mode) on page 65.
+To continue creating a Grid Only form in the Web Designer:
+1
+
+If you have not already done so, complete the steps in the topic Creating a form in the Web Designer
+on page 33 before continuing.
+
+Infor Mongoose Application and Form Development | 63
+
+Working with Forms
+2
+
+In the Form Template > Name field, specify the name of the form.
+You can do this either by selecting the name of a form template from the drop-down list or by typing
+a new name in the field.
+Caution: Be warned that, if you specify an existing form template, the Web Designer will overwrite
+your existing form with the new blank one. Once you click Finish, the old version is gone.
+
+3
+4
+5
+6
+7
+
+Verify that the Form Type is GridOnly.
+From the Form Layout drop-down list, select position to be used for the grid.
+From the Device Type drop-down list, specify what type of device you are creating the form for.
+From the Data Source drop-down list, specify the IDO to use as the source of data for your form.
+Optionally, specify the name of the Query Form to be used in conjunction with your form.
+This can also be specified later.
+
+8
+
+Optionally, add any Comments you want to associate with the form.
+Note: Any comments you enter here do not display anywhere on the form. They are strictly for
+your information, perhaps to explain the reason the form was created or what it was created to do.
+
+9 Click Next.
+10 On the Properties page of the wizard, specify which properties should be included for the primary
+collection and represented in components on the form.
+11 Click Next.
+12 On the next page of the wizard, specify the order and attributes of each property you have included
+in the primary collection. You can specify these attributes:
+Option
+
+Description
+
+Caption
+
+Enter the text string to use as the caption/label for the property
+component on the form.
+The string can be a translatable string from the Strings table or
+a literal string value. Literal values are not translated for localized displays.
+Note: If you specify a translatable string that does not yet exist,
+the Web Designer does not prompt you to define it. You must
+remember to create the string, or the system uses the designation here as a literal value.
+
+Component Class
+
+If the property is to use a component class, use this field to
+specify which one.
+Note: The component class must exist before you can specify
+it here.
+
+Order buttons
+
+Use the up and down arrows to move a selected property to
+the top, up one line, down one line, or to the bottom.
+
+13 Click Next.
+14 If you want to save the template for the form (in case you want to later recreate the form without
+having to start from the beginning), select the Save Template option.
+15 Click Finish.
+
+Infor Mongoose Application and Form Development | 64
+
+Working with Forms
+The Web Designer creates and displays a basic version of the form. You can now modify and fashion
+the form to suit your needs.
+
+Creating a Grid Only form (Design Mode)
+Note: This topic is for the creation of Grid Only forms in Windows client Design Mode. For the procedure
+to create these forms in the Web Designer, see the help topic on Creating a Grid Only Form on page
+63 (web client).
+To create a Grid Only form:
+1
+2
+3
+
+In Design Mode, launch the New Form Wizard.
+In the first page of the wizard, select the Create new form option, and then click Next.
+In the next page, complete the following required fields:
+• In the Name field, perform one of these actions:
+• Select from the drop-down list the name of an existing form to use as the basis for the new
+form.
+• Form names must be unique.
+• From the Form Type drop-down list, select Grid Only.
+• From the Data Source drop-down list, select an IDO to return the primary collection.
+
+4
+
+Optionally, specify a default Device Type, a Query Form, and any comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+5
+6
+
+Click Next.
+In the next page of the wizard (Select Properties), identify the properties of the IDO that will
+become grid column components in the new form.
+See New Form Wizard, Select Properties page on page 946.
+Note: Subcollection properties cannot be used in Grid Only forms. If any properties in the "included
+list" are subcollection properties, the wizard ignores them when creating the form.
+
+7
+8
+
+Click Next.
+In the next page of the wizard (Properties), you can specify:
+• The order in which the properties are listed, which determines the order in which they appear
+in the grid
+• The captions for properties/components, which become the column headings
+• What component class, if any, is to be applied to each property/component
+For more information, see New Form Wizard, Properties on page 945.
+
+9 Click Next.
+10 Optionally, to create a template from the new form, select the Save Template option.
+11 Click Finish.
+Your application creates the form and displays a rough-draft version in Design Mode.
+
+Infor Mongoose Application and Form Development | 65
+
+Working with Forms
+
+Detail Only forms
+About Detail Only forms
+A detail-only form displays the details for a single record of an IDO collection. This form is basically
+the same as the Detail View on a MultiView form. See About MultiView forms on page 58
+The limitation and potential drawback of creating this type of form is exactly that you can only view a
+single record from the collection at a time. Because there is no accompanying Grid View, the only way
+to navigate through the records in the collection is either with the navigation buttons on the main toolbar
+or by setting components on the form itself to provide the navigation options.
+One major advantage to using this type of form is that it can be used more easily by users with little or
+no WinStuido experience, especially in a web client situation.
+Other than the absence of the Grid View, this type of form is similar to the MultiView form and has
+virtually all the same capabilities, including the potential to host container components and subcollections.
+Creating Detail Only forms
+There are a number of different ways you can create Detail Only forms. The created Detail Only form
+functions the same regardless of the method used to create it.
+These are the options for creating a Detail Only form:
+•
+•
+•
+
+In a web client operating environment, you can use the Web Designer to create the form.
+In a Windows client (on-premises installation), you can use Design Mode.
+If the web client New Form Wizard - Detail Only form has been designated as a Runtime Builder
+form and you have authorization to create Runtime Builder forms, you can use that option. In this
+case, the form wizard operates the same as the Web Designer option.
+
+Creating a Detail Only form (Web Designer)
+Note: This procedure is a continuation of the procedure for creating forms in the Web Designer. For
+the procedure to create a Detail Only form in Windows client Design Mode, see Creating a Detail Only
+form (Design Mode) on page 68.
+To continue creating a Detail Only form in the Web Designer:
+1
+2
+
+If you have not already done so, complete the steps in the topic Creating a form in the Web Designer
+on page 33 before continuing.
+In the Form Template > Name field, specify the name of the form.
+You can do this either by selecting the name of a form template from the drop-down list or by typing
+a new name in the field.
+Caution: Be warned that, if you specify an existing form template, the Web Designer will overwrite
+your existing form with the new blank one. Once you click Finish, the old version is gone.
+
+3
+
+Verify that the Form Type is DetailOnly.
+
+Infor Mongoose Application and Form Development | 66
+
+Working with Forms
+4
+5
+6
+7
+
+In the Form Layout drop-down list, select the position to be used for the grid part of the form.
+From the Device Type drop-down list, specify what type of device you are creating the form for.
+From the Data Source drop-down list, specify the IDO to use as the source of data for your form.
+Optionally, specify the name of the Query Form to be used in conjunction with your form.
+This can also be specified later.
+
+8
+
+Optionally, add any Comments you want to associate with the form.
+Note: Any comments you enter here do not display anywhere on the form. They are strictly for
+your information, perhaps to explain the reason the form was created or what it was created to do.
+
+9 Click Next.
+10 On the Properties page of the wizard, specify which properties should be included for the primary
+collection and represented in components on the form.
+11 Click Next.
+12 On the next page of the wizard, specify the order and attributes of each property you have included
+in the primary collection. You can specify these attributes:
+Option
+
+Description
+
+Caption
+
+Enter the text string to use as the caption/label for the property
+component on the form.
+The string can be a translatable string from the Strings table or
+a literal string value. Literal values are not translated for localized displays.
+Note: If you specify a translatable string that does not yet exist,
+the Web Designer does not prompt you to define it. You must
+remember to create the string, or the system uses the designation here as a literal value.
+
+Containment
+
+If the property component is to be contained on a particular
+form page or notebook tab, use this drop-down list to select the
+container to which it belongs.
+Note: To use this option, you must first define the form pages
+and/or notebooks that can be used as containers.
+
+Component Class
+
+If the property is to use a component class, use this field to
+specify which one.
+Note: The component class must exist before you can specify
+it here.
+
+Component Class Parameters
+
+If the specified component class requires parameters, use this
+field to specify those parameters.
+
+Form Pages
+
+If the form is to use form pages, use this tab to add (+) or delete
+(-) form pages.
+
+Infor Mongoose Application and Form Development | 67
+
+Working with Forms
+
+Option
+
+Description
+
+Notebooks
+
+If the form is to use a notebook and notebook tabs, use this tab
+to add (+) or delete (-) the tabs. You can also optionally specify
+the caption for each tab.
+Finally, you can also use the up and down arrows to set the
+order in which the tabs should display.
+
+Order buttons
+
+For the specified properties, use the up and down arrows to
+move a selected property to the top, up one line, down one line,
+or to the bottom.
+For the form pages and notebooks, use the up and down arrows
+to change the order in which notebook tabs display.
+
+13 Click Next.
+14 If you want to save the template for the form (in case you want to later recreate the form without
+having to start from the beginning), select the Save Template option.
+15 Click Finish.
+The Web Designer creates the form and opens it ready for further design action. You can now add
+components and arrange them according to your needs.
+
+Creating a Detail Only form (Design Mode)
+Note: This topic is for the creation of Detail Only forms in the Windows client Design Mode. For the
+procedure to create these forms in the Web Designer, see the help topic on Creating a Detail Only
+form (Web Designer) on page 66 (web designer).
+To create a Detail Only form:
+1
+2
+3
+
+In Design Mode, launch the New Form Wizard.
+In the first page of the wizard, select the Create new form option, and then click Next.
+In the next page, complete the following required fields:
+• In the Name field, perform one of these actions:
+• Select from the drop-down list the name of an existing form to use as the basis for the new
+form.
+• Type a name for the new form.
+Form names must be unique.
+•
+•
+
+4
+
+From the Form Type drop-down list, select Detail Only.
+From the Data Source drop-down list, select an IDO to return the primary collection.
+
+Optionally, specify a default Device Type , a Query Form, and any comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+5
+6
+
+Click Next.
+In the next page of the wizard (Select Properties), specify the properties of the IDO that are to be
+used with components in the new form.
+
+Infor Mongoose Application and Form Development | 68
+
+Working with Forms
+See New Form Wizard, Select Properties page on page 946.
+7
+8
+
+Click Next.
+In the next page of the wizard (Properties), you can specify:
+• The order in which the properties are listed, which determines the order in which they display
+on the form initially
+• The captions for properties/components
+• Any containment
+• What component class, if any, is to be applied to each property/component
+See New Form Wizard, Properties on page 945.
+
+9
+
+If one of the properties is a subcollection property, the wizard prompts you to identify the
+subcollection information.
+See New Form Wizard, Link Properties on page 944.
+
+10 Click Next.
+The wizard displays the Select Properties page again.
+11 Specify the properties of the subcollection IDO that are to be used and displayed in the subcollection
+grid.
+12 Click Next .
+The wizard displays the Properties page again.
+13
+14
+15
+16
+
+Specify the order, the captions, and any other desired subcollection information for each property.
+Click Next .
+Optionally, to create a template from the new form, select the Save Template option.
+Click Finish.
+
+Windows client then creates the form and displays a rough-draft version in Design Mode.
+
+Query forms
+About Query forms
+Query forms allow users to create a filter to specify the collection they want to retrieve. The filter can
+be temporary (existing as long as the query form is open), or it can be saved by the user, to be used
+again.
+Query forms are split between primary criteria and additional criteria. When using the stand-alone query
+form, the lower pane displays the returned results set in a grid.
+Each IDO must be associated with a unique query form.
+Query forms are typically created in association with a particular form or component:
+•
+•
+
+For forms, query forms are usually assigned at the time the form is created, though they can be
+added or reassigned later.
+Query form assignments are made or changed:
+
+Infor Mongoose Application and Form Development | 69
+
+Working with Forms
+•
+•
+
+For forms, on the Form properties sheet, using the Behavior > Filter Form property setting
+For components, only by using a component class, with valid settings for Behavior >
+Add/Details and Find Form > Find Form in the component class definition
+Note: When assigning a query form to a component class, you must also set the Property
+attribute in the Behavior > Add/Details and Find Form group.
+
+When running a query form stand-alone, the result set form can be returned to the calling form or to
+the calling component. The result set becomes the current collection in the calling form. A selected
+IDO item in the result set becomes the current item or current component value.
+Query forms cannot be linked.
+Specifying criteria on query forms
+When you create a query form using the Windows client wizard, you specify:
+•
+•
+
+What IDO properties are to be included
+Whether they are placed on the Primary Criteria tab or the Additional Criteria tab
+
+Primary criteria are those properties considered to be the most important criteria or the criteria users
+will most likely want to search on. Additional criteria are all other criteria that users might want to search
+on but not thought likely to be their first choices.
+When performing a query:
+•
+
+•
+•
+
+Users are not required to specify any criteria - though that rather defeats the purpose of performing
+a query. Any primary criteria not specified includes all possible records in the return results. So, if
+you perform a query without specifying any filter criteria, then all records are returned in the result.
+Primary criteria have an assumed Boolean AND relationship. That is, items are retrieved from the
+database only if they meet all the specified criteria.
+Additional criteria are optional and can be joined by either AND or OR, depending on how you want
+to submit the query. If multiple criteria are joined by OR, records are returned if they meet any one
+of the criteria.
+
+You enter query criteria by selecting an operator and a value for each property listed on the Primary
+Criteria tab. You can use the wildcard character (by default, the asterisk).
+To add other properties, with appropriate operators and values, to the filter, you can also use the
+Additional Criteria tab.
+To display the results of your query, click the Refresh button. The results then display in the Results
+pane.
+To close the query form and optionally return the results to any calling form or component, click OK.
+Creating Query forms
+There are a number of different ways you can create Query forms. The created Query form functions
+the same regardless of the method used to create it.
+These are the options for creating a Query form:
+•
+•
+
+In a web client operating environment, you can use the Web Designer to create the form.
+In a Windows client (on-premises installation), you can use Design Mode.
+
+Infor Mongoose Application and Form Development | 70
+
+Working with Forms
+•
+
+If the web client New Form Wizard - Query form has been designated as a Runtime Builder form
+and you have authorization to create Runtime Builder forms, you can use that option. In this case,
+the form wizard operates the same as the Web Designer option.
+
+Performing a query
+To perform a query using a query form:
+1
+
+Open the query form using one of these methods:
+• Select the query form directly in the Explorer.
+• For a form, from the Actions menu select Filter > By Query .
+• For a component, right-click on the component and then select the Find option from the context
+menu.
+
+2
+
+Decide what primary criteria, if any, you want to filter on and include both an operator and a value
+to use for the filter.
+Note:
+• Any primary criteria for which the operator and value are not both specified autmatically returns
+all possible values for that criteria.
+• You can use one or more wildcard characters (by default, an asterisk) for all or part of the
+value.
+
+3
+
+Optionally, decide what other criteria you want to include in your query, and specify these on the
+Additional Criteria tab.
+Click Refresh .
+Optionally, to clear the results and initiate a new query, perhaps with modified search criteria, click
+Clear .
+To return the results of a satisfactory query to the parent form, click OK . To return to the parent
+form without returning the results of the query, click Cancel .
+
+4
+5
+6
+
+Creating a Query form (Web Designer)
+Note: This procedure is a continuation of the procedure for creating forms in the Web Designer. For
+the procedure to create a Query form in Design Mode (Windows client), see Creating a Query form
+(Design Mode) on page 73.
+To continue creating a Query form in the Web Designer:
+1
+2
+
+If you have not already done so, complete the steps in the topic Creating a form in the Web Designer
+on page 33 before continuing.
+In the Form Template > Name field, specify the name of the form.
+You can do this either by selecting the name of a form template from the drop-down list or by typing
+a new name in the field.
+Caution: Be warned that, if you specify an existing form template, the Web Designer will overwrite
+your existing form with the new blank one. Once you click Finish, the old version is gone.
+
+3
+
+Verify that the Form Type is Query.
+
+Infor Mongoose Application and Form Development | 71
+
+Working with Forms
+4
+5
+6
+
+In the Form Layout drop-down list, select the position to be used for the grid part of the form.
+From the Device Type drop-down list, specify what type of device you are creating the form for.
+From the Data Source drop-down list, select the IDO from which the information is to be queried.
+This must be the same IDO as the IDO collection used for the parent form or calling component.
+
+7
+
+Optionally, add any Comments you want to associate with the form.
+Note: Any comments you enter here do not display anywhere on the form. They are strictly for
+your information, perhaps to explain the reason the form was created or what it was created to do.
+
+8
+9
+
+Click Next.
+On the Properties page of the wizard, specify which properties should be included for the primary
+collection and represented in components on the form.
+10 Click Next.
+11 On the next page of the wizard, specify the order and attributes of each property to query from the
+primary collection. You can specify these attributes:
+Option
+
+Description
+
+Caption
+
+Enter the text string to use as the caption/label for the property
+component on the form.
+The string can be a translatable string from the Strings table or
+a literal string value. Literal values are not translated for localized displays.
+Note: If you specify a translatable string that does not yet exist,
+the Web Designer does not prompt you to define it. You must
+remember to create the string, or the system uses the designation here as a literal value.
+
+Include in Primary
+
+To specify which properties are to be displayed as the primary
+returns, select this option. Any property not selected here does
+not display on the Primary Criteria tab.
+
+Include in Additional
+
+To specify which properties can be included in advanced
+queries, select this option. These properties are searched uing
+the Additional Criteria tab on the query form.
+
+Include in Results
+
+To specify which properties are to be included and displayed
+in the results of a query, select this option. This option allows
+criteria to be used for a search without forcing the display of
+searched properties.
+
+Component Class
+
+If the property uses a component class, use this field to specify
+which one.
+Note: The component class must exist before you can specify
+it here. Also, this option is not availble for Query forms.
+
+Order buttons
+
+For the specified properties, use the up and down arrows to
+move a selected property to the top, up one line, down one line,
+or to the bottom.
+
+12 Click Next.
+
+Infor Mongoose Application and Form Development | 72
+
+Working with Forms
+13 If you want to save the template for the form (in case you want to later recreate the form without
+having to start from the beginning), select the Save Template option.
+14 Click Finish.
+The Web Designer creates the form and opens it ready for further design action. You can now add
+components and arrange them according to your needs.
+
+Creating a Query form (Design Mode)
+Note: This topic is for the creation of Query forms in Design Mode (Windows client). For the procedure
+to create these forms in the Web Designer, see the help topic on Creating a query form (Web Designer)
+on page 71.
+1 In Design Mode, launch the New Form Wizard.
+2 In the first page of the wizard, select the Create new form option, and then click Next.
+3 In the next page, complete the following required fields:
+• In the Name field, perform one of these actions:
+• Type a unique name for the new form.
+Form names must be unique. The typical query form name consists of the parent form
+name appended with "Query".
+•
+•
+•
+
+Select from the drop-down list the name of an existing form to use as the basis for the new
+form.
+From the Form Type drop-down list, select Query.
+From the Data Source drop-down list, select an IDO to return the primary collection.
+This must be the same IDO as the primary IDO collection used for the parent form or calling
+component.
+
+4
+
+Optionally, specify a default Device Type and any comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+5
+6
+
+Click Next.
+In the next page of the wizard (Select Properties), specify the properties of the IDO that are to be
+included in any possible query using this form.
+See New Form Wizard, Select Properties page on page 946.
+
+7
+8
+
+Click Next.
+In the next page of the wizard (Properties), you can specify:
+• The order in which the properties are listed
+This affects the order in which properties display on the Primary Criteria tab and in the returned
+Results.
+•
+•
+
+The captions for properties
+Whether each properties' values are to be included:
+• On the Primary Criteria tab
+• On the Additional Criteria tab
+• With the returned Results of a query
+
+See New Form Wizard, Properties on page 945.
+
+Infor Mongoose Application and Form Development | 73
+
+Working with Forms
+9 Click Next.
+10 To create a template from the new form, select Save Form Definition Template.
+11 Click Finish.
+Your application displays the form in Runtime Mode.
+
+Report forms
+Creating reports
+Mongoose offers the capabilities to produce four types of reports:
+•
+•
+•
+•
+
+Custom reports generated from Report type forms
+Custom reports generated from DataViews
+Standard reports, packaged with Mongoose
+Custom reports generated from SQL Server Reporting Services (SSRS) templates
+
+Creation of custom reports is a two-stage process:
+•
+
+Create the report object that will be used to define the source and potential contents of the generated
+report.
+Depending on the type of report, this object might be a Report type (template) form, a predefined
+DataView, or an SSRS report definition file.
+
+•
+
+Create a report criteria form that is used to generate the actual report.
+Regardless of the object used to generate the form, each report type uses an associated report
+criteria form. This form is accessible to end users.
+Note: This includes the standard reports packaged with Mongoose. The forms that are used to
+generate these reports are actually report criteria forms for predefined DataViews that we created.
+Typically, this form provides options that users can select to determine what data is generated by
+and included in the report. This form also usually includes both a Preview button and a Print
+button.
+
+About Report type forms
+Report type forms are specialized Mongoose forms that you can create to produce templates for your
+own custom reports. Although they are true Mongoose forms, they behave a little differently than the
+more common types of forms.
+A report-template type of form actually contains only the layout and definition of a report. While it is
+possible to run a report from this form, the normal practice is to create an associated report criteria
+form, similar to those used to generate other types of reports.
+As with other types of reports, you can generate this report on a regular basis, as a background task
+in Mongoose, or manually, on demand.
+
+Infor Mongoose Application and Form Development | 74
+
+Working with Forms
+Note: In the web client, you can view a report-template type form as a template, but you cannot use
+the runtime preview function or generate a report from it.
+The structure of a report-template type form
+The basic report-template type form has two panes, the second of which is subdivided into five basic
+regions, as in this example.
+
+See the help topic on About Report Type Form Regions on page 1154.
+Collections on report-template type forms
+Report-template forms support the use of both primary collections and secondary collections, but not
+subcollections. This is because the Detail sections are designed to be repeatable sections, and are
+designed to handle only one row (record) of data at a time.
+This means that you cannot use components that display more than one row of data at a time. This
+includes grids, DataViews, list boxes, trees, and so on. Because subcollections require the use of a
+grid to display their data, this also means that subcollections cannot be used in report-template type
+forms.
+You can, however, use multiple secondary collections to access and display the data you want for your
+report. You can also establish multiple parent/child(/grandchild, /sibling, etc.) relationships between
+collections.
+The hierarchy between collections is established by means of a Parent Collection property. Available
+for secondary collections only, this property allows you to specify a parent collection for each secondary
+collection. This hierarchy is used when processing rows for the report, to determine when each secondary
+collection is to be processed.
+
+Infor Mongoose Application and Form Development | 75
+
+Working with Forms
+Orientation and paper sizes
+You can determine the initial form size and orientation for a Report-type form when creating the form
+in the New Form Wizard. The paper size can be changed later using either the Report Options form
+or the Background Task Definitions form.
+The orientation can be changed later in the Form Properties sheet, of the Report form under the
+Report section, Orientation property.
+You can also adapt the form design to different paper sizes using Glue properties with the main
+FlexLayout region.
+Creating Report forms
+There are a number of different ways you can create Report forms. The created Report form functions
+the same regardless of the method used to create it.
+These are the options for creating a Report form:
+•
+•
+•
+
+In a web client operating environment, you can use the Web Designer to create the form.
+In a Windows client (on-premises installation), you can use Design Mode.
+If the web client New Form Wizard - Report form has been designated as a Runtime Builder form
+and you have authorization to create Runtime Builder forms, you can use that option. In this case,
+the form wizard operates the same as the Web Designer option.
+
+About sub-report type forms
+Sub-reports are reports that are designed to promote the reduction and reuse of reports by repeatedly
+reusing a sub-report within one or more parent reports. During the execution of a parent report, all
+referenced sub-reports are also executed and their outputs are merged into the output of the parent
+report. This allows for commonly used report content, such as notes, to be easily added to one or more
+parent reports.
+Any Report type form can be used as a sub-report. There are no special requirements that make a
+Report type form eligible for use as a sub-report. Sub-reports are added to parent reports by setting
+the Sub-report Form and Sub-report Parameters properties of any report type region within the
+MainFlexLayout component of the parent report.
+When a report type region of a parent report is specified to contain a sub-report, the entire region
+becomes a placeholder for the sub-report and cannot contain any additional components. During design
+time, the sub-report region displays the sub-report name and is shaded as disabled, to visually set it
+apart from other regions. During runtime, the sub-report region is replaced by any regions that are
+rendered by the sub-report.
+Even though any Report type form can technically be used as a sub-report, the typical sub-report will
+contain a limited number of regions that are of the similar region type as the region they will replace
+within the parent report. All regions rendered by a sub-report are copied in sequence into the parent
+report where they will replace the report type region in the parent report. That means that sub-reports
+that replace Detail regions should also contain Detail regions, even though that is not specifically
+required.
+
+Infor Mongoose Application and Form Development | 76
+
+Working with Forms
+Page breaks and page renumbering properties in sub-report regions are honored in the parent report.
+If a sub-report region contains a page break, then that page break will be inserted into the parent report
+at the same point where the sub-report region is inserted into the parent report. Many combinations of
+before and after page breaks can be used on both parent report regions and on sub-report regions to
+produce many varying layouts. Page renumbering for the overall report can also be influenced by the
+page renumbering properties of the sub-report regions.
+VisibleWhen properties on regions in both parent and sub-reports can be used to influence the visibility
+of the regions rendered in the final report output. The VisibleWhen property on report type regions of
+the parent report can influence the overall visibility of the entire sub-report. The VisibleWhen properties
+on each region within the sub-report can influence the visibility of each individual sub-report region or
+the cumulative sub-report. Variables and collections are not shared between parent reports and
+sub-reports. It is important to note that the VisibleWhen property in the parent report can only contain
+references to variables and collections that are in the parent report and the VisibleWhen properties
+in the sub-report can only contain references to variables and collections that are in the sub-report.
+Therefore, if you desire to hide an entire sub-report based on the (non-)existence of data in the
+sub-report, then you will need to use VisibleWhen properties on all regions in the sub-report to influence
+the visibility of the entire sub-report.
+Sub-reports are called in a similar fashion as other Report type forms, using phrases from a Run Form
+event handler, such as SETVARVALUES. In the parent report, use the Sub-report Parameters property
+of the report type region to specify calling parameters for a sub-report.
+
+About DataView reports
+DataView reports can be produced from any type of DataView result. In most cases, you can prepare
+and generate DataView reports directly from the DataView Results form or the DataView Form Results
+form. These report outputs are most useful when you need to create a quick ad hoc report.
+You can, however, also create standard-type reports based on DataViews. These standard-type
+DataView reports must be based on predefined DataViews. To produce the standard-type report output
+options, then, you must also create a report criteria form.
+Note: When creating DataView reports, make sure the DataView and the report criteria form both have
+the same user/group permissions.
+
+About report criteria forms
+Report criteria forms are specialized forms that can be used to specify how reports are to be generated.
+Most reports are launched and generated from these report criteria forms.
+Note: When you create a report-type form using the Report Builder wizard, the report criteria form is
+created automatically by the wizard.
+On report criteria forms, typically, you can:
+•
+•
+•
+
+Select what data is to be included in the generated report.
+Specify how the data is to be arranged and laid out in the report output.
+Preview the report output before you actually generate the report.
+
+Infor Mongoose Application and Form Development | 77
+
+Working with Forms
+•
+•
+
+Manually generate (print) the report.
+Set up the report to be scheduled for automatic and scheduled generation.
+
+Report criteria forms are generally intended to be used by end users, such as system administrators
+or others who are responsible for generating reports.
+These forms usually have several editable fields for the report’s parameters. These fields can include
+criteria such as date ranges; selection of who to include information about, such as customers or
+vendors; and selection of other specific criteria either to include or not include in the report output.
+For a fairly typical example of a report criteria form, take a look at the User Authorization Report.
+Report criteria forms are actually the "interface," as it were, between the report object itself and the
+report that actually gets generated. The report object itself might be a custom Report-template type
+form, a predefined DataView, or an SSRS report definition file.
+No matter what the report object is, though, a report criteria form is required to use it most effectively.
+In addition, report criteria forms can be designed in such a way that you can schedule them to be
+generated automatically, either a single time or on a recurring basis.
+
+Creating a Report type form (Web Designer)
+Note: This procedure is a continuation of the procedure for creating forms in the Web Designer. For
+the procedure to create a Report-type form in Design Mode (Windows client), see Creating a Report
+type form (Design Mode) on page 80.
+To continue creating a Report form in the Web Designer:
+1
+2
+
+If you have not already done so, complete the steps in the topic Creating a form in the Web Designer
+on page 33 before continuing.
+In the Form Template > Name field, specify the name of the form.
+You can do this either by selecting the name of a form template from the drop-down list or by typing
+a new name in the field.
+Caution: Be warned that, if you specify an existing form template, the Web Designer will overwrite
+your existing form with the new blank one. Once you click Finish, the old version is gone.
+
+3
+4
+5
+6
+7
+
+Verify that the Form Type is Report.
+From the Form Layout drop-down list, select position to be used for the grid.
+From the Device Type drop-down list, specify what type of device you are creating the form for.
+From the Data Source drop-down list, specify the IDO to use as the source of data for the report.
+Optionally, specify the name of the Query Form to be used in conjunction with your form.
+This can also be specified later.
+
+8
+
+Optionally, add any Comments you want to associate with the form.
+Note: Any comments you enter here do not display anywhere on the form. They are strictly for
+your information, perhaps to explain the reason the form was created or what it was created to do.
+
+9
+
+Click Next.
+
+Infor Mongoose Application and Form Development | 78
+
+Working with Forms
+10 On the Properties page of the wizard, specify which properties should be included for the primary
+collection and represented in components on the form.
+11 Click Next.
+12 On the next page of the wizard, specify the order and attributes of each property you have included
+in the primary collection. You can specify these attributes:
+Option
+
+Description
+
+Name (read-only)
+
+This column displays the properties selected on the previous
+page of the wizard. Use the arrow buttons on the right to change
+the order in which the properties are presented on the form
+template.
+
+Caption
+
+Enter the text string to use as the caption/label for the property
+component on the form.
+The string can be a translatable string from the Strings table or
+a literal string value. Literal values are not translated for localized displays.
+Note: If you specify a translatable string that does not yet exist,
+the Web Designer does not prompt you to define it. You must
+remember to create the string, or the system uses the designation here as a literal value.
+
+Component Class
+
+If the property is to use a component class, use this field to
+specify which one.
+Note: The component class must exist before you can specify
+it here.
+
+Order buttons
+
+Use the up and down arrows to move a selected property to
+the top, up one line, down one line, or to the bottom.
+
+13 Click Next.
+14 In the Select Regions section, select which "boilerplate" regions to include in the report-template
+form.
+15 Optionally, in the Create Background Task section, create a background task to allow the report
+to print:
+a In the Task Name field, provide a descriptive and unique name for the background task.
+b Optionally, from the Paper Size drop-down list, select the size for the Report-type form.
+Note: The Paper Size field is only enabled when you enter a name in the Task Name field.
+16 In the Set Orientation section, specify whether to use a Portrait orientation or a Landscape
+orientation for the report form and its published output.
+17 Optionally, in the Select Group Properties section, select which properties to use to group returns.
+For example, suppose you want to group a report on quarterly sales by salesperson. You would
+select the Salesperson property in this section, and the system would then group the sales figures
+by salesperson.
+You can select multiple properties to group by. If you do, the system processes the data in the
+order in which you list them here. To change the order, use the up and down arrows.
+
+Infor Mongoose Application and Form Development | 79
+
+Working with Forms
+As with other property selection sections, the right panel indicates which properties are to be
+included.
+18 Click Next.
+19 If you want to save the template for the form (in case you want to later recreate the form without
+having to start from the beginning), select the Save Template option.
+20 Click Finish.
+The Web Designer creates and displays a basic version of the form template. You can now modify and
+fashion the form template to suit your needs.
+
+Creating a Report type form (Design Mode)
+Note: This topic is for the creation of Report-type forms in Design Mode (Windows client). For the
+procedure to create these forms in the Web Designer, see Creating a Report type form (Web Designer)
+on page 78.
+The Report type of form is designed to make it possible for you to create your own custom
+report-template forms that you can then use to generate your custom reports. Create the report form
+using the New Form Wizard.
+Note: In addition to this form, you should plan to create a second form, called a report criteria form, to
+allow a user to select report options for, preview, and print the report itself.
+To create a report-template type form:
+1
+2
+3
+
+In Design Mode (or the Web Designer), launch the New Form Wizard.
+On the first page of the wizard, select the Create a new form option and then click Next.
+On the next page, complete these required fields:
+• In the Name field, perform one of these actions:
+• From the drop-down list, select the name of an existing form to use as the basis for the
+new form.
+• Type a unique name for the new form.
+Note: Because the basic purpose of this form type is to serve as the template for the actual
+custom report, we recommend that you use a naming convention in which you append the
+word "Template" to the end of the form name; for example: MyReportReportTemplate,
+where MyReport is the actual name of the report that will be output.
+Later, then, you should create the report criteria form for users to use and generate the custom
+report.
+•
+•
+
+4
+
+From the Form Type drop-down list, select Report.
+From the Data Source drop-down list, select an IDO to use as the primary collection.
+
+Optionally, specify a default Device Type and any comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+Note: The Form Layout setting has no effect on a Report type form.
+
+5
+6
+
+Click Next.
+In the next page of the wizard (Select Properties), specify the properties of the IDO that are to be
+used in the report generated by the new form.
+
+Infor Mongoose Application and Form Development | 80
+
+Working with Forms
+7
+
+Optionally, in the next page of the wizard (Properties), specify:
+• The order in which the properties are to be displayed
+• The captions for properties/components
+• What component class, if any, is to be applied to each property/component, along with any
+parameters to be passed
+
+8
+
+Click Next.
+The Windows client displays the Select Regions page of the wizard.
+
+9
+
+In the Select Regions section, select which "boilerplate" regions to include in the report-template
+form.
+10 Optionally, in the Create Background Task section, create a background task to allow the report
+to print:
+a In the Task Name field, provide a descriptive and unique name for the background task.
+b Optionally, from the Paper Size drop-down list, select the size for the Report-type form.
+Note: The Paper Size field is only enabled when you enter a name in the Task Name field.
+11 In the Set Orientation section, specify whether to use a Portrait orientation or a Landscape
+orientation for the report form and its published output.
+12 Optionally, in the Select Group Properties section, select which properties to use to group returns.
+For example, suppose you want to group a report on quarterly sales by salesperson. You would
+select the Salesperson property in this section, and the system would then group the sales figures
+by salesperson.
+You can select multiple properties to group by. If you do, the system processes the data in the
+order in which you list them here. To change the order, use the up and down arrows.
+As with other property selection sections, the right panel indicates which properties are to be
+included.
+13 Click Next.
+14 Optionally, to create a template from the new form, select the Save Template option.
+15 Click Finish.
+The Windows client then creates the form and displays a rough-draft version.
+16 Use Design Mode (or the Web Designer) to finish crafting your report form.
+Note: If you are using the Orientation option Fill: To make it easier to select the FlexLayout
+component or the contained component, you can right-click the area, select Set Current Selection
+from the context menu, and then select the desired component from the submenu.
+Whether or not you are using the Fill option, the selected component--whether it is the FlexLayout
+component or a contained component--is highlighted when it is selected.
+You can now modify and customize all regions of your report, replace the corporate logo image with
+one of your own, and so on. Because the Report type of form is based on the FlexLayout component
+type, you should be familiar with that component type before attempting to modify your report form.
+In addition, you can employ secondary collections and set the hierarchies between them (and the
+primary collection). To set those hierarchies, use the Parent Collection property on the Collections
+property sheet.
+
+Infor Mongoose Application and Form Development | 81
+
+Working with Forms
+Note: Once you finish designing your report template, you should create an accompanying report
+criteria form. Once that form is created, come back to the template form and set up the required
+associations between the two forms.
+
+Setting up sub-reports
+FlexLayout regions in sub-reports can be customized depending on the report designer requirements.
+Note: The properties that are used to set up sub-reports are honored by the parent report.
+Adding a sub-report to a parent report
+Sub-reports are added to parent reports through report type region properties. All report forms contain
+a MainFlexLayout component. This component contains one or more report type regions. Each region
+in the main flex layout have sub-report related properties that include Sub-report Form and Sub-report
+Parameters. Specify the name of the sub-report that replaces the report type region in the parent by
+setting the Sub-report Form property to the appropriate name of the sub-report. Likewise, you may
+set the Sub-report Parameters property to pass runtime parameters from the parent report to the
+sub-report.
+Report type regions in sub-reports can be customized by report designers. The report type region
+properties that are defined in sub-reports is applied to the parent reports and is honored in the formatting
+of the final report output. Some of the report type region properties that may influence the final report
+output include Insert Page Break Before or Insert Page Break After, Reset Page Number, Can
+Grow, VisibleWhen, and so on.
+Setting page breaks
+Use the Insert Page Break Before property and Insert Page Break After property to add page breaks
+at the beginning and at the end of any sub-report region.
+You can set page breaks before the first region and after the last region of a sub-report to display the
+sub-report content on an individual page in the final report output. It is also possible to achieve a similar
+layout by inserting page breaks before and after the sub-report region in the parent report.
+Renumbering pages
+Use the Reset Page Number property on any report type region in a sub-report. This property is applied
+to the parent report and starts a new page numbering sequence in the final report output.
+Note: This is a region property. If a region that includes a page break is non-visible, based on the
+VisibleWhen property, then the page break assigned to that region is also non-visible. Therefore, the
+page break is not applied to the parent report and does not affect the final report output. This feature
+can be used as an advantage when you want to control the existence of page breaks based on some
+varying values or the (non-)existence of data.
+Displaying or hiding blank pages
+Use the VisibleWhen property to determine if any report type region is (non-)visible based on some
+varying values or the (non-)existence of data.
+
+Infor Mongoose Application and Form Development | 82
+
+Working with Forms
+Note: It is possible to hide a blank sub-report by setting the VisibleWhen property on each region to
+test for the non-existence of data. If all regions of a sub-report are non-visible, then the cumulative
+sub-report is also non-visible.
+Allowing sub-reports to grow
+Use the Can Grow property on any report type regions in sub-reports. This property allows the height
+of the region to expand as the components within the region also expand.
+When the property is used in a sub-report, the value of the property is applied to the parent report and
+ultimately influence the final output of the report.
+Understanding sub-report error messages inserted into parent reports
+Sub-report related error messages may appear inserted into parent reports if the executing user does
+not have permission to view the sub-report or the system is not licensed appropriately to display the
+sub-report. The non-existence of a reference sub-report also inserts an error message into the parent
+report. In each case, resolving the specified issue also removes the error message that is inserted into
+the parent report. The inserted error messages are visible on a user-by-user basis and one user does
+not see the error message that is generated by another user.
+
+Creating a DataView report
+DataView reports must be based on predefined DataViews. The DataView defined for report output is
+much like any other predefined DataView, but with a few specific requirements for the output.
+To create a DataView report:
+1
+
+Create a predefined DataView that contains all the data fields/columns you want to display on the
+report output.
+When creating the predefined DataView, make sure you include these specifications, in addition
+to whatever other specifications you want to make on the DataViews Setup form:
+• Select the specific IDO properties to include in the output.
+This is done by clicking the IDO Setup button on the General tab, and then by selecting the
+desired properties in the Properties section of the DataView IDO Setup form.
+You can also set additional IDO parameters using the DataView IDO Setup form.
+•
+
+Optionally, create input parameters for the DataView to use when creating the output display.
+Note: Although this is optional, we strongly recommend that you create input parameters,
+especially for the starting and ending values of ranges.
+This is done by selecting the Input Parameters tab on the DataViews Setup form, and then
+creating the necessary parameters. These input parameters require an IDO property name,
+an operator, and optionally, a description consisting of a string.
+
+•
+
+Optionally, set user permissions to determine who has the ability to access and generate the
+report.
+Note: Although this is optional, we strongly recommend that you set access permissions for
+the report. Otherwise, anybody has the ability to access and generate the report.
+
+Infor Mongoose Application and Form Development | 83
+
+Working with Forms
+This is done by selecting the User Permissions tab and then setting the individual user and/or
+the group permissions.
+2
+
+Launch the DataView, and verify that the data you want is displayed correctly:
+a In the DataView Results form, click Launch.
+If you created input parameters, the system displays DataView Input dialog boxes that prompt
+you for the parameters by which to filter the results. If you leave these prompt fields blank and
+click Next or Finish, the system returns all applicable data for each field.
+b
+c
+
+3
+4
+5
+6
+
+Optionally, in the DataView Results form, rearrange the layout, select what data to include,
+etc.
+When you have the report display set to your requirements, save the layout.
+Note: Although it is not required that you save a layout, we recommend that you do so. If you
+try to create a background task without a saved layout, it can cause problems later with report
+generation.
+
+Close the DataView Results form, return to the DataViews Setup form, and refresh it.
+Select the Layouts tab and verify that your layout displays in the list of layouts.
+Save and close the DataView Results form.
+To have the report generated automatically, according to a schedule, create a background task
+definition for it, using the Background Task Definitions form. At a minimum, specify these values:
+• For the Executable Name field, specify the DataView name and the name of the layout to
+use. Use this syntax:
+DataViewName-LayoutName
+where:
+•
+
+•
+•
+7
+
+DataViewName is the name of the DataView exactly as it appears on the DataViews and
+DataViews Setup forms.
+• LayoutName is the name of the layout you want the system to use when generating the
+report.
+• The two names are separated by a hyphen and no spaces.
+For the Executable Type, specify RPT.
+For the Report Type, specify DATAVIEW.
+
+Create the report criteria form.
+
+Creating a report criteria form
+Report criteria forms are specialized forms that can be used to specify how reports are to be generated.
+This topic presents the basic process to create such a form for a report-template form or an SSRS
+report.
+To create a report criteria form:
+1
+
+In Design Mode, launch the New Form Wizard and create a new Build from Scratch form.
+The name for the form should consist of the subject of the report, appended with "Report" to identify
+it as a report form. For example, you might have a report on user tasks named UserTasksReport.
+
+Infor Mongoose Application and Form Development | 84
+
+Working with Forms
+You need not select a data source for this form, because it is simply a form that passes report
+criteria parameters to the report object.
+2
+3
+4
+5
+
+In the Form properties sheet, specify a Caption for the form.
+Save the form.
+Optionally, if you are using a source control system, check your new form in and then back out.
+Create the report input fields and parameters that will determine what data is to be processed and
+included in the generated report.
+Although you can include virtually any type of component for this, there are several common types
+of components used on report forms. They include these:
+• To create ranges for possible return values, you can use pairs of combo boxes or date combo
+boxes, using one for the starting value and the other for the ending value. These are especially
+useful with DataView reports.
+• To create checklists of property values to include, you can use check boxes or possibly option
+(radio) buttons. These are more common with Report-template type forms.
+• It is also common to create "Reminder" date fields/ranges; options to increment the date when
+the report is generated; and options to display (or not display) the report header.
+It is beyond the scope of this topic to provide specific procedures for each of these options. To
+view procedures to create each of these options, however, see the Related Topics.
+Note: For each task parameter that you want to pass to the report object, you must include it as
+part of the BGTaskParms variable definition. The parameter specification depends on what type
+of parameter you are passing.
+
+6
+
+Create a form variable with these specifications:
+• Name: BGTaskName
+• Value: The name of the background task for this report, as defined on the Background Task
+Definitions form.
+• Persistent: True
+• Global: False
+
+7
+
+Create a form variable with these specifications:
+• Name: BGTaskParms
+• Value: The syntax to use in this field depends on the type of report object the criteria form is
+being created for.
+• If the report object is a Report-template type form, then use this syntax for each variable
+value:
+Note: You can group multiple variables into one SETVARVALUES declaration.
+SETVARVALUES(targetVariable=V(sourceVariable))
+where:
+•
+
+•
+
+targetVariable is the name of the variable in the report object that is to receive the
+value of the parameter being passed.
+• sourceVariable is the name of the variable you are using in the report criteria form to
+send the value as a parameter to the report object.
+If the report object is a DataView or an SSRS report definition file, then use this syntax for
+the variable values:
+V(variable1),V(variable2),V(variable3),...
+
+Infor Mongoose Application and Form Development | 85
+
+Working with Forms
+If the list of variables is for a DataView report, they must be listed in in the same sequence
+as they appear on the Input Parameters tab of the DataViews Setup form.
+•
+•
+8
+
+Persistent: True
+Global: False
+
+Create the Print button.
+See the help topic Creating a button to print a report on page 1213.
+
+9 Save the form and close it.
+10 Reopen the form and test the Print functionality.
+Note: At this point, the entire contents of the template form should print, because you have not yet
+set up the associations between this form and the report object.
+11 Create the Preview button.
+See the help topic Creating a button to preview a report on page 1212.
+12 Save the form and close it.
+13 Reopen the form and test the Preview functionality.
+Note: At this point, the entire contents of the template form should preview, because you have not
+yet set up the associations between this form and the report object.
+14 Make sure you go back to the report object and set up the associations between that form and this
+one.
+The report criteria form is now ready to be used to manually generate reports. If you want or need the
+report to be generated automatically, probably on a recurring basis, you must perform additional steps
+to enable the report to be generated in the background.
+
+About SSRS reports
+Infor Mongoose can be used to create and generate SQL Server Reporting Services (SSRS) reports.
+Note: Although Mongoose still supports the creation and production of SSRS reports, they are now
+deprecated. Instead, we encourage the use of the Report type form or DataViews to create reports
+within Mongoose.
+As with other types of reports, SSRS reports are typically made up of different sections. Most reports
+have these sections:
+•
+•
+•
+•
+
+Page header
+Report header
+Data section
+Page footer
+
+Some reports include additional features, such as notes.
+SSRS has four container classes. Three of these are subclasses of the Tablix class: Lists, Tables, and
+Matrices. The fourth container class is the Rectangle. Data stored in a Tablix object can be filtered,
+sorted, and grouped. Tablix objects also change their size and shape to best fit the space provided by
+a particular output format. Rectangles are used to contain other objects, like tablix objects, textboxes,
+images, and so on. Rectangles are useful to restrain the movement of objects, such as tables, as they
+
+Infor Mongoose Application and Form Development | 86
+
+Working with Forms
+grow. This is especially important for reports like "label reports," where precise control of object
+positioning is required.
+In general, most reports use a rectangle for the report header, page header, page footer, and one or
+more tables for detail data. In some instances, where there is a parent-child relationship to data, a list
+format can be used for the parent data, and one or more tables for the child data.
+Virtually any element or component of an SSRS report can be formatted independently of the others.
+You can format the backgrounds of each section separately, and the text fonts and colors as well.
+
+Designing a report to allow scheduling
+Report criteria forms can be designed in such a way that the reports can be generated automatically,
+either on a one-time or a recurring basis. This, however, requires an additional procedure to be performed
+when creating them.
+To allow a report criteria form to be used for scheduled report generation:
+1
+2
+
+Open the report criteria form and go into Design Mode.
+From the Toolbox, select the MenuItem component and then click inside the form area.
+Note: When you add a menu item component to a form, it is, in effect, hidden; that is, there is no
+visible change to the form and the menu item component itself is not delineated on the form. If you
+lose focus on this type of component, to regain focus, you must select it from the Component
+drop-down list or from the Object Viewer.
+
+3
+
+Name the component BackgroundQueueTaskMenuItem.
+
+4
+
+For the Caption, specify s&Background.
+
+5
+
+Add a form event to generate the report in the background:
+a With the menu item component selected, select the Events properties sheet.
+b Click the ellipsis (…) button associated with the Primary property.
+c In the Event Handlers dialog box, click New.
+d In the Event Handler Properties dialog box, set the Event field to RunBackgroundQueue.
+e For the Response > Type, select Run Form as Modal Child.
+f
+Click the ellipsis button for Response > Parameters.
+g Click Type Specific Parameters.
+h In the Specify Form Run Options dialog box, from the Form drop-down list, select
+BackgroundQueue.
+i
+Click Set Variables.
+j
+In the Edit Set Variable Values dialog box, click New.
+k In the Edit Set Variable Value Pair dialog box, specify these values:
+• Target = BGTaskName
+• Value = V(BGTaskName)
+l
+Click OK.
+m Repeat substeps j.-l. to create a second variable value pair with these value:
+• Target = RunTaskEvent
+• Value = GenerateReport
+
+Infor Mongoose Application and Form Development | 87
+
+Working with Forms
+Note: "GenerateReport" is the name of the Run Background Task event that we want to
+schedule and be placed on the background queue. If you have been following the related
+topics, it should already have been created.
+6
+7
+8
+
+In each dialog box, click OK, until you have been returned to the Event Handlers dialog box.
+If all event handlers for the form are not being displayed, click Show All.
+Modify the GenerateReport event handler:
+a Select the GenerateReport event handler that has the Response Type of Run Background
+Task.
+b Click Edit.
+c In the Event Handler Properties dialog box, click the ellipsis (…) button associated with the
+Response > Paramters field.
+d In the Event Handler Parms dialog box, click Type Specific Properties.
+e If the Task Status field is not already set, set it to V(BGTaskStatus).
+f
+If the Task Number field is not already set, set it to BGTaskNumber.
+
+9
+10
+11
+12
+13
+14
+15
+
+Click OK repeatedly until you are returned to the form.
+Verify that the Primary field displays RunBackgroundQueue.
+Save and close the report criteria form.
+Refresh the metadata cache and then reopen the form.
+Verify that the Actions menu now includes a Background option for this form.
+Click the Background menu item and verify that the Background Queue form opens.
+Test the automatic generation of the report by performing these actions:
+• Click the Once At option and set the time to a few minutes from now.
+• Click OK.
+If everything is set up correctly, you should get a "Report Submitted" confirmation message.
+•
+
+After the scheduled time has elapsed, use the Background Task History form to verify that
+the report was generated at the correct time.
+
+Tile forms
+About Tile forms
+Essentially, tiles are embeddable forms with limited capabilities. Tile forms are not intended to be
+accessed and displayed as stand-alone forms, but must be displayed within a container on another,
+"host" form. The information displayed on each tile form, then, is taken from a single record of the IDO
+collection bound to the host form.
+Use tiles to display key information succinctly. Tiles also offer user interaction options such as clicking
+to go to a different form.
+Tile forms can be displayed within either of two types of container components: grids or infocons. For
+more information, see Adding Tiles to a Form on page 92.
+
+Infor Mongoose Application and Form Development | 88
+
+Working with Forms
+When multiple tiles are displayed in a form, it is the container's domain to manage the multiple UI
+controls and bind them to appropriate rows.
+Note: It is fine to use the same tile form on multiple host forms; and it is also fine to use multiple tile
+forms on a single host form.
+In tiles, the current row is indicated by a background color that is specified in the theme, or it uses the
+same color as the grid's current row color. Current row status icons (new, modified, error, and
+marked-for-deletion) are displayed in the upper left corner, overlaid on the tile, similar to the way they
+are handled in grid rows.
+Tile forms are very limited, as compared to other types of forms:
+•
+•
+•
+•
+•
+•
+•
+•
+
+The only form event to be processed is the primary event (click) on components.
+No form scripts can run.
+No form variables are present.
+Filter-in-place is not possible.
+You cannot add any new Action menus or toolbar buttons.
+Tiles can only bind to a single collection.
+Data in tiles is read-only.
+Only these component types are allowed on tiles:
+• Static, which can display images as well as text
+• Edit
+• Multiline edit
+• Button, which can also display an optional image
+• Hyperlink
+• Checkbox
+• Combo and Date Combo (read-only)
+
+Creating Tile forms
+There are a number of different ways you can create Tile forms. The created Tile form functions the
+same regardless of the method used to create it.
+These are the options for creating a Tile form:
+•
+•
+•
+
+In a web client operating environment, you can use the Web Designer to create the form.
+In a Windows client (on-premises installation), you can use Design Mode.
+If the web client New Form Wizard - Tile form has been designated as a Runtime Builder form
+and you have authorization to create Runtime Builder forms, you can use that option. In this case,
+the form wizard operates the same as the Web Designer option.
+
+Creating a Tile form (Web Designer)
+Note: This procedure is a continuation of the procedure for creating forms in the Web Designer. For
+the procedure to create a Tile form in Design Mode (Windows clients), see Creating a Tile form (Design
+Mode) on page 91.
+To continue creating a Tile form in the Web Designer:
+
+Infor Mongoose Application and Form Development | 89
+
+Working with Forms
+1
+2
+
+If you have not already done so, complete the steps in the topic Creating a form in the Web Designer
+on page 33 before continuing.
+In the Form Template > Name field, specify the name of the form.
+You can do this either by selecting the name of a form template from the drop-down list or by typing
+a new name in the field.
+Caution: Be warned that, if you specify an existing form template, the Web Designer will overwrite
+your existing form with the new blank one. Once you click Finish, the old version is gone.
+
+3
+4
+5
+6
+7
+
+Verify that the Form Type is Tile.
+In the Form Layout drop-down list, select the position to be used for the grid part of the form.
+From the Device Type drop-down list, specify what type of device you are creating the form for.
+From the Data Source drop-down list, specify the IDO to use as the source of data for your form.
+Optionally, specify the name of the Query Form to be used in conjunction with your form.
+This can also be specified later.
+
+8
+
+Optionally, add any Comments you want to associate with the form.
+Note: Any comments you enter here do not display anywhere on the form. They are strictly for
+your information, perhaps to explain the reason the form was created or what it was created to do.
+
+9 Click Next.
+10 On the Properties page of the wizard, specify which properties should be included for the primary
+collection and represented in components on the form.
+11 Click Next.
+12 On the next page of the wizard, specify the order and attributes of each property you have included
+in the primary collection. You can specify these attributes:
+Option
+
+Description
+
+Caption
+
+Enter the text string to use as the caption/label for the property
+component on the form.
+The string can be a translatable string from the Strings table or
+a literal string value. Literal values are not translated for localized displays.
+Note: If you specify a translatable string that does not yet exist,
+the Web Designer does not prompt you to define it. You must
+remember to create the string, or the system uses the designation here as a literal value.
+
+Component Class
+
+If the property is to use a component class, use this field to
+specify which one.
+Note: The component class must exist before you can specify
+it here. Also, this option is not availble for Query forms.
+
+Order buttons
+
+For the specified properties, use the up and down arrows to
+move a selected property to the top, up one line, down one line,
+or to the bottom.
+For the form pages and notebooks, use the up and down arrows
+to change the order in which notebook tabs display.
+
+Infor Mongoose Application and Form Development | 90
+
+Working with Forms
+13 Click Next.
+14 If you want to save the template for the form (in case you want to later recreate the form without
+having to start from the beginning), select the Save Template option.
+The Web Designer creates the form and opens it ready for further design action. You can now add
+components and arrange them according to your needs.
+
+Creating a Tile form (Design Mode)
+Note: This topic is for the creation of Tile forms in Design Mode (Windows clients). For the procedure
+to create these forms in the Web Designer, see the help topic Creating a Tile form (Web Designer) on
+page 89.
+1 In Design Mode, start the New Form Wizard.
+2 In the first page of the wizard, select the Create new form option, and then click Next.
+3 In the next page, complete the following required fields:
+• In the Name field, perform one of these actions:
+• Select from the drop-down list the name of an existing form to use as the basis for the new
+form.
+• Type a unique name for the new form.
+Form names must be unique.
+This must be the same IDO that is the data source for the component where the tile form
+is to be used.
+•
+•
+4
+
+From the Form Type drop-down list, select Tile.
+From the Data Source drop-down list, select an IDO to return the primary collection.
+
+Optionally, specify a default Device Type , a Query Form, and any comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+5
+6
+
+Click Next.
+In the next page of the wizard (Select Properties), specify the properties of the IDO that are to be
+used with components in the new form.
+See New Form Wizard, Select Properties page on page 946.
+
+7
+8
+
+Click Next.
+In the next page of the wizard (Properties), you can specify:
+• The order in which the properties are listed
+• The captions for properties/components
+• What component class, if any, is to be applied to each property/component
+See New Form Wizard, Properties on page 945.
+
+9 Click Next .
+10 Optionally, to create a template from the new form, select the Save Template option.
+11 Click Finish.
+The Windows client then creates the form and opens a rough draft version in Design Mode.
+
+Infor Mongoose Application and Form Development | 91
+
+Working with Forms
+
+Adding tiles to a form grid component
+Note: Before you can add tiles to a form, you must create the tile form to use.
+1 With the parent form open in Design Mode, add or select the grid component in which you want
+to use tiles.
+2 In the Tile Form property, specify the tile form to add.
+The Tile Form property is located in the Miscellaneous > Specific Attributes group on the
+Component property sheet.
+3
+
+Use the Tile When property to specify one of these options:
+• Always indicates that the data should always be displayed in tile format.
+• Never indicates that the data should never display in tile format.
+• n specifies a number of characters (n) used to determine whether the data should display as
+a tile or not.
+If the number of characters (width) currently being displayed is n or less, the data displays in
+tile format. If the number of characters is greater than n, then the data does not display in tile
+format. In this case, the Grid View reverts to a normal grid display.
+•
+
+V(varName) indicates that the value used for the Tile When property is from an interpreted
+expression or a variable.
+
+Note: When a tile is assigned to a container that is to present the collection data, you must ensure that
+the tile and the container match in their collection definitions - that is, any collection used in binding
+the tile is available from a collection in the container.
+
+Adding tiles to a form infocon component
+Note: Before you can add tiles to a form, you must create the tile form to use.
+1 With the parent form open in Design Mode, add or select the infocon component in which you want
+to use tiles.
+2 In the Tile Form property, specify the tile form to add.
+The Tile Form property is located in the Miscellaneous > Specific Attributes group on the
+Component property sheet.
+3
+
+Use the Tile When property to specify these options:
+• List Columns specifies how many tiles, side-by-side, should display when the infocon
+component is expanded. Valid values are integers representing the number of tiles to display
+in each row.
+• List Rows specifies how many tiles, top-to-bottom, should display when the infocon component
+is expanded. Valid values are integers representing the number of tiles to display in each
+column.
+Note: When the List Column and List Rows values are left at their default values (0), the
+behavior for the infocon behavior is very much like a ComboBox: If the Tile Direction is Down
+or Up, the expanded display area is one tile wide, with an algorithmically determined height.
+If the Tile Direction is Right or Left, the expanded display area is one tile high, with an
+algorithmically determined width.
+• Tile Direction specifies the main direction in which the infocon is to expand when expanded.
+Valid values are Down, Up, Right, and Left.
+
+Infor Mongoose Application and Form Development | 92
+
+Working with Forms
+•
+•
+
+Display Selected Item As specifies how the selected item is to be displayed in the drop-down
+list. Valid values are Text and Tile.
+When set to True, Always Expand specifies that the infocon component is always to display
+the tile forms in an expanded mode.
+When this is the case, the behavior of the previous properties is different:
+•
+•
+•
+
+The Tile Direction property specified not only the direction in which the expanded tile
+display should extend, but also the scrolling options.
+The List Columns and List Rows properties might be disabled, depending on the Tile
+Direction setting.
+The Display Selected Item As property is disabled.
+
+Note: When a tile is assigned to a container that is to present the collection data, you must ensure that
+the tile and the container match in their collection definitions - that is, any collection used in binding
+the tile is available from a collection in the container.
+
+Build from Scratch forms
+About Build from Scratch forms
+The Build from Scratch form type is used to create forms without defined components. This form type
+requires that you create each component yourself. Select this option when you need to create a form
+whose components do not conform to the standard components generated by the wizards.
+Creating Build from Scratch forms
+There are a number of different ways you can create Build from Scratch forms. The created form
+functions the same regardless of the method used to create it.
+These are the options for creating a Build from Scratch form:
+•
+•
+•
+
+In a web client operating environment, you can use the Web Designer to create the form.
+In a Windows client (on-premises installation), you can use Design Mode.
+If the web client New Form Wizard - Build from Scratch form has been designated as a Runtime
+Builder form and you have authorization to create Runtime Builder forms, you can use that option.
+In this case, the form wizard operates the same as the Web Designer option.
+
+Creating a Build from Scratch form (Web Designer)
+Note: This procedure is a continuation of the procedure for creating forms in the Web Designer. For
+the procedure to create a build-from-scratch form in Design Mode (Windows client), see Creating a
+Build from Scratch form (Design Mode) on page 94.
+To continue creating a Build from Scratch form in the Web Designer:
+1
+
+If you have not already done so, complete the steps in the topic Creating a form in the Web Designer
+on page 33 before continuing.
+
+Infor Mongoose Application and Form Development | 93
+
+Working with Forms
+2
+
+In the Form Template > Name field, specify the name of the form.
+You can do this either by selecting the name of a form template from the drop-down list or by typing
+a new name in the field.
+Caution: Be warned that, if you specify an existing form template, the Web Designer will overwrite
+your existing form with the new blank one. Once you click Finish, the old version is gone.
+
+3
+4
+5
+6
+7
+8
+
+Verify that the Form Type is BuildFromScratch.
+In the Form Layout drop-down list, select the position to be used for the grid part of the form.
+From the Device Type drop-down list, specify what type of device you are creating the form for.
+Optionally, from the Data Source drop-down list, specify the IDO to use as the source of data for
+your form.
+Optionally, specify the name of the Query Form to be used in conjunction with your form.
+This can also be specified later.
+Optionally, add any Comments you want to associate with the form.
+Note: Any comments you enter here do not display anywhere on the form. They are strictly for
+your information, perhaps to explain the reason the form was created or what it was created to do.
+
+9 Click Next.
+10 If you want to save the template for the form (in case you want to later recreate the form without
+having to start from the beginning), select the Save Template option.
+11 Click Finish.
+The Web Designer creates the form and opens it ready for further design action. You can now add
+components and arrange them according to your needs.
+
+Creating a Build from Scratch form (Design Mode)
+Note: This topic is for the creation of Build from Scratch forms in Design Mode (Windows client). For
+the procedure to create these forms in the Web Designer, see the help topic Creating a Build from
+Scratch form (Web Designer) on page 93.
+1 Start the New Form Wizard.
+2 In the first page of the wizard, select the Create new form option, and then click Next .
+3 In the next page, complete the following required fields:
+• In the Name field, perform one of these actions:
+• Select from the drop-down list the name of an existing form to use as the basis for the new
+form.
+• Type a unique name for the new form.
+Form names must be unique.
+•
+•
+4
+
+From the Form Type drop-down list, select Build from Scratch.
+Optionally, from the Data Source drop-down list, select an IDO to return a primary collection.
+
+Optionally, specify a default Device Type, a Query form, and any comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+5
+
+Click Next.
+
+Infor Mongoose Application and Form Development | 94
+
+Working with Forms
+6
+7
+
+Optionally, to create a template from the new form, select the Save Template option.
+Click Finish.
+
+The wizard then creates the form and displays a rough-draft version in Design Mode.
+Note: At this point, the form has no components of any kind. You must add any required components
+manually.
+
+Form Only forms
+About "FormOnly" forms
+"FormOnly" forms are specialized forms designed to display without the the typical Mongoose framework:
+Explorer, toolbar, menus, and so on. While many of these forms are designed for mobile device use,
+they need not be. FormOnly forms, rather, are typically designed for "consumer UI" applications; that
+is, applications designed with a sleeker, more consumer-oriented look-and-feel.
+Because they typically do not include the standard Mongoose navigational and operational elements,
+FormOnly forms must compensate in other ways. By default, when you create a form with the New
+Form Wizard specifically as a "Form Only" form, the wizard automatically creates several navigational
+and operational icons/buttons:
+•
+•
+•
+•
+
+New: Allows the user to create a new record for the associated IDO collection.
+Save: Allows the user to save a new or modified record.
+Delete: Allows the user to delete a selected record.
+Refresh: Allows the user to refresh the current IDO collection without having to close and reopen
+the form.
+• First: Navigates the user to the first record in the collection.
+• Previous; Navigates the user to the record that immediately precedes the current record.
+• Next: Navigates the user to the record that immediately follows the current record.
+• Last: Navigates the user to the last record in the collection.
+• Close: Prompts the user to save any unsaved work and then closes the form.
+Note: Most of the keyboard shortcuts used in a typical form (such as F4 to execute Filter-in-Place) and
+standard events (such as Open, Save, and Apply Saved Filter) also work with the FormOnly form.
+Although these icons/buttons (and their associated form events and handlers) are created automatically
+by the New Form Wizard, you are not obligated to keep or use them; and you can also create other
+navigational or operational components of your own, as need dictates.
+
+Creating a FormOnly form
+To create a FormOnly type form:
+1
+2
+3
+
+In the Web Designer (web client) or Design Mode (Windows client), launch the New Form Wizard.
+In the first page of the wizard, select the Create new form option, and then click Next.
+In the next page, complete the following required fields:
+
+Infor Mongoose Application and Form Development | 95
+
+Working with Forms
+
+Name
+Perform one of these actions:
+• Select from the drop-down list the name of an existing form to use as the basis for the new
+form.
+• Type a name for the new form.
+Form names must be unique.
+Form Type
+From the drop-down list, select Form Only.
+Data Source
+From the drop-down list, select an IDO to return the primary collection.
+4
+
+Optionally, specify a default Device Type, a Query Form, and any comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+5
+6
+
+Click Next.
+In the next page of the wizard (Select Properties), specify the properties of the IDO that are to be
+used with components in the new form.
+See New Form Wizard, Select Properties page on page 946.
+
+7
+8
+
+Click Next.
+In the next page of the wizard (Properties), you can specify:
+• The order in which the properties are listed, which determines the order in which they display
+on the form initially
+• The captions for properties/components
+• Any containment
+• What component class, if any, is to be applied to each property/component
+See New Form Wizard, Properties on page 945.
+
+9
+
+If one of the properties is a subcollection property, the wizard prompts you to identify the
+subcollection information.
+See New Form Wizard, Link Properties on page 944.
+
+10 Click Next.
+The wizard displays the Select Properties page again.
+11 Specify the properties of the subcollection IDO that are to be used and displayed in the subcollection
+grid.
+12 Click Next.
+The wizard displays the Properties page again.
+13
+14
+15
+16
+
+Specify the order, the captions, and any other desired subcollection information for each property.
+Click Next.
+Optionally, to create a template from the new form, select the Save Template option.
+Click Finish.
+
+The New Form Wizard creates the form, populates it with a number of default navigational and
+operational buttons, and opens a rough version of the form in Design Mode.
+
+Infor Mongoose Application and Form Development | 96
+
+Working with Forms
+From there, you can further modify the form to meet your needs.
+
+Mobile forms
+About mobile form design
+Mobile forms are specialized forms, designed and created specifically for use with mobile devices such
+as smart phones and other portable computing devices. Because of their intended use, these forms
+have some constraints that other forms do not:
+•
+•
+•
+•
+•
+•
+•
+•
+
+A significantly smaller screen requires the form to have smaller dimensions.
+Icons must be suitable for viewing on these devices.
+The button toolbar typically contains fewer buttons and can appear at the top of the screen, the
+bottom, both, or neither.
+Mobile forms do not have menus.
+The Site drop-down and Switch Site fields on mobile forms are displayed in FormOnly mode on
+a mobile device but not on the standard client.
+Scrolling, either vertical or horizontal, can operate or behave differently for mobile forms.
+Mobile form names must include a .mobi extension.
+Mobile forms are accessed by means of Mongoose web clients. These web clients have specially
+formatted URLs to direct the user to the appropriate forms.
+
+Examples:
+
+Infor Mongoose Application and Form Development | 97
+
+Working with Forms
+
+About the toolbar in FormOnly mode
+Note: This topic applies to forms that are created to display in "FormOnly mode." These are somewhat
+different from forms created specifically as Form Only type forms, although many of the same concepts
+apply.
+Some forms are designed to be opened in "FormOnly mode," that is, they are forms designed to be
+viewed and used without standard toolbars or menu bars. Mobile forms are good examples of this type
+of form. Typically, this means that, if a toolbar is used, it has fewer options than most standard forms.
+Note: When forms that are designed to be viewed in FormOnly mode are opened in a standard smart
+client window or a standard web client window, they use the standard WinStudio toolbar, with any
+custom toolbar buttons displayed to the right of the standard buttons.
+The FormOnly mode toolbar display
+Settings for Form-Only mode toolbars are made at the form level. The primary control that determines
+whether the toolbar displays at all, and if so where, is the DisplayMobileToolbar form variable. This
+variable has four options:
+•
+•
+•
+•
+
+top causes the toolbar to display only at the top of the form.
+bottom causes the toolbar to display only at the bottom of the form.
+both causes the toolbar to display both at the top and the bottom of the form.
+neither (default) causes the toolbar to not display at all.
+
+Displaying buttons
+To display on the toolbar, buttons must be set individually. This must be done in Design Mode, using
+the Collections tab of the Form properties sheet. There, the Standard Operations options are used
+to select which buttons to display.
+Only those buttons set to True display when the toolbar is displayed. Available buttons include these:
+•
+•
+•
+•
+
+Filter allows you to filter the results for desired records.
+New/Copy creates a record or copies an existing record.
+Save saves whatever changes have been made to records.
+Delete marks the selected record for deletion.
+
+Displaying record counts
+You can also display a count of records returned as part of the toolbar display for a form-only mode
+display. This record count display includes both the number of the current record being displayed and
+the number of total records returned; for example: 5 of 38
+This record count display is controlled by the DisplayMobileCount form variable. When this variable is
+set to True, the record count is displayed, right-justified in the toolbar.
+Creating a custom toolbar option
+You can also create a custom toolbar option that allows your toolbar button to appear just to the right
+of any standard operation buttons that are displayed on the toolbar.
+
+Infor Mongoose Application and Form Development | 98
+
+Working with Forms
+See Creating a custom toolbar option on page 99.
+
+Creating a custom toolbar option
+1
+2
+
+With the form open in Design Mode, add a component of type Toolbar Button to the form.
+In the Component Properties grid, set the component properties as desired.
+At the least, you should set the Name , Caption , and Bitmap File Name properties. Your graphics
+file should be 15x15 pixels, in .JPG or .PNG format.
+
+3
+
+Save the form definition.
+
+Now, when you set the DisplayMobileToolbar form variable to True, your custom toolbar button
+appears just to the right of any standard operation buttons you have chosen to display on the toolbar.
+Note: When you create a custom toolbar button, the system is set to automatically display the button
+whenever the DisplayMobileToolbar form variable is set to True. Unlike the standard operations,
+there is no need to set a Standard Operations property to True.
+
+Setting up the Site or Switch Site feature on a mobile form
+If you want users to be able to access data from more than one site through your custom mobile form,
+you can include one of these features:
+•
+
+If the IDO uses an _all table to display data from multiple sites, then use the Site field's multi-site
+dropdown to switch sites without requiring a new login.
+• If the IDO does not use an _all table, then use the Site feld and the Switch link, which logs users
+out of the current site and logs them into the other site, preserving the form's context.
+Note: If you have a set of forms where one is the "parent" and the others are "child" (detail) forms,
+just set up the site or switch site feature on the parent form. The child forms will inherit the site information
+from the parent.
+The Site field and Switch link are visible in FormOnly mode, but not in the standard client.
+
+Runtime Builder forms
+About the Runtime Builder
+The Runtime Builder is a tool used for a specialized set of Mongoose forms that are designed to allow
+authorized users to create simple forms in Runtime Mode, without having to use the Web Designer (in
+a web client) or go into Design Mode (in a Windows client).
+This feature was created primarily for system administrators who either want to provide their users with
+an easier, less complicated option than the Web Designer or Design Mode for creating forms; or for
+form developers who do not want to tackle the complexities of Design Mode to create fairly simple
+
+Infor Mongoose Application and Form Development | 99
+
+Working with Forms
+forms. Runtime Builder, therefore, was designed to allow the creation of relatively limited-capability
+forms while in Runtime Mode.
+About using the Runtime Builder
+Before attempting to use the Runtime Builder, a system administrator must use the Form Wizard
+Categories form to designate which form wizards can be used in Runtime Mode, and thus, what types
+of forms can be created using Runtime Builder.
+The Runtime Builder can be used to create forms only by users who are authorized. An authorized
+user must have either Site Developer or Vendor editing permissions. Such a user can only create forms
+of the types designated on the Form Wizard Categories form as Runtime Builder form types.
+Note: Before using the Runtime Builder to create forms, you should select and apply a theme to your
+working environment. Otherwise, some fields in the Runtime Builder appear as "grayed out".
+About Form Wizards
+"Form wizards" are a special group of forms designed to be used as "wizards" to create end-user forms.
+These forms were originally created to allow form developers to create forms in a web client environment,
+such as a cloud installation of your application.
+Each wizard form is designed to guide the user through the creation of a different type of form. Some
+of these are for the "classic" Mongoose form types: MultiView, Grid Only, Query, and so on. Others
+are used for the creation of specialized forms, such as the Data Lake IDO Wizard or the REST API
+Wizard.
+For the Runtime Builder, we expanded on these wizard forms, to allow them to be used in runtime by
+authorized users. This expanded use of the wizard forms is controlled by designating one or more of
+the original wizard forms as "Runtime Builder" forms. Only wizard forms that have been designated as
+"Runtime Builder" forms can be used to create forms while in Runtime Mode.
+
+Designating a form wizard as a Runtime Builder form
+Before you can use the Runtime Builder to create a form, a system administrator must designate what
+types of forms can be created using the Runtime Builder. This is done using the Form Wizard
+Categories form.
+1
+2
+3
+
+In Mongoose, launch the Form Wizard Categories form.
+Execute Filter-in-Place.
+Verify that the Access As identifier in both Access As fields match your Access As identifier.
+If you are not sure what your Access As identifier is, you can find out by opening the Access As
+form.
+In most cases, the Access As identifier on the Form Wizard Categories form is going to be "Core".
+If this value, whatever it is, does not match yours (typically blank), you must change the Access
+As identifier for your system—temporarily!—to match what is used on the Form Wizard Categories
+form.
+
+Infor Mongoose Application and Form Development | 100
+
+Working with Forms
+4
+5
+6
+7
+8
+
+In the list of Wizards, select a form type that you want to be able to create using the Runtime
+Builder.
+On the Detail View side, select the Runtime Builder option.
+Repeat the previous two steps for each form type that want to be able to create using the Runtime
+Builder.
+Save your changes and close the Form Wizard Categories form.
+If you had to change the Access As identifier for this procedure, change it back to its original value.
+
+Creating a form with the Runtime Builder
+The Runtime Builder is a special feature that allows authorized users to create forms in Runtime
+Mode, without having to use the Web Designer (web client) or go into Design Mode (Windows client).
+1
+
+Launch the Runtime Builder Selection form.
+Note: To use the Runtime Builder Selection form, you must have Site Developer or Vendor
+editing permissions and be authorized to use this form.
+Open the Runtime Builder Selection form by clicking the Runtime Builder icon on the menu bar.
+Note: If this is your first time using the Runtime Builder Selection form, the system prompts you
+for your Editing Scope.
+
+2
+
+In the Runtime Builder Selection form, select the Category for the form you want to build.
+The Category drop-down list displays only the categories for which form types have been designated
+as Runtime Builder forms.
+
+3
+
+From the Runtime Builder drop-down list, select the type of form to create.
+This list displays only the form types that have been designated as Runtime Builder forms.
+
+4
+
+Click OK.
+The system launches the correct wizard for the type of form you are creating.
+
+5
+
+Use the wizard that launches to finish creating the form.
+
+Data Lake IDO Wizard
+Use the Data Lake IDO Wizard to import objects from the Infor Data Lake. When objects are imported
+from the Data Lake, Mongoose creates an IDO, object properties, and methods, as appropriate for the
+object being imported.
+Before you can use this wizard, you must first make sure that the default ION API server is set up for
+the Data Lake IDO Wizard, and you must designate the wizard as a Runtime Builder form. You must
+also be authorized to use Runtime Builder forms.
+
+Setting up the Data Lake IDO Wizard
+Before you can use the Data Lake IDO Wizard to import objects from the Infor Data Lake, the wizard
+must be set up to work in your system.
+
+Infor Mongoose Application and Form Development | 101
+
+Working with Forms
+1
+2
+3
+4
+5
+6
+
+Ensure that you have an Infor Ming.le account and are provisioned to use Infor ION API, Infor Data
+Lake, and Infor Mongoose.
+Sign in to Infor Ming.le.
+Select the Infor ION API app.
+In the Infor ION API app, select and open the Infor ION API.
+From the menu on the left, select Authorized Apps.
+Either select the app you want from the list that displays or create the app you need for the Data
+Lake IDO Wizard.
+To create the app:
+a On the Authorized Apps tab, click the Add New App icon (+).
+b Specify this information:
+Name
+Specify a name for the app you are creating.
+Type
+Select Backend Service.
+Description
+Specify the text to describe the content, scope, or purpose of the API connection.
+c
+
+7
+8
+
+Click the Save icon.
+The app now displays in the list of Authorized Apps.
+
+Click the Download icon for the app you just created.
+In the Download Credentials dialog box, create the service account and provide the download
+credentials:
+a Select the Create Service Account option.
+b In the User Name field, specify the user name that you use to access Infor ION API.
+You can start to type the name and then select the user ID from the list.
+c
+
+Click Download.
+The app downloads a copy of the .ionapi file to the Downloads folder on your computer.
+
+9 In Mongoose, open the ION API Servers form.
+10 If you have not already done so, create an ION API server entry for the Data Lake IDO Wizard to
+use:
+Note: If you have a previously existing ION API server entry with a Server ID value of 0 (zero),
+you might need to edit or delete it, and then re-create it using the .ionapi you just downloaded.
+a In the Server ID field, specify 0 (zero).
+b Click Import .ionapi file.
+c Use the Import Binary Data From File dialog box either to drag-and-drop the .ionapi file you
+just created, or click Select File and use the Open dialog box to navigate to it and open it.
+d Click Upload.
+Mongoose automatically shows the .ionapi exists check box as selected and populates the
+Server URL field, the STS URL field, and the Token URL field.
+e
+
+Save the API server entry.
+
+Infor Mongoose Application and Form Development | 102
+
+Working with Forms
+The Data Lake IDO Wizard is now ready for use.
+
+Using the Data Lake IDO Wizard
+Use the Data Lake IDO Wizard form to import objects from the Infor Data Lake.
+Note: Before you can use this wizard, you must first verify that these settings have been made:
+•
+•
+•
+
+The ION API Server must be set to 0 (zero, the default).
+Verify that the Data Lake IDO Wizard form has been designated as a Runtime Builder form.
+You are authorized to use Runtime Builder forms.
+
+1
+
+If you do not already have an IDO project with which to associate the IDO you are creating, use
+the IDO Projects form to create one.
+Open the Data Lake IDO Wizard form.
+From the Data Lake Object drop-down list, select the API object you want to use.
+Optionally, to view the properties associated with the selected object, click Object Properties.
+When finished viewing the properties, click Return.
+
+2
+3
+4
+5
+6
+
+Click Next.
+On the next page of the wizard, supply these values:
+IDO Name
+Provide the name to be assigned to the new IDO.
+Caption
+Provide the text to be used and displayed as the IDO caption.
+Project Name
+From the drop-down list, select the IDO project to be associated with the new IDO.
+
+7
+
+Click Finish.
+If successful, the system displays a message to let you know that the IDO was generated
+successfully.
+
+8
+
+(Optional, but recommended) Use the IDOs form and related IDO forms to verify that the IDO exists
+and has the correct properties and methods.
+
+The IDO can now be used much like any other IDO collection in your application.
+Caution: When using this IDO collection in a form, you must use the GetDatalakeData custom load
+method with it. Otherwise, your application cannot find the requested information.
+To do this, in Design Mode or the Web Designer, select the Collections property sheet, and then
+select GetDatalakeData as the Custom Load Method attribute value.
+
+Flex Basic form wizard
+Use the New Form Wizard - Flex Basic form wizard to create a basic Flex form.
+
+Infor Mongoose Application and Form Development | 103
+
+Working with Forms
+You can open this form in the Web Designer by clicking the New Form Definition icon on the toolbar.
+Then select the Flex Category and the Basic Wizard option.
+If this wizard has been designated as a Runtime Builder form, and you are authorized to use Runtime
+Builder form wizards, you can launch it by opening the Runtime Builder Selection form and then
+selecting those same options.
+
+About Flex forms
+The Flex type form is designed to use FlexLayout components to render all other components, allowing
+you to create forms that are dynamically responsive to the viewing environment. When initially created,
+the Flex form includes only a single FlexLayout component divided into three vertical regions. Optionally,
+you can add FlexLayout and other components and regions needed to create the form.
+Creating Flex forms
+There are a number of different ways you can create Flex forms. The created Flex form functions the
+same regardless of the method used to create it.
+These are the options for creating a Flex form:
+•
+•
+•
+
+In a web client operating environment, you can use the Web Designer to create the form.
+In a Windows client (on-premises installation), you can use Design Mode.
+If the web client New Form Wizard - Flex Basic form has been designated as a Runtime Builder
+form and you have authorization to create Runtime Builder forms, you can use that option. In this
+case, the form wizard operates the same as the Web Designer option.
+
+Creating a Flex form (Web Designer)
+Note:
+• This topic is for the creation of Flex forms in Web Designer (web client). For the procedure to create
+these forms in the Windows client, see Creating a Flex form (Design Mode) on page 105.
+• Use this procedure also when launching the Flex Basic form wizard from theRuntime Builder
+Selection form in the web client (runtime mode). In this case, start with Step 3 after opening the
+Runtime Builder Selection form.
+To create a Flex form in Web Designer:
+1
+2
+3
+
+In Web Designer, launch the New Form Definition wizard.
+On the Form Wizard Selection page, select New Form.
+Specify this information:
+Category
+Select Flex from the list.
+Wizard
+Select Basic from the list.
+
+4
+
+Click, OK.
+
+Infor Mongoose Application and Form Development | 104
+
+Working with Forms
+5
+
+On the New Form Wizard – Flex Basic page, specify this information:
+Name
+Specify the name for the new form. Form names must be unique.
+Unit
+From the drop-down list, seletct either char or pixel. The selected unit is permanent.
+Comments
+Optionally, provide comments to describe how the new form is intended to be used, or other
+pertinent comments.
+
+6
+7
+8
+
+Click Next.
+Optionally, to save the form template, select the Save Template option.
+Click Finish.
+
+Creating a Flex form (Design Mode)
+Note: This topic is for the creation of Flex forms in Design Mode in the Windows client. For the procedure
+to create these forms in Web Designer in the web client, see Creating a Flex form (Web Designer) on
+page 104.
+1 With no forms open, go into Design Mode.
+2 Launch the New Form Wizard.
+3 In the first page of the wizard, select the Create a new form option, and then click Next.
+4 In the next page, complete these required fields:
+Name
+Provide the name for the new form. Form names must be unique.
+Form Type
+From the drop-down list, select Flex.
+Data Source
+From the drop-down list, select an IDO to return the primary collection.
+5
+
+Optionally, specify a default Device Type, a Query Form, and any Comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+6
+7
+
+Click Next.
+In the next page of the wizard, specify this information:
+Layout
+Specify Basic from the list.
+Unit
+Specify char or pixel from the list. The selected unit is permanent.
+Optionally, specify any Comments.
+Comments are stored with the form definition and do not appear anywhere on the actual form.
+
+Infor Mongoose Application and Form Development | 105
+
+Working with Forms
+8 Click Next.
+9 Optionally, to create a template from the new form, select the Save Template option.
+10 Click Finish.
+Your application then creates the form and displays a rough-draft version in Design Mode.
+
+About Form Builder forms
+Form Builder forms are forms that can be created in Runtime Mode, without having to use the Web
+Designer in web clients or Design Mode in Windows clients. Form Builder uses the Runtime Builder
+functionality to generate forms from a limited set of templates. The basic options are for full-function
+forms and various types of responsive forms.
+Note: Before you can use Form Builder, these conditions must be met:
+• Form Builder must be designated as a Runtime Builder form on the Form Wizard Categories
+form.
+• You must be authorized to access and use Runtime Builder forms.
+To create Form Builder forms, start by clicking the Runtime Builder icon on the toolbar. Then, in the
+Runtime Builder Selection form, select Category = Form Builder and Runtime Builder = one of
+these basic options:
+•
+•
+•
+
+DataMaintenance
+Report
+ResponsiveForm
+
+About the DataMaintenance option
+"DataMaintenance" forms use the New Data Maintenance Wizard to create the infrastructure for
+full-function Mongoose forms. This infrastructure consists of the Intelligent Data Objects (IDOs) and
+property tables needed to create and maintain a set of data.
+Optionally, you can also use this option to create an associated form built on the IDO and tables being
+created. This version of the New Data Maintenance Wizard allows you to create the IDOs and tables
+only for MultiView forms, Grid-Only forms, or Detail-Only forms. You can also create IDOs and tables
+for subcollections associated with the primary IDO collection.
+Once the New Data Maintenance Wizard is finished, you have the option to create an associated
+form. If you select this option, Form Builder then launches the Responsive Form Builder wizard.
+About the Report option
+This option launches the Report Builder wizard. This wizard allows you to create runnable report-type
+forms that are essentially the same as those created by the Report option in the Classic form wizard
+or New Form Wizard options elsewhere—but without having to use the Web Designer or Design Mode
+to create them.
+At the same time, this wizard creates a second form that is used to specify the filter criteria for the
+report output. Unlike other ways to create a report-type form that require a criteria form to be created
+
+Infor Mongoose Application and Form Development | 106
+
+Working with Forms
+separately (typically, from a build-from-scratch form type), this wizard improves the process by creating
+the criteria form at the same time as the report-type form.
+About the ResponsiveForm option
+If you do not need to create an IDO and table for a new form, you can go directly to the Responsive
+Form option. Selecting this option launches the Responsive Form Builder wizard.
+The Responsive Form Builder wizard provides options to create these basic types of responsive
+forms:
+•
+•
+•
+
+"FullForms" (full-sized forms)
+"Widget" forms
+"Non-Data" forms
+
+About the New Data Maintenance Wizard
+Note: This topic refers primarily to the Windows client version of the New Data Maintenance Wizard.
+There is also a web client version of this wizard, which is functionally the same. The web client version
+can also be designated and used as a Runtime Builder form.
+Use the New Data Maintenance Wizard (NDMW) to quickly create a table, IDO, and (optionally) form,
+all from a single procedure. This wizard is especially helpful when you want to create a new form,
+instead of building on top of an existing database schema. In addition to the basic creation of one or
+more SQL tables, IDOs, and optional forms, you can use this wizard to:
+•
+•
+•
+•
+•
+
+Create the form based on a previously saved template, using the Open Template button on the
+NDMW toolbar.
+Save the current form setup as a template, by clicking the Save Template button on the toolbar.
+Base the new tables/IDOs/forms on an existing database schema, using the Get Database Schema
+button on the toolbar.
+Create subcollections at the same time you are creating the primary collection, using the Add
+Collection button.
+Set various wizard options, using the Options button.
+
+See About the New Data Maintenance Wizard toolbar on page 113.
+Other NDMW options
+You can also use the New Data Maintenance Wizard to:
+•
+•
+
+Save the form definition to the form definitions database for future use as a template.
+Generate SQL scripts for user-defined data types (UDTs) and optionally, copy them to the system
+clipboard and/or save them.
+
+The NDMW creation process
+When you click Finish, the wizard performs these actions:
+
+Infor Mongoose Application and Form Development | 107
+
+Working with Forms
+•
+•
+•
+•
+•
+•
+
+Creates the tables, columns, primary key definitions, IDOs, properties, template data, and, optionally,
+new form
+Refreshes the IDO metadata cache and saves object elements to the objects database
+Saves the new template to the templates database and the new form to the forms database
+Launches the Sql Tables form filtered for any new tables
+Launches the IDOs form filtered for the new IDO
+Launches the new form in Runtime Mode
+
+You can immediately use the form to enter and save data. To modify it, you must use the Web Designer
+or Design Mode, and then you can work with it the same as any other form.
+
+Using the New Data Maintenance Wizard (web client version)
+Use the Web Designer New Data Maintenance Wizard to create an IDO, a table, and optionally, a
+form.
+1
+
+In the New Data Maintenance Wizard, provide these values:
+Note: All values are required, unless otherwise noted.
+IDO Name
+Specify the name for the new IDO, table, and (optionally) form to be created.
+IDO Project Name
+From the drop-down list, select the IDO project that the IDO is to belong to.
+Note: If you want the IDO to belong to a new IDO project, you must create the IDO project before
+using the wizard.
+Table Alias
+Specify an alias for the system to use when referring to the IDO table.
+Form Type
+From the drop-down list, select the type of form to create.
+Note: If you are not creating a form, it does not matter what you select for this option, nor the
+Form Layout and Device Type options. They are used only for form creation.
+Form Layout
+From the drop-down list, select the desired placement for the grid.
+Device Type
+Optionally, from the drop-down list, specify what type of device the form is being created for.
+
+2
+
+Optionally, to designate the table, IDO, and form as part of a multi-site setup, select the Site Split
+option.
+When selected, the Table Name and View Name fields are automatically populated with appropriate
+names.
+
+3
+
+Define the table columns, IDO properties, and form components that the wizard is to create. Click
+Add Row to add an entry to the grid for each column/property/form component.
+The grid includes these attributes for each column/property/form component:
+
+Infor Mongoose Application and Form Development | 108
+
+Working with Forms
+
+Grid column/Attribute
+
+Specification/Comments
+
+Name
+
+Required. Specify a name for the new column/property/form component.
+Note: You cannot use spaces or special characters in the name.
+
+Property Class
+
+Optional. Specify the property class on which you want to base the
+column/property attributes.
+If you select a property class, several other column fields are populated
+automatically.
+If the property class you want does not yet exist, you can provide a
+name for a property class and then create the property class later. If
+you do not later provide the property class, the system simply ignores
+this setting.
+
+Data Type
+
+Required. Specify the Mongoose data type for the IDO property.
+Assuming you specify this setting before the SQL data type, the wizard
+automatically selects an appropriate data type for the SQL Data Type
+setting, which you can then override if you want.
+
+SQL Data Type
+
+Required. Specify the SQL data type for each record in this column of
+the table.
+You can specify an existing SQL base data type or a User-Defined
+Data Type (UDT).
+
+Property Length
+
+Optional, depending on the data type.
+Certain data types allow a length to be set. This specification determines
+the maximum length that the component's value can have. In the case
+of string types, it sets the maximum number of characters that can be
+used. In the case of number types, it sets the maximum total number
+of digits the number can have to the left or right of any decimal point.
+
+Decimal Precision
+
+Optional. Certain data types allow you to specify how many decimal
+places should display to the right of the decimal point.
+To create that scale, specify a number in this field.
+
+Primary Key
+
+To make the column/property a primary key, select this option.
+
+Required
+
+If the column/property value is required, that is, if it cannot be null, select
+this option. If the property is to allow null values, clear this check box.
+
+Label String ID
+
+Optional. Specify a translatable string to use for the form component's
+caption.
+If you specify a string that does not already exist, the system does not
+prompt you to create one. You must create it later, using the procedure
+to create a string global object. If you do not create the string object,
+the system treats the value here as a literal value.
+
+Infor Mongoose Application and Form Development | 109
+
+Working with Forms
+
+4
+5
+
+Grid column/Attribute
+
+Specification/Comments
+
+Default Value
+
+Optional. If the form component is to display a default value, specify
+that default value here. You can use keywords, such as the AUTONUMBER().
+Note: This setting refers to the IDO default value and not a SQL default
+value.
+
+Optionally, use the move buttons on the right to rearrange the order of your
+columns/properties/components.
+Optionally, to include a subcollection as part of the form, click Add Subcollection.
+This action displays a new "page" on which you can define the subcollection. Most of the fields
+and options on the new page are the same as for the primary collection. An additional optional
+field allows you to assign a Subcollection Name that is different from the basic collection Name.
+For additional steps that are required if you specify a subcollection, see Adding a subcollection in
+the Web Designer on page 1205.
+
+6
+
+When you are finished defining the columns/properties/form components for the primary collection
+and any subcollections, click Next.
+The wizard displays the Finish page.
+
+7
+
+Optionally, to have the wizard create SQL scripts for the table and IDO, select the Create Scripts
+option.
+Click Finish.
+The wizard displays a prompt asking whether you want to create a form to go with the table and
+IDO.
+• To create just the table and IDO, click No.
+
+8
+
+In this case, the wizard creates just the table and IDO and is finished. You can close the wiard.
+•
+
+To create a form to go with the table and IDO, click Yes.
+In this case, the wizard creates the table and IDO and then opens the Responsive Form
+Builder wizard. Use this wizard to create your form (see Responsive Form Builder on page
+1374).
+After the form creation process has completed, the New Data Maintenance Wizard returns
+to the Finish page.
+
+The wizard creates the IDO, table, and optional form. The wizard then opens the form in Runtime Mode
+and closes.
+When the form opens, remember to go back and close the New Data Maintenance Wizard.
+
+Using the New Data Maintenance Wizard (Windows client version)
+Note: This topic is for the creation of forms using the New Data Maintenance Wizard in Windows client
+Design Mode. For the procedure to create these forms in the Web Designer, see Using the New Data
+Maintenance Wizard (web client version) on page 108.
+
+Infor Mongoose Application and Form Development | 110
+
+Working with Forms
+Use the New Data Maintenance Wizard to quickly create a new table, IDO, and form, all from a single
+procedure. This wizard is especially helpful when you want to create a new form, instead of building
+on top of an existing database schema.
+To create a table, IDO, and form with the New Data Maintenance Wizard:
+1
+2
+3
+4
+
+Go into Design Mode.
+On the Design Mode toolbar, click the New Data Maintenance Wizard button.
+In the Name field, specify the name that is to be assigned to the new table, IDO, and (optionally)
+form.
+Specify the IDO Project to which the new table, IDO, and form are to belong.
+If the IDO project you want does not yet exist, you can click the ellipsis (...) button next to this field
+and use the Add IDO Project dialog box to create a new one.
+
+5
+6
+7
+8
+
+Specify the Form Type that the new form is to be.
+Optionally, if you are creating a MultiView form, specify a default Form Layout for the Grid View.
+Optionally, specify the Device Type that the new form is to be created for.
+Optionally, specify your own Table Alias for the table to be created.
+If you do not specify a table alias, the wizard specifies a default alias. We recommend the use of
+a short mnemonic alias.
+
+9
+
+Optionally, to designate the table, IDO, and form as part of a multi-site setup, select the Site Split
+check box.
+When selected, the Table Name and View Name fields are automatically populated with appropriate
+names.
+
+10 Optionally, to have the wizard create only the table and IDO, but not the form, clear the Create
+Form check box.
+11 Optionally, to have the wizard create an IDO description, a form description, a form caption, and/or
+sort columns alphabetically, click the Options button on the NDMW toolbar, and use the New Data

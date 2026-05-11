@@ -168,6 +168,17 @@ Mixing these up returns `405`.
 
 ---
 
+## IDO Name Casing
+
+IDO names are case-sensitive. Casing is also not standardized across the catalog — names like `SLJobMatls` and `SLJobmatls` may both exist as distinct, separate IDOs. Always verify the exact casing via `IdoCollections` before using an IDO name:
+
+```bash
+curl -s "$SYTELINE_BASE_URL/load/IdoCollections?properties=CollectionName&filter=CollectionName%20LIKE%20N'%25Jobmat%25'&recordcap=5" \
+  -H "Authorization: $TOKEN"
+```
+
+---
+
 ## Task Submission Errors
 
 ### "Task Name is invalid"
@@ -253,6 +264,15 @@ During discovery, always set a small `recordcap` (e.g., `10`) to avoid overwhelm
 
 ## SQL Table Name Suffixes
 
-Database table names in `SqlColumns` use a `_mst` suffix (e.g., `itemprice_mst`), but the IDO layer references them without it (e.g., `itemprice`). When querying `SqlColumns`, use the `_mst` version. When querying `IdoTables`, use the version without `_mst`.
+SQL table names in `SqlColumns` and the underlying database use a `_mst` suffix (e.g., `itemprice_mst`, not `itemprice`). The IDO layer strips this suffix — so `IdoTables` references the table as `itemprice` while `SqlColumns` has `itemprice_mst`. When querying `SqlColumns` to find primary keys or column metadata, always add `_mst` to the table name:
+
+```bash
+# Correct — includes _mst suffix
+curl -s "$SYTELINE_BASE_URL/load/SqlColumns?properties=derShadowColumnName,isPrimaryKey&filter=tableName%20%3D%20N'itemprice_mst'&recordcap=0" \
+  -H "Authorization: $TOKEN"
+
+# Wrong — no results
+curl -s "...&filter=tableName%20%3D%20N'itemprice'..."
+```
 
 Check `MoreRowsExist` in the response to know if you're missing data.

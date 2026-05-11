@@ -1,5 +1,7 @@
 # Authentication
 
+> **API Version Note:** This documentation covers the **REST API Version 2** endpoints (base URL: `/IDORequestService/ido/`). Syteline also provides a legacy Version 1 API at `/IDORequestService/MGRESTService.svc/` with a different endpoint structure. All examples in this guide use V2.
+
 ## Token Endpoint
 
 Credentials are passed as HTTP headers — **not** in the URL path.
@@ -146,3 +148,13 @@ GET {SYTELINE_BASE_URL without /ido}/Ping.aspx
 - `200` — IIS + IDO Request Web Service + IDO Runtime Service all running
 - `503` — IDO Runtime Service is down
 - `404` — IIS or IDO Request Web Service is unavailable
+
+---
+
+## Alternative Authentication: OAuth / ION API
+
+In addition to the Mongoose security token described above, the REST API supports **OAuth 1.0a zero-legged authentication** when accessed through Infor ION API. This uses a consumer key and consumer secret (configured in the IDO Request Service's `web.config`) plus `X-Infor-Identity2` and `X-Infor-MongooseConfig` headers provided by ION API.
+
+This method is typically used for cloud-hosted or multi-tenant deployments where centralized authentication is required. For direct API access (the scenario covered in these docs), use the Mongoose security token approach.
+
+See the *Infor ION API Administration Guide* for details on ION API setup and Swagger documentation access.

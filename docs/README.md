@@ -3,7 +3,7 @@
 **Purpose:** Teach AI coding agents how to interact with the Infor Syteline ERP system via the IDO (Intelligent Data Object) REST API. Attach these docs to your agent's context and tell it what you need to accomplish.
 
 **Environment:** Syteline 10 (Infor CloudSuite Industrial / Mongoose framework)  
-**Base URL:** `$SYTELINE_BASE_URL`  
+**Base URL:** `$SYTELINE_BASE_URL` (points to `/IDORequestService/ido` — REST API V2)  
 **Default site:** `DEFAULT_SITE` (defaults to `Demo_DALS`)  
 **Site discovery:** use `SLSites` only when default does not apply or the user requests other sites
 
