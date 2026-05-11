@@ -125,7 +125,12 @@ curl -s "$SYTELINE_BASE_URL/load/IdoMethods?properties=MethodName,MethodType&fil
   -H "Authorization: $TOKEN"
 ```
 
-This tells you what methods are available and whether each is a stored procedure or extension class. The method name is sufficient to proceed to Step 4.
+This tells you:
+- What methods are available
+- Whether each is a stored procedure (`MethodType=0`) or extension class (`MethodType=2`)
+- The stored procedure name (if applicable)
+
+> **Note:** The `StoredProcedure` property is documented in some Syteline versions but may not exist on `IdoMethods` in your environment — you'll get `"Property StoredProcedure not found"`. Omit it and use just `MethodName,MethodType`; the method name is sufficient to proceed to Step 4.
 
 When a stored procedure has been converted to an extension class (MethodType=2), it can **only** be called through the IDO API, not via direct SQL `EXEC`.
 

@@ -212,6 +212,8 @@ curl -s "$SYTELINE_BASE_URL/load/IdoMethods?properties=CollectionName,MethodName
 
 Then get parameters and invoke via `/invoke/{IDO}?method={MethodName}`.
 
+> **Note:** As SPs are converted, the `StoredProcedure` property on `IdoMethods` goes empty for converted methods — there is no longer an SP to reference. Searching by `MethodName` is more reliable than searching by `StoredProcedure`.
+
 ---
 
 ## Date/Time Formats
