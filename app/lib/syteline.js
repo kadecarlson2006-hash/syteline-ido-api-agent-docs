@@ -32,7 +32,13 @@ export function buildLoadUrl(baseUrl, ido, { properties, filter, orderby, record
 }
 
 export function createClient({ baseUrl, site, username, password }) {
-  async function getToken() {
+  // Cache a single token across all requests. Since this app never calls Invoke,
+  // the session is never destroyed server-side. Concurrent callers share the same
+  // in-flight fetch so we never open more than one new session at a time.
+  let cachedToken = null;
+  let tokenPromise = null;
+
+  async function fetchFreshToken() {
     const res = await fetch(`${baseUrl}/token/${encodeURIComponent(site)}`, {
       method: 'GET',
       headers: { username, password },
@@ -47,13 +53,33 @@ export function createClient({ baseUrl, site, username, password }) {
     return body.Token;
   }
 
-  async function load(ido, options = {}) {
-    const token = await getToken();
-    const url = buildLoadUrl(baseUrl, ido, options);
-    const res = await fetch(url, {
-      method: 'GET',
-      headers: { Authorization: token },
-    });
+  async function getToken() {
+    if (cachedToken) return cachedToken;
+    if (!tokenPromise) {
+      tokenPromise = fetchFreshToken()
+        .then((t) => { cachedToken = t; tokenPromise = null; return t; })
+        .catch((err) => { tokenPromise = null; throw err; });
+    }
+    return tokenPromise;
+  }
+
+  function invalidateToken() {
+    cachedToken = null;
+    tokenPromise = null;
+  }
+
+  function isAuthError(message = '') {
+    return (
+      message.includes('session') ||
+      message.includes('token') ||
+      message.includes('log on') ||
+      message.includes('logged') ||
+      message.includes('session count')
+    );
+  }
+
+  async function doLoad(token, url) {
+    const res = await fetch(url, { method: 'GET', headers: { Authorization: token } });
     const text = await res.text();
     let body;
     try {
@@ -64,10 +90,36 @@ export function createClient({ baseUrl, site, username, password }) {
         502,
       );
     }
+    return body;
+  }
+
+  // Serialize all outgoing Syteline requests. Syteline only handles one concurrent
+  // request per session — parallel calls on the same token cause "session deleted" errors.
+  let requestQueue = Promise.resolve();
+
+  async function loadOnce(ido, options) {
+    const url = buildLoadUrl(baseUrl, ido, options);
+    let token = await getToken();
+    let body = await doLoad(token, url);
+
+    // If the cached token was invalidated server-side, retry once with a fresh one.
+    if (body && body.Success === false && isAuthError(body.Message || '')) {
+      invalidateToken();
+      token = await getToken();
+      body = await doLoad(token, url);
+    }
+
     if (body && body.Success === false) {
       throw new SytelineError(body.Message || 'Syteline returned Success=false', 502);
     }
     return body;
+  }
+
+  async function load(ido, options = {}) {
+    const result = requestQueue.then(() => loadOnce(ido, options));
+    // Keep the queue alive even when a request errors — don't let rejections break the chain.
+    requestQueue = result.then(() => {}, () => {});
+    return result;
   }
 
   return { getToken, load };
