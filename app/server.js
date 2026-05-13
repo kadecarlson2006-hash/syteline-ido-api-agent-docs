@@ -101,6 +101,8 @@ app.get(
         'Sequence',
         'DomainIDOName',
         'DomainProperty',
+        'DomainListProperties',
+        'PropertyDesc',
         'DefaultValue',
         'Validators',
       ].join(','),
@@ -132,6 +134,23 @@ app.get(
     const result = await syteline.load('IdoMethodParameters', {
       properties:
         'Sequence,ParameterName,DataType,SpDataType,SpDataLength,SpDataScale,InputFlag,OutputFlag',
+      filter: buildFilter([
+        { field: 'CollectionName', op: '=', value: name },
+        { field: 'MethodName', op: '=', value: method },
+      ]),
+      orderby: 'Sequence',
+      recordcap: 0,
+    });
+    return { items: result.Items || [] };
+  }),
+);
+
+app.get(
+  '/api/ido/:name/methods/:method/resultsets',
+  wrap(async (req) => {
+    const { name, method } = req.params;
+    const result = await syteline.load('IdoMethodResultSets', {
+      properties: 'Sequence,PropertyName',
       filter: buildFilter([
         { field: 'CollectionName', op: '=', value: name },
         { field: 'MethodName', op: '=', value: method },

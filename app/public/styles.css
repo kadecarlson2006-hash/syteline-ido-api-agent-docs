@@ -495,12 +495,16 @@ pre {
   list-style: none;
 }
 .index-list li {
-  padding: 10px 16px;
+  padding: 10px 16px 10px 16px;
   border-bottom: 1px solid var(--rule-soft);
   cursor: pointer;
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transition: background 110ms var(--ease), padding-left 160ms var(--ease);
 }
+.list-item-main { flex: 1; min-width: 0; }
 .index-list li::before {
   content: "";
   position: absolute;
@@ -537,6 +541,22 @@ pre {
   color: var(--paper-dim);
 }
 .index-list li.selected .text-xs.text-slate-500 { color: var(--bone-dim); }
+
+.fav-btn {
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--paper-dim);
+  padding: 2px 4px;
+  opacity: 0;
+  transition: opacity 120ms var(--ease), color 120ms var(--ease);
+  line-height: 1;
+}
+.index-list li:hover .fav-btn { opacity: 1; }
+.fav-btn.is-fav { opacity: 1; color: var(--brass); }
+.fav-btn:hover { color: var(--brass) !important; opacity: 1 !important; }
+
+.fav-chip { color: var(--brass) !important; }
+.fav-chip.chip-on { background: var(--brass); color: var(--ink-0) !important; border-color: var(--brass); }
 
 /* ============================================================
    DOSSIER (detail pane)
@@ -658,6 +678,16 @@ pre {
   color: var(--paper-mute);
   margin-left: 6px;
 }
+.card-hint {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 11px;
+  color: var(--paper-dim);
+  letter-spacing: 0.01em;
+  margin-top: 2px;
+}
+
 .card-legend {
   font-size: 10px;
   letter-spacing: 0.15em;
@@ -845,6 +875,87 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--paper-dim);
+}
+
+/* Table pagination */
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 9px 14px;
+  border-top: 1px solid var(--rule-soft);
+  background: var(--ink-1);
+  min-height: 38px;
+}
+.pag-btn {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--bone-dim);
+  border: 1px solid var(--rule);
+  padding: 3px 11px;
+  cursor: pointer;
+  transition: color 120ms var(--ease), border-color 120ms var(--ease), background 120ms var(--ease);
+}
+.pag-btn:hover:not([disabled]) {
+  color: var(--brass);
+  border-color: var(--brass-soft);
+  background: var(--brass-glow);
+}
+.pag-btn[disabled] { opacity: 0.28; cursor: default; }
+.pag-info {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--paper-mute);
+  min-width: 80px;
+  text-align: center;
+}
+
+/* Active table row when bound to a property filter */
+.table-row-active td { background: rgba(212, 161, 85, 0.07); }
+.table-row-active td:first-child { color: var(--brass) !important; font-weight: 600; }
+.table-row-active:hover td { background: rgba(212, 161, 85, 0.11) !important; }
+
+/* Property binding filter indicator */
+.prop-binding-indicator {
+  padding: 7px 18px;
+  background: rgba(212, 161, 85, 0.05);
+  border-bottom: 1px solid var(--brass-soft);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--paper-mute);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  text-transform: uppercase;
+}
+.prop-binding-indicator strong {
+  color: var(--brass);
+  font-weight: 500;
+  letter-spacing: 0.005em;
+  text-transform: none;
+}
+.prop-binding-indicator button {
+  color: var(--paper-dim);
+  font-size: 11px;
+  padding: 1px 6px;
+  border: 1px solid var(--rule);
+  transition: color 120ms var(--ease), border-color 120ms var(--ease);
+  margin-left: 2px;
+}
+.prop-binding-indicator button:hover {
+  color: var(--bone);
+  border-color: var(--rule-bright);
+}
+
+/* Badge for domain/lookup properties */
+.badge-domain {
+  color: var(--moss);
+  border-color: var(--moss-soft);
+  background: rgba(142, 170, 120, 0.07);
+  cursor: help;
 }
 
 /* Badge for chain-sourced items in tables/props/methods */
@@ -1122,6 +1233,42 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
   border-color: var(--brass-soft);
 }
 
+/* Method drawer sections */
+.method-section-loading {
+  padding: 24px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--paper-mute);
+  letter-spacing: 0.1em;
+}
+.method-section {
+  border-bottom: 1px solid var(--rule);
+}
+.method-section:last-child { border-bottom: 0; }
+.method-section-results .data-table thead th { background: rgba(107, 168, 197, 0.06); }
+.method-section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 14px 9px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.012), transparent);
+  border-bottom: 1px solid var(--rule-soft);
+}
+.method-section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper-mute);
+}
+.method-section-results .method-section-label { color: var(--steel); }
+.method-section-count {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--paper-dim);
+}
+
 .drawer-body {
   flex: 1;
   overflow: auto;
@@ -1236,6 +1383,62 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
   border: 0;
   padding: 0;
   color: var(--bone-2);
+}
+
+.drawer-prop-desc {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: 13px;
+  color: var(--bone-dim);
+  line-height: 1.55;
+  margin: 0;
+  letter-spacing: 0.005em;
+}
+
+/* Domain card inside property drawer */
+.domain-card {
+  border: 1px solid var(--moss-soft);
+  background: rgba(142, 170, 120, 0.04);
+  position: relative;
+}
+.domain-card-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--moss);
+  background: var(--ink-1);
+  padding: 0 8px;
+  position: absolute;
+  top: -7px;
+  left: 12px;
+}
+.domain-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+}
+.domain-table td {
+  padding: 6px 14px;
+  border-bottom: 1px solid rgba(142, 170, 120, 0.12);
+  font-size: 11px;
+  vertical-align: baseline;
+}
+.domain-table tr:last-child td { border-bottom: 0; }
+.domain-table td:first-child {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+  width: 80px;
+  white-space: nowrap;
+}
+.domain-table code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--bone-2);
+  font-family: var(--mono);
+  font-size: 11px;
 }
 
 #prop-drawer-body .prop-ref,

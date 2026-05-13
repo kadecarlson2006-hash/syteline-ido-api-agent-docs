@@ -3,6 +3,7 @@ const state = {
   collectionFilter: '',
   accessFilter: '',
   showReplaced: false,
+  favorites: loadFavorites(),
   selected: null,
   overview: null,
   extenders: [],
@@ -10,6 +11,8 @@ const state = {
   properties: [],
   methods: [],
   tableFilters: {},
+  tablePage: 0,
+  tableBindingFilter: null,  // { alias, name } when a table row is active
   propFilters: {},
   propClass: '',
   methodFilters: {},
@@ -17,6 +20,15 @@ const state = {
 
 const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+// ---------- Favorites (localStorage) ----------
+function loadFavorites() {
+  try { return new Set(JSON.parse(localStorage.getItem('ido-favorites') || '[]')); }
+  catch { return new Set(); }
+}
+function saveFavorites() {
+  localStorage.setItem('ido-favorites', JSON.stringify([...state.favorites]));
+}
 
 async function fetchJSON(url) {
   const res = await fetch(url);
@@ -74,7 +86,7 @@ async function loadEnv() {
 async function loadCollections() {
   const params = new URLSearchParams();
   if (state.collectionFilter) params.set('q', state.collectionFilter);
-  if (state.accessFilter) params.set('accessAs', state.accessFilter);
+  if (state.accessFilter && state.accessFilter !== '__favorites__') params.set('accessAs', state.accessFilter);
   try {
     const { items } = await fetchJSON(`/api/collections?${params}`);
     state.collections = items;
@@ -88,21 +100,38 @@ function renderCollections() {
   const list = $('#collections-list');
   const all = state.collections;
   const replaced = all.filter((c) => String(c.ReplaceFlag) === '1');
-  const visible = state.showReplaced ? all : all.filter((c) => String(c.ReplaceFlag) !== '1');
+  let visible = state.showReplaced ? all : all.filter((c) => String(c.ReplaceFlag) !== '1');
+  if (state.accessFilter === '__favorites__') {
+    visible = visible.filter((c) => state.favorites.has(c.CollectionName));
+  }
 
   $('#collections-count').textContent = `${visible.length}`;
   list.innerHTML = visible
     .map((c) => {
       const access = c.AccessAs || 'Custom';
       const sel = state.selected === c.CollectionName ? 'selected' : '';
+      const isFav = state.favorites.has(c.CollectionName);
       return `<li class="${sel}" data-name="${escapeHtml(c.CollectionName)}">
-        <div class="font-medium">${escapeHtml(c.CollectionName)}</div>
-        <div class="text-xs text-slate-500">${escapeHtml(access)}</div>
+        <div class="list-item-main">
+          <div class="font-medium">${escapeHtml(c.CollectionName)}</div>
+          <div class="text-xs text-slate-500">${escapeHtml(access)}</div>
+        </div>
+        <button class="fav-btn${isFav ? ' is-fav' : ''}" data-fav="${escapeHtml(c.CollectionName)}" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}">★</button>
       </li>`;
     })
     .join('');
   list.querySelectorAll('li').forEach((li) => {
     li.addEventListener('click', () => selectIdo(li.dataset.name));
+  });
+  list.querySelectorAll('.fav-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const name = btn.dataset.fav;
+      if (state.favorites.has(name)) state.favorites.delete(name);
+      else state.favorites.add(name);
+      saveFavorites();
+      renderCollections();
+    });
   });
 
   const footer = $('#collections-footer');
@@ -129,6 +158,8 @@ function renderCollections() {
 async function selectIdo(name) {
   state.selected = name;
   state.tableFilters = {};
+  state.tablePage = 0;
+  state.tableBindingFilter = null;
   state.propFilters = {};
   state.propClass = '';
   state.methodFilters = {};
@@ -307,6 +338,8 @@ function matchesFilter(value, filter) {
 }
 
 // ---------- Tables ----------
+const TABLE_PAGE_SIZE = 10;
+
 function tableSort(r) {
   if (r._sourceIdo) return 0;
   if (String(r.TableType) === '3') return 1;
@@ -314,10 +347,17 @@ function tableSort(r) {
 }
 
 function renderTables() {
-  const rows = state.tables
+  const allRows = state.tables
     .filter((r) => Object.entries(state.tableFilters).every(([f, v]) => matchesFilter(r[f], v)))
     .sort((a, b) => tableSort(a) - tableSort(b));
-  $('#tables-count').textContent = `${rows.length} / ${state.tables.length}`;
+
+  const totalPages = Math.max(1, Math.ceil(allRows.length / TABLE_PAGE_SIZE));
+  if (state.tablePage >= totalPages) state.tablePage = totalPages - 1;
+
+  const rows = allRows.slice(state.tablePage * TABLE_PAGE_SIZE, (state.tablePage + 1) * TABLE_PAGE_SIZE);
+
+  $('#tables-count').textContent = `${allRows.length} / ${state.tables.length}`;
+
   $('#tables-body').innerHTML = rows
     .map((r) => {
       const t = String(r.TableType ?? '');
@@ -328,7 +368,8 @@ function renderTables() {
       const sourceBadge = r._sourceIdo
         ? ` <span class="badge badge-chain" title="From ${escapeHtml(r._sourceIdo)}">${escapeHtml(r._sourceIdo)}</span>`
         : '';
-      return `<tr>
+      const isActive = state.tableBindingFilter && state.tableBindingFilter.alias === r.TableAlias;
+      return `<tr class="row-clickable${isActive ? ' table-row-active' : ''}" data-alias="${escapeHtml(r.TableAlias)}" data-tablename="${escapeHtml(r.TableName)}">
         <td class="font-medium">${escapeHtml(r.TableName)}${sourceBadge}</td>
         <td>${escapeHtml(r.TableAlias)}</td>
         <td>${badge}</td>
@@ -338,7 +379,36 @@ function renderTables() {
     })
     .join('');
 
-  // Show primary base table in the overview header once we have it
+  $('#tables-body').querySelectorAll('tr.row-clickable').forEach((tr) => {
+    tr.addEventListener('click', () => {
+      const { alias, tablename } = tr.dataset;
+      state.tableBindingFilter =
+        state.tableBindingFilter && state.tableBindingFilter.alias === alias
+          ? null
+          : { alias, name: tablename };
+      renderTables();
+      renderProps();
+    });
+  });
+
+  // Pagination controls
+  const pag = $('#tables-pagination');
+  if (pag) {
+    if (totalPages <= 1) {
+      pag.innerHTML = '';
+    } else {
+      const start = state.tablePage * TABLE_PAGE_SIZE + 1;
+      const end = Math.min((state.tablePage + 1) * TABLE_PAGE_SIZE, allRows.length);
+      pag.innerHTML = `
+        <button class="pag-btn" id="tprev" ${state.tablePage === 0 ? 'disabled' : ''}>←</button>
+        <span class="pag-info">${start}–${end} of ${allRows.length}</span>
+        <button class="pag-btn" id="tnext" ${state.tablePage >= totalPages - 1 ? 'disabled' : ''}>→</button>`;
+      pag.querySelector('#tprev').addEventListener('click', () => { state.tablePage--; renderTables(); });
+      pag.querySelector('#tnext').addEventListener('click', () => { state.tablePage++; renderTables(); });
+    }
+  }
+
+  // Primary base table in the overview header
   const primary = state.tables.find((t) => String(t.TableType) === '3' && !t._sourceIdo);
   const el = $('#ov-primary-table');
   if (el && primary) {
@@ -405,9 +475,29 @@ function truncate(str, max = 70) {
 }
 
 function renderProps() {
+  const bf = state.tableBindingFilter;
+
+  // Update the binding-filter indicator above the props table
+  const indicator = $('#prop-binding-indicator');
+  if (indicator) {
+    if (bf) {
+      indicator.innerHTML = `<span>showing properties bound to</span> <strong>${escapeHtml(bf.alias)}</strong> <button id="clear-binding" title="Show all properties">✕</button>`;
+      indicator.classList.remove('hidden');
+      indicator.querySelector('#clear-binding').addEventListener('click', () => {
+        state.tableBindingFilter = null;
+        renderTables();
+        renderProps();
+      });
+    } else {
+      indicator.innerHTML = '';
+      indicator.classList.add('hidden');
+    }
+  }
+
   const rows = state.properties
     .filter((r) => {
       if (!propClassMatches(r)) return false;
+      if (bf && r.ColumnTableAlias !== bf.alias) return false;
       return Object.entries(state.propFilters).every(([f, v]) => {
         if (!v) return true;
         const target = f === '_columnOrExpression' ? columnOrExpression(r) : r[f];
@@ -441,8 +531,11 @@ function renderProps() {
       const sourceBadge = r._sourceIdo
         ? ` <span class="badge badge-chain" title="From ${escapeHtml(r._sourceIdo)}">${escapeHtml(r._sourceIdo)}</span>`
         : '';
+      const domainBadge = r.DomainIDOName
+        ? ` <span class="badge badge-domain" title="Lookup: ${escapeHtml(r.DomainIDOName)}.${escapeHtml(r.DomainProperty || '?')}">▾ ${escapeHtml(r.DomainIDOName)}</span>`
+        : '';
       return `<tr class="row-clickable" data-prop="${escapeHtml(r.PropertyName)}">
-        <td class="font-medium">${sargWarn}${escapeHtml(r.PropertyName)}${sourceBadge}</td>
+        <td class="font-medium">${sargWarn}${escapeHtml(r.PropertyName)}${sourceBadge}${domainBadge}</td>
         <td>${escapeHtml(r.DataType)}</td>
         <td><span class="badge ${clsBadgeClass}">${escapeHtml(clsLabel)}</span></td>
         <td>${columnCell}</td>
@@ -490,6 +583,11 @@ function openPropertyDrawer(propName) {
   }
 
   const sections = [];
+
+  // Description (if set)
+  if (row.PropertyDesc) {
+    sections.push(`<p class="drawer-prop-desc">${escapeHtml(row.PropertyDesc)}</p>`);
+  }
 
   // Class + flags summary
   const flagBadges = [
@@ -546,14 +644,27 @@ function openPropertyDrawer(propName) {
     </div>`);
   }
 
-  // Domain (typeahead / dropdown source)
+  // Domain (dropdown / lookup source)
   if (row.DomainIDOName) {
-    sections.push(`<div>
-      <div class="text-xs muted mb-1">Domain (lookup source)</div>
-      <div class="text-xs">
-        <button class="ido-link border rounded px-2 py-0.5 bg-slate-50 hover:bg-slate-100" data-ido="${escapeHtml(row.DomainIDOName)}">${escapeHtml(row.DomainIDOName)} →</button>
-        ${row.DomainProperty ? `<span class="muted">on property</span> <code>${escapeHtml(row.DomainProperty)}</code>` : ''}
-      </div>
+    const listProps = row.DomainListProperties
+      ? row.DomainListProperties.split(',').map((p) => `<code>${escapeHtml(p.trim())}</code>`).join(' ')
+      : '<span class="muted">—</span>';
+    sections.push(`<div class="domain-card">
+      <div class="domain-card-label">▾ Domain · Lookup source</div>
+      <table class="domain-table">
+        <tr>
+          <td>IDO</td>
+          <td><button class="ido-link" data-ido="${escapeHtml(row.DomainIDOName)}">${escapeHtml(row.DomainIDOName)} →</button></td>
+        </tr>
+        <tr>
+          <td>Property</td>
+          <td>${row.DomainProperty ? `<code>${escapeHtml(row.DomainProperty)}</code>` : '<span class="muted">—</span>'}</td>
+        </tr>
+        <tr>
+          <td>List props</td>
+          <td>${listProps}</td>
+        </tr>
+      </table>
     </div>`);
   }
 
@@ -632,39 +743,80 @@ function renderMethods() {
     .forEach((tr) => tr.addEventListener('click', () => openMethodDrawer(tr.dataset.method)));
 }
 
-// ---------- Method parameters drawer ----------
+// ---------- Method drawer ----------
 async function openMethodDrawer(method) {
   const drawer = $('#drawer');
   drawer.classList.add('open');
   $('#drawer-title').textContent = method;
   $('#drawer-sub').textContent = state.selected;
-  $('#drawer-body').innerHTML = '<tr><td colspan="5" class="muted px-2 py-3">Loading…</td></tr>';
-  try {
-    const { items } = await fetchJSON(
-      `/api/ido/${encodeURIComponent(state.selected)}/methods/${encodeURIComponent(method)}/parameters`,
-    );
-    $('#drawer-body').innerHTML = items
-      .map((p) => {
-        const inFlag = p.InputFlag === '1' || p.InputFlag === 1;
-        const outFlag = p.OutputFlag === '1' || p.OutputFlag === 1;
-        const dirBadge =
-          inFlag && outFlag ? '<span class="badge badge-inout">IN/OUT</span>'
-          : outFlag ? '<span class="badge badge-out">OUT</span>'
-          : inFlag ? '<span class="badge badge-in">IN</span>'
-          : '<span class="badge">—</span>';
-        const spType = p.SpDataLength ? `${p.SpDataType}(${p.SpDataLength}${p.SpDataScale ? ',' + p.SpDataScale : ''})` : p.SpDataType;
-        return `<tr>
-          <td class="px-2 py-1.5">${escapeHtml(p.Sequence)}</td>
-          <td class="px-2 py-1.5 font-medium">${escapeHtml(p.ParameterName)}</td>
-          <td class="px-2 py-1.5">${escapeHtml(p.DataType)}</td>
-          <td class="px-2 py-1.5 text-xs muted">${escapeHtml(spType)}</td>
-          <td class="px-2 py-1.5">${dirBadge}</td>
-        </tr>`;
-      })
-      .join('');
-  } catch (err) {
-    $('#drawer-body').innerHTML = `<tr><td colspan="5" class="muted px-2 py-3">Error: ${escapeHtml(err.message)}</td></tr>`;
+  const wrap = $('#drawer-body-wrap');
+  wrap.innerHTML = '<div class="method-section-loading">Loading…</div>';
+
+  const base = `/api/ido/${encodeURIComponent(state.selected)}/methods/${encodeURIComponent(method)}`;
+  const paramsR = await fetchJSON(`${base}/parameters`).then((v) => ({ status: 'fulfilled', value: v })).catch((e) => ({ status: 'rejected', reason: e }));
+  const resultSetsR = await fetchJSON(`${base}/resultsets`).then((v) => ({ status: 'fulfilled', value: v })).catch((e) => ({ status: 'rejected', reason: e }));
+
+  const sections = [];
+
+  // Parameters section
+  const params = paramsR.status === 'fulfilled' ? paramsR.value.items : [];
+  const paramError = paramsR.status === 'rejected' ? paramsR.reason.message : null;
+  const paramRows = paramError
+    ? `<tr><td colspan="5" class="muted px-2 py-3">Error: ${escapeHtml(paramError)}</td></tr>`
+    : params.length === 0
+      ? `<tr><td colspan="5" class="muted px-2 py-3">No parameters</td></tr>`
+      : params.map((p) => {
+          const inFlag = p.InputFlag === '1' || p.InputFlag === 1;
+          const outFlag = p.OutputFlag === '1' || p.OutputFlag === 1;
+          const dirBadge =
+            inFlag && outFlag ? '<span class="badge badge-inout">IN/OUT</span>'
+            : outFlag ? '<span class="badge badge-out">OUT</span>'
+            : inFlag ? '<span class="badge badge-in">IN</span>'
+            : '<span class="badge">—</span>';
+          const spType = p.SpDataLength
+            ? `${p.SpDataType}(${p.SpDataLength}${p.SpDataScale ? ',' + p.SpDataScale : ''})`
+            : p.SpDataType;
+          return `<tr>
+            <td>${escapeHtml(p.Sequence)}</td>
+            <td class="font-medium">${escapeHtml(p.ParameterName)}</td>
+            <td>${escapeHtml(p.DataType)}</td>
+            <td class="text-xs muted">${escapeHtml(spType)}</td>
+            <td>${dirBadge}</td>
+          </tr>`;
+        }).join('');
+
+  sections.push(`<div class="method-section">
+    <div class="method-section-head">
+      <span class="method-section-label">Parameters</span>
+      <span class="method-section-count">${params.length}</span>
+    </div>
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Name</th><th>Type</th><th>SP Type</th><th>Dir</th></tr></thead>
+      <tbody>${paramRows}</tbody>
+    </table>
+  </div>`);
+
+  // Result sets section (CLM output) — only shown when results exist; errors are silently swallowed
+  const resultSets = resultSetsR.status === 'fulfilled' ? resultSetsR.value.items : [];
+  if (resultSets.length > 0) {
+    const rsRows = resultSets.map((r) => `<tr>
+          <td>${escapeHtml(r.Sequence)}</td>
+          <td class="font-medium">${escapeHtml(r.PropertyName)}</td>
+        </tr>`).join('');
+
+    sections.push(`<div class="method-section method-section-results">
+      <div class="method-section-head">
+        <span class="method-section-label">Result Set · CLM output properties</span>
+        <span class="method-section-count">${resultSets.length}</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>#</th><th>PropertyName</th></tr></thead>
+        <tbody>${rsRows}</tbody>
+      </table>
+    </div>`);
   }
+
+  wrap.innerHTML = sections.join('');
 }
 
 // ---------- Cross-IDO search ----------
@@ -766,6 +918,7 @@ function wire() {
         const value = input.value;
         if (card.querySelector('#tables-body')) {
           state.tableFilters[field] = value;
+          state.tablePage = 0;
           renderTables();
         } else if (card.querySelector('#props-body')) {
           state.propFilters[field] = value;

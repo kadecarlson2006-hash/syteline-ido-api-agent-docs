@@ -98,6 +98,7 @@
             <button data-access="" class="access-chip chip-on">All</button>
             <button data-access="BaseSyteLine" class="access-chip">Core</button>
             <button data-access="Custom" class="access-chip">Custom</button>
+            <button data-access="__favorites__" class="access-chip fav-chip">★ Fav</button>
           </div>
         </div>
         <ul id="collections-list" class="index-list"></ul>
@@ -135,6 +136,7 @@
               <div class="card-title-block">
                 <span class="card-kicker">Structure</span>
                 <h3 class="card-title">Tables <span class="card-count" id="tables-count"></span></h3>
+                <span class="card-hint">click a row to filter properties ↓</span>
               </div>
               <span class="card-legend">Primary <span class="dot dot-primary"></span> · Secondary <span class="dot dot-secondary"></span></span>
             </header>
@@ -158,6 +160,7 @@
                 </thead>
                 <tbody id="tables-body"></tbody>
               </table>
+              <div id="tables-pagination" class="table-pagination"></div>
             </div>
           </article>
 
@@ -179,6 +182,7 @@
                 <button data-class="nonsargable" class="prop-chip warn" title="Expression contains COALESCE / CASE / ISNULL / NULLIF / scalar UDFs — non-sargable.">⚠ Non-sargable</button>
               </div>
             </header>
+            <div id="prop-binding-indicator" class="prop-binding-indicator hidden"></div>
             <div class="dossier-card-body scroll-tall">
               <table class="data-table sticky-head">
                 <thead>
@@ -259,20 +263,7 @@
         </div>
         <button id="drawer-close" class="drawer-close" aria-label="Close">✕</button>
       </div>
-      <div class="drawer-body drawer-body-table">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>SP Type</th>
-              <th>Dir</th>
-            </tr>
-          </thead>
-          <tbody id="drawer-body"></tbody>
-        </table>
-      </div>
+      <div class="drawer-body drawer-body-table" id="drawer-body-wrap"></div>
     </div>
 
     <div id="toast" class="toast hidden"></div>
