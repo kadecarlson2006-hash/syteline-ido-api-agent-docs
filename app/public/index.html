@@ -31,10 +31,17 @@
           <div class="env-strip">
             <span class="env-label">Site</span>
             <span id="env-pill" class="env-value">— · — · —</span>
+            <button id="theme-toggle" class="theme-toggle" title="Toggle light / dark mode">◑</button>
           </div>
 
           <div class="search-rig" role="search">
-            <span class="search-kicker">Cross-IDO search</span>
+            <div class="search-kicker-row">
+              <span class="search-kicker">Cross-IDO search</span>
+              <div class="search-op-chips">
+                <button data-op="=" class="search-op-chip chip-on">Equals</button>
+                <button data-op="LIKE" class="search-op-chip">Contains</button>
+              </div>
+            </div>
             <div class="search-row">
               <select id="search-type" class="search-select">
                 <option value="properties">Property name</option>
@@ -123,8 +130,9 @@
                 <h2 id="ov-name" class="overview-name">—</h2>
                 <p class="overview-sub" id="ov-sub"></p>
                 <p id="ov-primary-table" class="overview-primary-table hidden"></p>
-              </div>
-              <div id="ov-extended" class="overview-extended"></div>
+              <div id="ov-meta" class="overview-meta hidden"></div>
+            </div>
+            <div id="ov-extended" class="overview-extended"></div>
             </header>
             <div id="ov-body" class="overview-body hidden"></div>
           </article>

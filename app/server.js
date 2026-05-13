@@ -165,11 +165,11 @@ app.get(
 app.get(
   '/api/search/properties',
   wrap(async (req) => {
-    const { q } = req.query;
+    const { q, op = 'LIKE' } = req.query;
     if (!q) return { items: [] };
     const result = await syteline.load('IdoProperties', {
       properties: 'CollectionName,PropertyName,DataType,ColumnName,PropertyValue',
-      filter: buildFilter([{ field: 'PropertyName', op: 'LIKE', value: q }]),
+      filter: buildFilter([{ field: 'PropertyName', op: op === '=' ? '=' : 'LIKE', value: q }]),
       orderby: 'CollectionName,PropertyName',
       recordcap: 0,
     });
@@ -180,14 +180,11 @@ app.get(
 app.get(
   '/api/search/expressions',
   wrap(async (req) => {
-    const { q } = req.query;
+    const { q, op = 'LIKE' } = req.query;
     if (!q) return { items: [] };
-    // Search the PropertyValue field — derived-property SQL expressions.
-    // Useful for finding all IDOs with COALESCE/CASE/ISNULL patterns,
-    // or every property that references a given column or sub-expression.
     const result = await syteline.load('IdoProperties', {
       properties: 'CollectionName,PropertyName,DataType,ColumnName,PropertyValue',
-      filter: buildFilter([{ field: 'PropertyValue', op: 'LIKE', value: q }]),
+      filter: buildFilter([{ field: 'PropertyValue', op: op === '=' ? '=' : 'LIKE', value: q }]),
       orderby: 'CollectionName,PropertyName',
       recordcap: 500,
     });
@@ -198,11 +195,11 @@ app.get(
 app.get(
   '/api/search/methods',
   wrap(async (req) => {
-    const { q } = req.query;
+    const { q, op = 'LIKE' } = req.query;
     if (!q) return { items: [] };
     const result = await syteline.load('IdoMethods', {
       properties: 'CollectionName,MethodName,MethodType',
-      filter: buildFilter([{ field: 'MethodName', op: 'LIKE', value: q }]),
+      filter: buildFilter([{ field: 'MethodName', op: op === '=' ? '=' : 'LIKE', value: q }]),
       orderby: 'CollectionName,MethodName',
       recordcap: 0,
     });
@@ -213,17 +210,20 @@ app.get(
 app.get(
   '/api/search/tables',
   wrap(async (req) => {
-    const { q } = req.query;
+    const { q, op = 'LIKE' } = req.query;
     if (!q) return { items: [] };
     const result = await syteline.load('IdoTables', {
       properties: 'CollectionName,TableName,TableType,JoinType',
-      filter: buildFilter([{ field: 'TableName', op: 'LIKE', value: q }]),
+      filter: buildFilter([{ field: 'TableName', op: op === '=' ? '=' : 'LIKE', value: q }]),
       orderby: 'CollectionName,TableName',
       recordcap: 0,
     });
     return { items: result.Items || [] };
   }),
 );
+
+// SPA fallback — must come after all /api/* routes
+app.get('*', (_req, res) => res.sendFile(resolve(__dirname, 'public', 'index.html')));
 
 app.listen(env.port, () => {
   console.log(`IDO Explorer running on http://localhost:${env.port}`);

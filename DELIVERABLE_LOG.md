@@ -2,6 +2,27 @@
 
 ---
 
+## 2026-05-11 — Copyright Quarantine Packaging (Hermes Skill Imports)
+
+**Request:** Identify likely direct-copied Infor manual content in Hermes-imported skills and package those files into a zip for quarantine (not for public GitHub commit history).
+
+**Method:**
+
+1. Scanned `skills/` for high-confidence legal/manual fingerprints (for example: `Copyright ©`, `Important Notices`, `By gaining access to the attached`, `Document code:`, `Publication Date:`, `Trademark Acknowledgements`, and repeated `Infor Mongoose Application and Form Development |` pagination markers).
+2. Built a candidate list of matched files and saved it for review.
+3. Created quarantine zip archives containing exactly the matched files, preserving folder structure.
+
+**Deliverables:**
+
+- `quarantine/suspected_infor_copyrighted_files.txt` (strict candidate list)
+- `quarantine/suspected_infor_copyrighted_files.zip` (strict archive)
+- `quarantine/suspected_infor_copyrighted_files_broad.txt` (broad candidate list)
+- `quarantine/suspected_infor_copyrighted_files_broad.zip` (broad archive)
+
+**Result:** 19 high-confidence files were identified and packaged into quarantine archives.
+
+---
+
 ## 2026-05-08 — Hermes Skills Validation Harness + In-House Doc Reconciliation
 
 **Request:** Ivan Velo submitted PR #1 (`hermes-crosscheck`) adding 51 Hermes Agent skills sourced from official Infor documentation, plus surgical edits to the in-house docs. Verify the skills' claims against the SL10 pilot at `http://s10dev.salinavortex.com` (config `Pilot_Vortx`) and reconcile any conflicts with our existing docs.

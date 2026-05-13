@@ -49,6 +49,70 @@
   --ease:         cubic-bezier(0.4, 0.02, 0.2, 1);
 }
 
+/* ============================================================
+   LIGHT THEME — parchment & archival ink
+   Warm off-white paper, charcoal type, darkened accents.
+   ============================================================ */
+[data-theme="light"] {
+  --ink-0:        #f2ece0;
+  --ink-1:        #ebe4d6;
+  --ink-2:        #e3dbc9;
+  --ink-3:        #d9d0bc;
+  --ink-elev:     #cec4ae;
+  --rule:         #bdb49d;
+  --rule-soft:    #d0c8b4;
+  --rule-bright:  #a89e88;
+
+  --bone:         #0d0f13;
+  --bone-2:       #1e222e;
+  --bone-dim:     #38404f;
+  --paper-mute:   #5c5648;
+  --paper-dim:    #8a8272;
+
+  --brass:        #7a5312;
+  --brass-2:      #9a6c22;
+  --brass-soft:   #d4b87a;
+  --brass-glow:   rgba(122, 83, 18, 0.14);
+
+  --sienna:       #b83c20;
+  --sienna-2:     #962e14;
+  --sienna-soft:  #e8c4b0;
+  --sienna-glow:  rgba(184, 60, 32, 0.12);
+
+  --steel:        #2a6888;
+  --steel-soft:   #b0cdd8;
+
+  --moss:         #3c6a30;
+  --moss-soft:    #b0cab0;
+}
+
+html[data-theme="light"],
+html[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse 60% 50% at top left, rgba(122, 83, 18, 0.04), transparent 60%),
+    radial-gradient(ellipse 60% 60% at bottom right, rgba(184, 60, 32, 0.025), transparent 65%),
+    var(--ink-0);
+}
+
+html[data-theme="light"] .masthead {
+  background:
+    linear-gradient(180deg, rgba(122, 83, 18, 0.03) 0%, transparent 30%),
+    var(--ink-1);
+}
+
+html[data-theme="light"] .masthead::after {
+  background: linear-gradient(90deg, transparent, var(--brass-soft) 20%, var(--brass-soft) 80%, transparent);
+  opacity: 0.7;
+}
+
+html[data-theme="light"] .grain {
+  mix-blend-mode: multiply;
+  opacity: 0.04;
+}
+
+html[data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--rule); }
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--brass-soft); }
+
 * { box-sizing: border-box; }
 
 html, body {
@@ -178,7 +242,7 @@ pre {
 }
 .mark-title {
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 36px;
   line-height: 1.05;
   letter-spacing: -0.01em;
@@ -188,7 +252,7 @@ pre {
 .mark-meta {
   font-family: var(--serif);
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 13px;
   letter-spacing: 0.005em;
   color: var(--paper-mute);
@@ -224,6 +288,17 @@ pre {
   font-weight: 500;
   letter-spacing: 0.18em;
 }
+.theme-toggle {
+  font-size: 14px;
+  line-height: 1;
+  color: var(--paper-mute);
+  padding: 0 0 0 6px;
+  border-left: 1px solid var(--rule);
+  margin-left: 2px;
+  transition: color 120ms var(--ease);
+  letter-spacing: 0;
+}
+.theme-toggle:hover { color: var(--brass); }
 
 .search-rig {
   position: relative;
@@ -251,13 +326,39 @@ pre {
   border-right: 1px solid var(--brass);
 }
 
+.search-kicker-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
 .search-kicker {
-  display: block;
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--brass);
-  margin-bottom: 8px;
+}
+.search-op-chips {
+  display: flex;
+  gap: 0;
+  border: 1px solid var(--rule);
+}
+.search-op-chip {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--paper-mute);
+  background: var(--ink-2);
+  border: none;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: background 100ms var(--ease), color 100ms var(--ease);
+}
+.search-op-chip + .search-op-chip { border-left: 1px solid var(--rule); }
+.search-op-chip:hover { color: var(--bone-dim); background: var(--ink-3); }
+.search-op-chip.chip-on {
+  color: var(--brass);
+  background: var(--brass-soft);
 }
 
 .search-row {
@@ -312,7 +413,7 @@ pre {
 }
 .search-results-title {
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 17px;
   color: var(--bone);
   margin: 0;
@@ -390,7 +491,7 @@ pre {
 }
 .panel-title {
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 22px;
   letter-spacing: 0.005em;
   margin: 0;
@@ -407,7 +508,7 @@ pre {
   color: var(--paper-mute);
   margin: 0 0 12px;
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   letter-spacing: 0.005em;
 }
 
@@ -592,7 +693,7 @@ pre {
   display: inline-block;
   font-family: var(--serif);
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 13px;
   letter-spacing: 0.01em;
   color: var(--brass);
@@ -600,7 +701,7 @@ pre {
 }
 .dossier-empty p {
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 17px;
   margin: 0;
   color: var(--bone-dim);
@@ -643,7 +744,7 @@ pre {
 .card-numeral {
   font-family: var(--serif);
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 22px;
   color: var(--brass);
   line-height: 1;
@@ -663,7 +764,7 @@ pre {
 }
 .card-title {
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 20px;
   letter-spacing: 0.005em;
   color: var(--bone);
@@ -681,7 +782,7 @@ pre {
 .card-hint {
   font-family: var(--serif);
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 11px;
   color: var(--paper-dim);
   letter-spacing: 0.01em;
@@ -724,7 +825,7 @@ pre {
 }
 .overview-name {
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 30px;
   letter-spacing: -0.005em;
   color: var(--bone);
@@ -759,7 +860,7 @@ pre {
   margin-bottom: 14px;
   border-bottom: 1px solid var(--rule-soft);
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 14px;
   color: var(--bone-dim);
   letter-spacing: 0.005em;
@@ -819,6 +920,55 @@ button.ov-ido-link:hover {
   text-transform: uppercase;
   color: var(--steel);
   margin: 5px 0 0;
+}
+
+.overview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0;
+  margin: 9px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--rule-soft);
+}
+.ov-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 14px 0 0;
+}
+.ov-meta-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+}
+.ov-meta-value {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-2);
+  letter-spacing: 0.01em;
+}
+.ov-meta-value code {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--bone-2);
+  background: rgba(46, 56, 71, 0.4);
+  padding: 1px 5px;
+  border: 1px solid var(--rule-soft);
+}
+.ov-meta-sep {
+  align-self: flex-end;
+  padding: 0 10px 2px 0;
+  font-size: 9px;
+  color: var(--rule-bright);
+  letter-spacing: 0.1em;
+}
+
+/* Suppress double border when chain follows description */
+.overview-body .ov-desc + .chain-section {
+  border-top: none;
+  padding-top: 0;
 }
 
 /* Inheritance chain ladder */
@@ -1203,7 +1353,7 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
 }
 .drawer-title {
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 24px;
   letter-spacing: -0.005em;
   color: var(--bone);
@@ -1309,7 +1459,7 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
   top: -9px; left: 14px;
   font-family: var(--serif);
   font-style: italic;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 12px;
   letter-spacing: 0.005em;
   color: var(--brass);
@@ -1387,7 +1537,7 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
 
 .drawer-prop-desc {
   font-family: var(--serif);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 13px;
   color: var(--bone-dim);
   line-height: 1.55;
@@ -1502,6 +1652,25 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
 
 .muted, .text-slate-500, .text-slate-700 { color: var(--paper-mute) !important; }
 .text-xs.muted { color: var(--paper-dim) !important; }
+
+/* Derived-expression code in the property table and drawer */
+code.expr-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-dim);
+  font-style: italic;
+}
+pre.expr-pre {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--bone-2);
+  background: var(--ink-2);
+  border: 1px solid var(--rule-soft);
+  padding: 10px 13px;
+  overflow: auto;
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
 
 /* Reset Tailwind background utilities used elsewhere */
 .bg-white,

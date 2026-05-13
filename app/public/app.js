@@ -1,7 +1,7 @@
 const state = {
   collections: [],
   collectionFilter: '',
-  accessFilter: '',
+  accessFilter: '__favorites__',
   showReplaced: false,
   favorites: loadFavorites(),
   selected: null,
@@ -68,6 +68,51 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
+// ---------- Routing ----------
+let pendingRoute = null; // { type, name } applied after IDO finishes loading
+
+function encSeg(s) { return encodeURIComponent(s); }
+
+function setUrl(type, name) {
+  if (!state.selected) return;
+  const base = `/${encSeg(state.selected)}`;
+  const path = type && name ? `${base}/${type}/${encSeg(name)}` : base;
+  history.replaceState(null, '', path);
+}
+
+function parsePath(path) {
+  // path: /<ido>[/<type>/<name>]
+  const segs = path.split('/').filter(Boolean).map(decodeURIComponent);
+  return { ido: segs[0] || null, type: segs[1] || null, name: segs[2] || null };
+}
+
+async function routeTo(path) {
+  const { ido, type, name } = parsePath(path);
+  if (!ido) return;
+  if (ido !== state.selected) {
+    pendingRoute = type && name ? { type, name } : null;
+    await selectIdo(ido, false);
+  } else if (type && name) {
+    applySubRoute(type, name);
+  }
+}
+
+function applySubRoute(type, name) {
+  if (type === 'table') {
+    const row = state.tables.find((t) => t.TableName === name);
+    if (row) {
+      state.tableBindingFilter = { alias: row.TableAlias, name: row.TableName };
+      renderTables();
+      renderProps();
+      setUrl('table', name);
+    }
+  } else if (type === 'property') {
+    openPropertyDrawer(name);
+  } else if (type === 'method') {
+    openMethodDrawer(name);
+  }
+}
+
 // ---------- ENV / boot ----------
 async function loadEnv() {
   try {
@@ -102,7 +147,14 @@ function renderCollections() {
   const replaced = all.filter((c) => String(c.ReplaceFlag) === '1');
   let visible = state.showReplaced ? all : all.filter((c) => String(c.ReplaceFlag) !== '1');
   if (state.accessFilter === '__favorites__') {
-    visible = visible.filter((c) => state.favorites.has(c.CollectionName));
+    const favFiltered = visible.filter((c) => state.favorites.has(c.CollectionName));
+    // If a search term produced zero favorites, silently fall back to All
+    if (favFiltered.length === 0 && state.collectionFilter) {
+      state.accessFilter = '';
+      $$('.access-chip').forEach((b) => b.classList.toggle('chip-on', b.dataset.access === ''));
+    } else {
+      visible = favFiltered;
+    }
   }
 
   $('#collections-count').textContent = `${visible.length}`;
@@ -155,7 +207,8 @@ function renderCollections() {
 }
 
 // ---------- Selected IDO ----------
-async function selectIdo(name) {
+async function selectIdo(name, push = true) {
+  if (push) history.pushState(null, '', `/${encSeg(name)}`);
   state.selected = name;
   state.tableFilters = {};
   state.tablePage = 0;
@@ -173,6 +226,8 @@ async function selectIdo(name) {
   $('#ov-extended').textContent = '';
   $('#ov-primary-table').textContent = '';
   $('#ov-primary-table').classList.add('hidden');
+  $('#ov-meta').innerHTML = '';
+  $('#ov-meta').classList.add('hidden');
   $('#tables-body').innerHTML = '<tr><td colspan="5" class="muted px-3 py-3">Loading…</td></tr>';
   $('#props-body').innerHTML = '<tr><td colspan="6" class="muted px-3 py-3">Loading…</td></tr>';
   $('#methods-body').innerHTML = '<tr><td colspan="3" class="muted px-3 py-3">Loading…</td></tr>';
@@ -214,7 +269,10 @@ async function selectIdo(name) {
 
   // Load chain data: IDOs that extend+replace this one add their schema on top
   const replacers = state.extenders.filter((e) => String(e.ReplaceFlag) === '1');
-  if (replacers.length === 0) return;
+  if (replacers.length === 0) {
+    if (pendingRoute) { const { type, name } = pendingRoute; pendingRoute = null; applySubRoute(type, name); }
+    return;
+  }
 
   const chainLoads = replacers.map((ext) => {
     const n = ext.CollectionName;
@@ -241,6 +299,12 @@ async function selectIdo(name) {
   renderTables();
   renderProps();
   renderMethods();
+
+  if (pendingRoute) {
+    const { type, name } = pendingRoute;
+    pendingRoute = null;
+    applySubRoute(type, name);
+  }
 }
 
 function renderOverview() {
@@ -256,8 +320,35 @@ function renderOverview() {
 
   const extBadges = [];
   if (String(ov.DevelopmentFlag) === '1') extBadges.push(`<span class="badge badge-warn">Dev</span>`);
-  if (String(ov.DerHasProdVersion) === '1') extBadges.push(`<span class="badge badge-primary">Prod version</span>`);
+  if (String(ov.DerHasProdVersion) === '1') extBadges.push(`<span class="badge badge-primary">Prod</span>`);
   $('#ov-extended').innerHTML = extBadges.join(' ');
+
+  // -- Header meta strip (Revision, Last updated, Extension class)
+  function fmtDate(val) {
+    if (!val) return '—';
+    // Syteline format: YYYYMMDD HH:MM:SS.mmm — parse manually
+    const m = String(val).match(/^(\d{4})(\d{2})(\d{2})/);
+    if (m) {
+      const d = new Date(+m[1], +m[2] - 1, +m[3]);
+      return d.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' });
+    }
+    const d = new Date(val);
+    return isNaN(d) ? String(val) : d.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  }
+  function metaItem(label, valueHtml) {
+    return `<span class="ov-meta-item"><span class="ov-meta-label">${label}</span><span class="ov-meta-value">${valueHtml}</span></span>`;
+  }
+  const metaParts = [];
+  const rev = ov.RevisionNo !== undefined && ov.RevisionNo !== null && ov.RevisionNo !== ''
+    ? `<code>${escapeHtml(String(ov.RevisionNo))}</code>&thinsp;·&thinsp;${escapeHtml(fmtDate(ov.RevisionDate))}`
+    : '—';
+  metaParts.push(metaItem('Rev', rev));
+  metaParts.push(metaItem('Updated', `${ov.UpdatedBy ? escapeHtml(ov.UpdatedBy) : '—'}&thinsp;·&thinsp;${escapeHtml(fmtDate(ov.RecordDate))}`));
+  if (ov.ExtClassName) metaParts.push(metaItem('Ext', `<code>${escapeHtml(ov.ExtClassName)}</code>`));
+
+  const metaEl = $('#ov-meta');
+  metaEl.innerHTML = metaParts.join('<span class="ov-meta-sep">·</span>');
+  metaEl.classList.toggle('hidden', metaParts.length === 0);
 
   const body = $('#ov-body');
   const parts = [];
@@ -265,23 +356,6 @@ function renderOverview() {
   if (ov.CollectionDesc) {
     parts.push(`<div class="ov-desc">${escapeHtml(ov.CollectionDesc)}</div>`);
   }
-
-  function field(label, valueHtml) {
-    return `<div class="ov-field"><span class="ov-field-label">${label}</span><span class="ov-field-value">${valueHtml}</span></div>`;
-  }
-  function fmt(val) { return val ? escapeHtml(String(val)) : '<span class="muted">—</span>'; }
-  function fmtDate(val) {
-    if (!val) return '<span class="muted">—</span>';
-    const d = new Date(val);
-    return isNaN(d) ? escapeHtml(val) : escapeHtml(d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }));
-  }
-
-  const rev = ov.RevisionNo !== undefined && ov.RevisionNo !== null && ov.RevisionNo !== ''
-    ? `<code>${escapeHtml(String(ov.RevisionNo))}</code>`
-    : '<span class="muted">—</span>';
-  parts.push(field('Revision', `${rev} &nbsp;·&nbsp; ${fmtDate(ov.RevisionDate)}`));
-  parts.push(field('Last updated', `${fmt(ov.UpdatedBy)} &nbsp;·&nbsp; ${fmtDate(ov.RecordDate)}`));
-  if (ov.ExtClassName) parts.push(field('Extension class', `<code>${escapeHtml(ov.ExtClassName)}</code>`));
 
   // Inheritance chain — build a ladder showing parent (Extends) and children (extenders)
   const replacers = state.extenders.filter((e) => String(e.ReplaceFlag) === '1');
@@ -382,10 +456,9 @@ function renderTables() {
   $('#tables-body').querySelectorAll('tr.row-clickable').forEach((tr) => {
     tr.addEventListener('click', () => {
       const { alias, tablename } = tr.dataset;
-      state.tableBindingFilter =
-        state.tableBindingFilter && state.tableBindingFilter.alias === alias
-          ? null
-          : { alias, name: tablename };
+      const toggling = state.tableBindingFilter && state.tableBindingFilter.alias === alias;
+      state.tableBindingFilter = toggling ? null : { alias, name: tablename };
+      setUrl(toggling ? null : 'table', toggling ? null : tablename);
       renderTables();
       renderProps();
     });
@@ -485,6 +558,7 @@ function renderProps() {
       indicator.classList.remove('hidden');
       indicator.querySelector('#clear-binding').addEventListener('click', () => {
         state.tableBindingFilter = null;
+        setUrl();
         renderTables();
         renderProps();
       });
@@ -526,7 +600,7 @@ function renderProps() {
       const columnCell = r.ColumnName
         ? escapeHtml(r.ColumnName)
         : r.PropertyValue
-          ? `<code class="text-xs muted" title="${escapeHtml(r.PropertyValue)}">${escapeHtml(truncate(r.PropertyValue))}</code>`
+          ? `<code class="text-xs expr-code" title="${escapeHtml(r.PropertyValue)}">${escapeHtml(truncate(r.PropertyValue))}</code>`
           : '';
       const sourceBadge = r._sourceIdo
         ? ` <span class="badge badge-chain" title="From ${escapeHtml(r._sourceIdo)}">${escapeHtml(r._sourceIdo)}</span>`
@@ -553,6 +627,7 @@ function renderProps() {
 function openPropertyDrawer(propName) {
   const row = state.properties.find((r) => r.PropertyName === propName);
   if (!row) return;
+  setUrl('property', propName);
   const drawer = $('#prop-drawer');
   drawer.classList.add('open');
   $('#prop-drawer-title').textContent = propName;
@@ -612,7 +687,7 @@ function openPropertyDrawer(propName) {
   if (row.PropertyValue) {
     sections.push(`<div>
       <div class="text-xs muted mb-1">PropertyValue (derived SQL expression)</div>
-      <pre class="text-xs bg-slate-50 border rounded p-2 overflow-auto whitespace-pre-wrap">${escapeHtml(row.PropertyValue)}</pre>
+      <pre class="expr-pre">${escapeHtml(row.PropertyValue)}</pre>
     </div>`);
   }
   if (row.ColumnName) {
@@ -745,6 +820,7 @@ function renderMethods() {
 
 // ---------- Method drawer ----------
 async function openMethodDrawer(method) {
+  setUrl('method', method);
   const drawer = $('#drawer');
   drawer.classList.add('open');
   $('#drawer-title').textContent = method;
@@ -820,22 +896,26 @@ async function openMethodDrawer(method) {
 }
 
 // ---------- Cross-IDO search ----------
+let searchOp = '=';
+
 async function runSearch() {
   const type = $('#search-type').value;
+  const op = searchOp;
   const q = $('#search-input').value.trim();
   if (!q) return;
   try {
-    const { items } = await fetchJSON(`/api/search/${type}?q=${encodeURIComponent(q)}`);
-    renderSearchResults(type, q, items);
+    const { items } = await fetchJSON(`/api/search/${type}?q=${encodeURIComponent(q)}&op=${encodeURIComponent(op)}`);
+    renderSearchResults(type, q, op, items);
   } catch (err) {
     toast(`Search failed: ${err.message}`);
   }
 }
 
-function renderSearchResults(type, q, items) {
+function renderSearchResults(type, q, op, items) {
   $('#search-results-wrap').classList.remove('hidden');
   const labelMap = { properties: 'property', expressions: 'expression', methods: 'method', tables: 'table' };
-  $('#search-results-title').textContent = `${items.length} match${items.length === 1 ? '' : 'es'} for ${labelMap[type] || type} "${q}"`;
+  const opLabel = op === '=' ? 'equal to' : 'containing';
+  $('#search-results-title').textContent = `${items.length} match${items.length === 1 ? '' : 'es'} for ${labelMap[type] || type} ${opLabel} "${q}"`;
   const headCols = {
     properties: ['IDO', 'PropertyName', 'DataType', 'ColumnName'],
     expressions: ['IDO', 'PropertyName', 'DataType', 'Expression'],
@@ -940,6 +1020,13 @@ function wire() {
     });
   });
 
+  $$('.search-op-chip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      $$('.search-op-chip').forEach((b) => b.classList.remove('chip-on'));
+      btn.classList.add('chip-on');
+      searchOp = btn.dataset.op;
+    });
+  });
   $('#search-btn').addEventListener('click', runSearch);
   $('#search-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') runSearch();
@@ -947,16 +1034,39 @@ function wire() {
   $('#search-close').addEventListener('click', () =>
     $('#search-results-wrap').classList.add('hidden'),
   );
-  $('#drawer-close').addEventListener('click', () => $('#drawer').classList.remove('open'));
-  $('#prop-drawer-close').addEventListener('click', () => $('#prop-drawer').classList.remove('open'));
+  $('#drawer-close').addEventListener('click', () => { $('#drawer').classList.remove('open'); setUrl(); });
+  $('#prop-drawer-close').addEventListener('click', () => { $('#prop-drawer').classList.remove('open'); setUrl(); });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       $('#drawer').classList.remove('open');
       $('#prop-drawer').classList.remove('open');
+      setUrl();
     }
   });
 }
 
+// ---------- Theme ----------
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem('ido-theme', theme);
+  $('#theme-toggle').title = theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+}
+
 wire();
+// Sync chip UI to initial accessFilter state
+$$('.access-chip').forEach((b) => {
+  b.classList.toggle('chip-on', b.dataset.access === state.accessFilter);
+});
+// Init theme (default: dark)
+applyTheme(localStorage.getItem('ido-theme') || 'dark');
+$('#theme-toggle').addEventListener('click', () => {
+  applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+});
 loadEnv();
 loadCollections();
+
+// Boot: honour the current URL path on load
+if (location.pathname !== '/') routeTo(location.pathname);
+
+// Back / forward
+window.addEventListener('popstate', () => routeTo(location.pathname));
