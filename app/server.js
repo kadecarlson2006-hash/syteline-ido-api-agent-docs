@@ -34,7 +34,7 @@ app.get(
     else if (accessAs === 'Custom') parts.push({ field: 'AccessAs', op: '=', value: '__EMPTY__' });
     const filter = buildFilter(parts);
     const result = await syteline.load('IdoCollections', {
-      properties: 'CollectionName,AccessAs',
+      properties: 'CollectionName,AccessAs,ReplaceFlag',
       filter: filter || undefined,
       orderby: 'CollectionName',
       recordcap: 0,
@@ -47,22 +47,22 @@ app.get(
   '/api/ido/:name/overview',
   wrap(async (req) => {
     const { name } = req.params;
-    const result = await syteline.load('IdoCollections', {
-      properties: 'CollectionName,AccessAs',
-      filter: buildFilter([{ field: 'CollectionName', op: '=', value: name }]),
-      recordcap: 1,
-    });
-    const item = (result.Items || [])[0] || null;
-    let extended = null;
-    if (item) {
-      const probe = await syteline.load('IdoCollections', {
-        properties: 'CollectionName,AccessAs',
-        filter: buildFilter([{ field: 'CollectionName', op: '=', value: `CMP_${name}` }]),
+    const [result, extendersResult] = await Promise.all([
+      syteline.load('IdoCollections', {
+        properties: 'CollectionName,AccessAs,CollectionDesc,Extends,ReplaceFlag,RevisionNo,RevisionDate,RecordDate,UpdatedBy,DevelopmentFlag,ExtClassName,DerHasProdVersion',
+        filter: buildFilter([{ field: 'CollectionName', op: '=', value: name }]),
         recordcap: 1,
-      });
-      extended = (probe.Items || [])[0] || null;
-    }
-    return { item, extended };
+      }),
+      syteline.load('IdoCollections', {
+        properties: 'CollectionName,AccessAs,ReplaceFlag',
+        filter: buildFilter([{ field: 'Extends', op: '=', value: name }]),
+        orderby: 'CollectionName',
+        recordcap: 20,
+      }),
+    ]);
+    const item = (result.Items || [])[0] || null;
+    const extenders = extendersResult.Items || [];
+    return { item, extenders };
   }),
 );
 
@@ -82,7 +82,28 @@ app.get(
   '/api/ido/:name/properties',
   wrap(async (req) => {
     const result = await syteline.load('IdoProperties', {
-      properties: 'PropertyName,DataType,PropertyClass,IsReadOnly,ColumnName,ColumnTableAlias',
+      properties: [
+        'PropertyName',
+        'DataType',
+        'DataLength',
+        'PropertyClass',
+        'PropertyType',
+        'PropertyValue',
+        'PropertyValueArguments',
+        'ColumnName',
+        'ColumnTableAlias',
+        'ColumnTableName',
+        'SubCollectionName',
+        'IsReadOnly',
+        'IsRequired',
+        'KeySequence',
+        'PseudoKeyFlag',
+        'Sequence',
+        'DomainIDOName',
+        'DomainProperty',
+        'DefaultValue',
+        'Validators',
+      ].join(','),
       filter: buildFilter([{ field: 'CollectionName', op: '=', value: req.params.name }]),
       orderby: 'PropertyName',
       recordcap: 0,
@@ -128,10 +149,28 @@ app.get(
     const { q } = req.query;
     if (!q) return { items: [] };
     const result = await syteline.load('IdoProperties', {
-      properties: 'CollectionName,PropertyName,DataType,ColumnName',
+      properties: 'CollectionName,PropertyName,DataType,ColumnName,PropertyValue',
       filter: buildFilter([{ field: 'PropertyName', op: 'LIKE', value: q }]),
       orderby: 'CollectionName,PropertyName',
       recordcap: 0,
+    });
+    return { items: result.Items || [] };
+  }),
+);
+
+app.get(
+  '/api/search/expressions',
+  wrap(async (req) => {
+    const { q } = req.query;
+    if (!q) return { items: [] };
+    // Search the PropertyValue field — derived-property SQL expressions.
+    // Useful for finding all IDOs with COALESCE/CASE/ISNULL patterns,
+    // or every property that references a given column or sub-expression.
+    const result = await syteline.load('IdoProperties', {
+      properties: 'CollectionName,PropertyName,DataType,ColumnName,PropertyValue',
+      filter: buildFilter([{ field: 'PropertyValue', op: 'LIKE', value: q }]),
+      orderby: 'CollectionName,PropertyName',
+      recordcap: 500,
     });
     return { items: result.Items || [] };
   }),

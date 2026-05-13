@@ -20,16 +20,29 @@ apply.
   - **Tables** (`IdoTables`) with per-column text filters and a Primary /
     Secondary badge from `TableType`.
   - **Properties** (`IdoProperties`) with per-column filters and quick-toggle
-    chips for Writable / Read-only / Derived / Subcollection.
+    chips for Writable / Read-only / Derived / Subcollection / Key /
+    ⚠️ Non-sargable. The Column / Expression column shows the underlying column
+    for bound properties, or the truncated `PropertyValue` SQL expression for
+    derived properties. Properties whose expression contains COALESCE / CASE /
+    ISNULL / NULLIF / scalar UDFs are flagged with a ⚠️ — these are
+    non-sargable and any form filter targeting them forces a full table scan.
+    Click a property row to open a detail drawer with the full expression,
+    referenced sibling properties (clickable to navigate), domain target,
+    and all relevant metadata.
   - **Methods** (`IdoMethods`) with per-column filters. Click a method row to
     open a drawer that fetches `IdoMethodParameters` and shows the ordered
     signature with IN / OUT / IN-OUT badges (derived from `InputFlag` and
     `OutputFlag`).
-- **Top bar — cross-IDO search**: pick `Property`, `Method`, or `Table`, type a
-  string, and hit Search. The proxy issues a single LIKE query against the
-  matching meta-IDO and returns every IDO that has a match. Example use case:
-  type `Item` under "Property name" → see every IDO that exposes an `Item`
-  property. Clicking a result row jumps the left pane to that IDO.
+- **Top bar — cross-IDO search**: pick `Property name`, `Expression
+  (PropertyValue)`, `Method name`, or `Table name`, type a string, and hit
+  Search. The proxy issues a single LIKE query against the matching meta-IDO
+  and returns every IDO that has a match.
+  - `Property name` example: type `Item` → every IDO that exposes an `Item`
+    property.
+  - `Expression` example: type `COALESCE` → every IDO property whose SQL
+    expression contains COALESCE. Lets you scan the whole catalog for the
+    non-sargable pattern that bit SL10HD-429.
+  - Clicking a result row jumps the left pane to that IDO.
 
 ## Running locally
 
@@ -85,6 +98,7 @@ All routes return JSON. Errors from Syteline come back as HTTP 502 with
 | `GET /api/ido/:name/methods`                                | `IdoMethods` for the IDO               |
 | `GET /api/ido/:name/methods/:method/parameters`             | `IdoMethodParameters` for the method   |
 | `GET /api/search/properties?q`                              | Cross-IDO property name LIKE           |
+| `GET /api/search/expressions?q`                             | Cross-IDO `PropertyValue` LIKE (derived expression search) |
 | `GET /api/search/methods?q`                                 | Cross-IDO method name LIKE             |
 | `GET /api/search/tables?q`                                  | Cross-IDO table name LIKE              |
 
