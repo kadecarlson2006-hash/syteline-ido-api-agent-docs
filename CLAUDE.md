@@ -37,7 +37,7 @@ The repository contains comprehensive documentation in the `docs/` folder:
 
 - **Search for IDOs:** Use `IdoCollections` meta-IDO to find available IDOs
 - **Explore IDO structure:** Use `IdoProperties`, `IdoMethods`, `IdoMethodParameters` to understand any IDO
-- **Check DELIVERABLE_LOG:** Before starting work, check `DELIVERABLE_LOG.md` — your task may already be solved by a previous agent
+- **Check DELIVERABLE_LOG:** Before starting work, check `DELIVERABLE_LOG.md` — a previous agent may have already built the workflow. Only append a new entry when you've completed a non-trivial end-user IDO workflow; do not log repo maintenance, doc edits, or validation runs.
 
 ### 3. Testing API Calls
 

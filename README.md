@@ -4,7 +4,7 @@ Reference documentation for the Infor Syteline (CloudSuite Industrial) IDO REST 
 
 ## Deliverable Log
 
-[`DELIVERABLE_LOG.md`](DELIVERABLE_LOG.md) is a running log of tasks agents have completed in this repo. Each entry records the request, the discovery path taken, and the final deliverable (curl command). **Read it first** — your task may already be solved. **Append an entry when you finish** so the next agent can benefit.
+[`DELIVERABLE_LOG.md`](DELIVERABLE_LOG.md) is a running log of reusable IDO workflows agents have built for users. Each entry records the request, the discovery path, and the final curl command(s). **Read it first** — your task may already be solved. **Append an entry when you finish a non-trivial IDO workflow** so the next agent can benefit. Scope is end-user API work only — don't log repo maintenance, doc edits, or validation runs.
 
 ---
 
