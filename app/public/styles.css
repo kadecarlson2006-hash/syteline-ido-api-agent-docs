@@ -1299,25 +1299,50 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
   filter: drop-shadow(0 0 4px var(--sienna-glow));
 }
 
+.prop-icon {
+  display: inline-block;
+  margin-right: 4px;
+  cursor: help;
+  font-style: normal;
+  line-height: 1;
+}
+
 /* ============================================================
    DRAWERS
    ============================================================ */
 
+/* Backdrop — sits behind all drawers, in front of main content */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 49;
+  display: none;
+  transition: background 250ms var(--ease);
+}
+.drawer-backdrop.active {
+  display: block;
+  background: rgba(0, 0, 0, 0.28);
+}
+html[data-theme="light"] .drawer-backdrop.active {
+  background: rgba(0, 0, 0, 0.16);
+}
+
 .drawer {
   position: fixed;
   inset: 0 0 0 auto;
-  width: 560px;
-  max-width: 100vw;
+  width: 680px;
+  max-width: 92vw;
   background: var(--ink-1);
   border-left: 1px solid var(--rule);
   box-shadow: -32px 0 64px -20px rgba(0, 0, 0, 0.6);
   display: none;
   flex-direction: column;
   z-index: 50;
-  animation: drawer-in 300ms var(--ease);
+  animation: drawer-in 250ms var(--ease);
 }
 .drawer.open { display: flex; }
-.method-drawer { width: 540px; }
+.method-drawer { width: 680px; }
 
 @keyframes drawer-in {
   from { transform: translateX(40px); opacity: 0; }
@@ -1382,6 +1407,53 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
   color: var(--brass);
   border-color: var(--brass-soft);
 }
+
+/* Table SQL button in the tables grid */
+.td-action { width: 32px; text-align: center; padding: 0 4px !important; }
+.table-sql-btn {
+  font-size: 13px;
+  color: var(--steel);
+  opacity: 0.75;
+  transition: opacity 120ms var(--ease), color 120ms var(--ease), background 120ms var(--ease);
+  padding: 3px 6px;
+  border: 1px solid var(--steel-soft);
+  background: rgba(107, 168, 197, 0.07);
+}
+.table-sql-btn:hover { opacity: 1; background: rgba(107, 168, 197, 0.18); }
+
+/* Table definition drawer */
+.tdef-type { padding: 14px 22px 0; }
+.tdef-section {
+  padding: 14px 22px;
+  border-top: 1px solid var(--rule-soft);
+}
+.tdef-section-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+  margin-bottom: 10px;
+}
+.tdef-count {
+  font-size: 9px;
+  color: var(--paper-mute);
+  letter-spacing: 0.1em;
+  margin-left: 6px;
+}
+.tdef-sql {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--bone-2);
+  background: var(--ink-2);
+  border: 1px solid var(--rule-soft);
+  padding: 14px 16px;
+  overflow: auto;
+  white-space: pre-wrap;
+  line-height: 1.65;
+  max-height: 55vh;
+}
+.tdef-cols td { font-size: 12px; }
+.tdef-cols td:first-child { font-weight: 500; }
 
 /* Method drawer sections */
 .method-section-loading {
@@ -1544,6 +1616,84 @@ button.chain-name:hover { color: var(--bone); text-decoration: underline; }
   margin: 0;
   letter-spacing: 0.005em;
 }
+
+/* DB column card inside property drawer */
+.prop-db-card {
+  border: 1px solid var(--steel-soft);
+  background: rgba(107, 168, 197, 0.04);
+  position: relative;
+}
+.prop-db-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 14px 0;
+}
+.prop-db-label {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--steel);
+  white-space: nowrap;
+}
+.prop-db-ref {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-dim);
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.prop-db-body {
+  padding: 4px 0 2px;
+}
+.prop-db-loading {
+  padding: 8px 14px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+.prop-db-missing {
+  display: block;
+  padding: 8px 14px;
+  font-size: 11px;
+  color: var(--sienna);
+}
+.prop-db-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.prop-db-table td {
+  padding: 5px 14px;
+  border-bottom: 1px solid rgba(107, 168, 197, 0.1);
+  font-size: 11px;
+  vertical-align: baseline;
+}
+.prop-db-table tr:last-child td { border-bottom: 0; }
+.prop-db-table td:first-child {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--paper-dim);
+  width: 72px;
+  white-space: nowrap;
+}
+.prop-db-table code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: var(--bone-2);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.prop-db-match    { font-size: 10px; color: var(--moss);   margin-left: 8px; letter-spacing: 0.04em; }
+.prop-db-mismatch { font-size: 10px; color: var(--sienna); margin-left: 8px; letter-spacing: 0.04em; }
+.prop-db-nullable { font-size: 10px; color: var(--paper-mute); }
+.prop-db-notnull  { font-size: 10px; color: var(--bone-dim); letter-spacing: 0.04em; }
 
 /* Domain card inside property drawer */
 .domain-card {

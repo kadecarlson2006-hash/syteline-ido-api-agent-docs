@@ -28,9 +28,19 @@ if (missing.length) {
 }
 
 export const env = {
-  baseUrl: process.env.SYTELINE_BASE_URL.replace(/\/$/, ''),
-  site: process.env.DEFAULT_SITE,
+  // Syteline IDO REST API
+  baseUrl:  process.env.SYTELINE_BASE_URL.replace(/\/$/, ''),
+  site:     process.env.DEFAULT_SITE,
   username: process.env.SYTELINE_AGENT_USERNAME,
   password: process.env.SYTELINE_AGENT_PASSWORD,
-  port: Number(process.env.PORT) || 3000,
+  port:     Number(process.env.PORT) || 3000,
+
+  // SQL Server — optional; DB routes return 503 when dbServer is absent.
+  // Auth: set DB_DOMAIN for Windows/NTLM auth (dev).
+  //       Omit DB_DOMAIN and use a SQL login for containers/CI.
+  dbServer:   process.env.DB_SERVER   || null,
+  dbName:     process.env.DB_NAME     || null,
+  dbDomain:   process.env.DB_DOMAIN   || null,
+  dbUser:     process.env.DB_USER     || null,
+  dbPassword: process.env.DB_PASSWORD || null,
 };

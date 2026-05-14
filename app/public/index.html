@@ -157,6 +157,7 @@
                     <th>Type</th>
                     <th>JoinType</th>
                     <th>JoinText</th>
+                    <th></th>
                   </tr>
                   <tr class="filter-row">
                     <th><input data-field="TableName" placeholder="filter…" /></th>
@@ -164,6 +165,7 @@
                     <th><input data-field="TableType" placeholder="filter…" /></th>
                     <th><input data-field="JoinType" placeholder="filter…" /></th>
                     <th><input data-field="JoinText" placeholder="filter…" /></th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody id="tables-body"></tbody>
@@ -259,6 +261,21 @@
         <button id="prop-drawer-close" class="drawer-close" aria-label="Close">✕</button>
       </div>
       <div class="drawer-body" id="prop-drawer-body"></div>
+    </div>
+
+    <div id="drawer-backdrop" class="drawer-backdrop"></div>
+
+    <!-- Table / View definition drawer -->
+    <div id="table-drawer" class="drawer table-drawer hidden">
+      <div class="drawer-head">
+        <div>
+          <span class="drawer-kicker">Table · View</span>
+          <h3 class="drawer-title" id="table-drawer-title">—</h3>
+          <p class="drawer-sub" id="table-drawer-sub"></p>
+        </div>
+        <button id="table-drawer-close" class="drawer-close" aria-label="Close">✕</button>
+      </div>
+      <div class="drawer-body" id="table-drawer-body"></div>
     </div>
 
     <!-- Method parameters drawer -->

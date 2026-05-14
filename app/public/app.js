@@ -68,6 +68,21 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
+// ---------- Drawer helpers ----------
+function openDrawer(el) {
+  el.classList.add('open');
+  $('#drawer-backdrop').classList.add('active');
+}
+function closeDrawer(el) {
+  el.classList.remove('open');
+  // Hide backdrop only when no drawer remains open
+  if (!$$('.drawer.open').length) $('#drawer-backdrop').classList.remove('active');
+}
+function closeAllDrawers() {
+  $$('.drawer.open').forEach((d) => d.classList.remove('open'));
+  $('#drawer-backdrop').classList.remove('active');
+}
+
 // ---------- Routing ----------
 let pendingRoute = null; // { type, name } applied after IDO finishes loading
 
@@ -420,6 +435,13 @@ function tableSort(r) {
   return 2;
 }
 
+function propSort(r) {
+  if (r._sourceIdo)                                    return 0; // extended chain
+  if (Number(r.KeySequence) > 0)                       return 1; // key field(s)
+  if (r.IsRequired === '1' || r.IsRequired === 1)      return 2; // required
+  return 3;
+}
+
 function renderTables() {
   const allRows = state.tables
     .filter((r) => Object.entries(state.tableFilters).every(([f, v]) => matchesFilter(r[f], v)))
@@ -449,6 +471,7 @@ function renderTables() {
         <td>${badge}</td>
         <td>${escapeHtml(r.JoinType)}</td>
         <td class="text-xs muted">${escapeHtml(r.JoinText)}</td>
+        <td class="td-action"><button class="table-sql-btn" data-table="${escapeHtml(r.TableName)}" title="View SQL definition">⬡</button></td>
       </tr>`;
     })
     .join('');
@@ -461,6 +484,12 @@ function renderTables() {
       setUrl(toggling ? null : 'table', toggling ? null : tablename);
       renderTables();
       renderProps();
+    });
+  });
+  $('#tables-body').querySelectorAll('.table-sql-btn').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openTableDrawer(btn.dataset.table);
     });
   });
 
@@ -547,6 +576,68 @@ function truncate(str, max = 70) {
   return s.length > max ? `${s.slice(0, max - 1)}…` : s;
 }
 
+// ---------- Table definition drawer ----------
+async function openTableDrawer(tableName) {
+  const drawer = $('#table-drawer');
+  openDrawer(drawer);
+  $('#table-drawer-title').textContent = tableName;
+  $('#table-drawer-sub').textContent = state.selected;
+  const body = $('#table-drawer-body');
+  body.innerHTML = `<div class="prop-db-loading">fetching definition…</div>`;
+
+  try {
+    const { objectType, definition, columns } = await fetchJSON(
+      `/api/db/table/${encodeURIComponent(tableName)}/definition`,
+    );
+
+    if (!$('#table-drawer-body')) return;
+
+    const typeBadge = objectType === 'VIEW'
+      ? `<span class="badge badge-derived">View</span>`
+      : objectType === 'USER_TABLE'
+        ? `<span class="badge">Table</span>`
+        : `<span class="badge muted">Unknown</span>`;
+
+    const sections = [`<div class="tdef-type">${typeBadge}</div>`];
+
+    if (definition) {
+      sections.push(`<div class="tdef-section">
+        <div class="tdef-section-label">Definition</div>
+        <pre class="tdef-sql">${escapeHtml(definition)}</pre>
+      </div>`);
+    }
+
+    if (columns.length) {
+      const colRows = columns.map((c) => {
+        const typeStr = escapeHtml(dbTypeLabel(c));
+        const nullable = c.IS_NULLABLE === 'YES'
+          ? '<span class="prop-db-nullable">null</span>'
+          : '<span class="prop-db-notnull">NOT NULL</span>';
+        return `<tr>
+          <td class="font-medium">${escapeHtml(c.COLUMN_NAME)}</td>
+          <td><code>${typeStr}</code></td>
+          <td>${nullable}</td>
+          <td class="muted text-xs">${c.COLUMN_DEFAULT ? escapeHtml(c.COLUMN_DEFAULT) : ''}</td>
+        </tr>`;
+      }).join('');
+      sections.push(`<div class="tdef-section">
+        <div class="tdef-section-label">Columns <span class="tdef-count">${columns.length}</span></div>
+        <table class="data-table tdef-cols">
+          <thead><tr><th>Column</th><th>Type</th><th>Nullable</th><th>Default</th></tr></thead>
+          <tbody>${colRows}</tbody>
+        </table>
+      </div>`);
+    } else {
+      sections.push(`<p class="prop-db-missing">No columns found — object may not exist in this database.</p>`);
+    }
+
+    body.innerHTML = sections.join('');
+  } catch (err) {
+    const b = $('#table-drawer-body');
+    if (b) b.innerHTML = `<p class="prop-db-missing">${escapeHtml(err.message)}</p>`;
+  }
+}
+
 function renderProps() {
   const bf = state.tableBindingFilter;
 
@@ -578,7 +669,7 @@ function renderProps() {
         return matchesFilter(target, v);
       });
     })
-    .sort((a, b) => (a._sourceIdo ? 0 : 1) - (b._sourceIdo ? 0 : 1));
+    .sort((a, b) => propSort(a) - propSort(b));
   $('#props-count').textContent = `${rows.length} / ${state.properties.length}`;
   $('#props-body').innerHTML = rows
     .map((r) => {
@@ -596,6 +687,12 @@ function renderProps() {
       const sargWarn = isNonSargable(r)
         ? `<span class="warn-icon" title="Expression contains a non-sargable construct (COALESCE/CASE/ISNULL/UDF). Filters on this property can't use indexes.">⚠️</span>`
         : '';
+      const keyIcon = keySeq > 0
+        ? `<span class="prop-icon" title="Key field (sequence ${keySeq})">🔑</span>`
+        : '';
+      const reqIcon = isRequired && keySeq === 0
+        ? `<span class="prop-icon" title="Required field">✳️</span>`
+        : '';
       // Show the column for bound props; show the (truncated) expression for derived.
       const columnCell = r.ColumnName
         ? escapeHtml(r.ColumnName)
@@ -609,7 +706,7 @@ function renderProps() {
         ? ` <span class="badge badge-domain" title="Lookup: ${escapeHtml(r.DomainIDOName)}.${escapeHtml(r.DomainProperty || '?')}">▾ ${escapeHtml(r.DomainIDOName)}</span>`
         : '';
       return `<tr class="row-clickable" data-prop="${escapeHtml(r.PropertyName)}">
-        <td class="font-medium">${sargWarn}${escapeHtml(r.PropertyName)}${sourceBadge}${domainBadge}</td>
+        <td class="font-medium">${sargWarn}${keyIcon}${reqIcon}${escapeHtml(r.PropertyName)}${sourceBadge}${domainBadge}</td>
         <td>${escapeHtml(r.DataType)}</td>
         <td><span class="badge ${clsBadgeClass}">${escapeHtml(clsLabel)}</span></td>
         <td>${columnCell}</td>
@@ -623,13 +720,85 @@ function renderProps() {
     .forEach((tr) => tr.addEventListener('click', () => openPropertyDrawer(tr.dataset.prop)));
 }
 
+// ---------- DB column enrichment ----------
+
+// Loose IDO DataType → SQL Server type family map for match checking
+const IDO_TYPE_FAMILIES = {
+  String:   ['varchar', 'nvarchar', 'char', 'nchar', 'text', 'ntext'],
+  Decimal:  ['decimal', 'numeric', 'float', 'real', 'money', 'smallmoney'],
+  Int:      ['int', 'bigint', 'smallint', 'tinyint'],
+  DateTime: ['datetime', 'datetime2', 'smalldatetime', 'date', 'time'],
+  Bool:     ['bit'],
+  Logical:  ['bit'],
+};
+
+function dbTypeLabel(col) {
+  if (!col) return '—';
+  const len = col.CHARACTER_MAXIMUM_LENGTH;
+  const prec = col.NUMERIC_PRECISION;
+  const scale = col.NUMERIC_SCALE;
+  if (len !== null && len !== undefined) return `${col.DATA_TYPE}(${len === -1 ? 'max' : len})`;
+  if (prec !== null && prec !== undefined && scale !== null) return `${col.DATA_TYPE}(${prec},${scale})`;
+  return col.DATA_TYPE;
+}
+
+function dbTypeMatch(idoType, col) {
+  if (!col || !idoType) return null;
+  const family = IDO_TYPE_FAMILIES[idoType];
+  if (!family) return null; // unknown IDO type — don't guess
+  return family.includes(col.DATA_TYPE.toLowerCase()) ? 'match' : 'mismatch';
+}
+
+async function loadDbColumn(row) {
+  const body = $('#prop-db-body');
+  if (!body) return;
+  try {
+    const { item } = await fetchJSON(
+      `/api/db/column/${encodeURIComponent(row.ColumnTableName)}/${encodeURIComponent(row.ColumnName)}`,
+    );
+    const b = $('#prop-db-body'); // re-query in case drawer was closed/reopened
+    if (!b) return;
+    if (!item) {
+      b.classList.remove('prop-db-loading');
+      b.innerHTML = `<span class="prop-db-missing">Column not found in DB — table or column name mismatch</span>`;
+      return;
+    }
+    const typeStr = escapeHtml(dbTypeLabel(item));
+    const match = dbTypeMatch(row.DataType, item);
+    const matchHtml = match === 'match'
+      ? `<span class="prop-db-match">✓ ${escapeHtml(row.DataType)}</span>`
+      : match === 'mismatch'
+        ? `<span class="prop-db-mismatch">⚠ IDO says ${escapeHtml(row.DataType)}</span>`
+        : '';
+    const nullable = item.IS_NULLABLE === 'YES'
+      ? '<span class="prop-db-nullable">nullable</span>'
+      : '<span class="prop-db-notnull">NOT NULL</span>';
+    const dflt = item.COLUMN_DEFAULT
+      ? `<code class="text-xs">${escapeHtml(item.COLUMN_DEFAULT)}</code>`
+      : '<span class="muted">none</span>';
+    b.classList.remove('prop-db-loading');
+    b.innerHTML = `
+      <table class="prop-db-table">
+        <tr><td>Type</td><td><code>${typeStr}</code> ${matchHtml}</td></tr>
+        <tr><td>Nullable</td><td>${nullable}</td></tr>
+        <tr><td>Default</td><td>${dflt}</td></tr>
+      </table>`;
+  } catch (err) {
+    const b = $('#prop-db-body');
+    if (b) {
+      b.classList.remove('prop-db-loading');
+      b.innerHTML = `<span class="prop-db-missing">${escapeHtml(err.message)}</span>`;
+    }
+  }
+}
+
 // ---------- Property detail drawer ----------
 function openPropertyDrawer(propName) {
   const row = state.properties.find((r) => r.PropertyName === propName);
   if (!row) return;
   setUrl('property', propName);
   const drawer = $('#prop-drawer');
-  drawer.classList.add('open');
+  openDrawer(drawer);
   $('#prop-drawer-title').textContent = propName;
   $('#prop-drawer-sub').textContent = state.selected;
 
@@ -691,9 +860,14 @@ function openPropertyDrawer(propName) {
     </div>`);
   }
   if (row.ColumnName) {
-    sections.push(`<div>
-      <div class="text-xs muted mb-1">Bound column</div>
-      <code class="text-xs">${escapeHtml(row.ColumnTableAlias || row.ColumnTableName || '?')}.${escapeHtml(row.ColumnName)}</code>
+    // Placeholder — filled in async by loadDbColumn() below
+    const tableDisplay = escapeHtml(row.ColumnTableAlias || row.ColumnTableName || '?');
+    sections.push(`<div id="prop-db-card" class="prop-db-card">
+      <div class="prop-db-header">
+        <span class="prop-db-label">⬡ Database Column</span>
+        <code class="prop-db-ref">${tableDisplay}.${escapeHtml(row.ColumnName)}</code>
+      </div>
+      <div id="prop-db-body" class="prop-db-body prop-db-loading">fetching…</div>
     </div>`);
   }
 
@@ -773,6 +947,9 @@ function openPropertyDrawer(propName) {
 
   $('#prop-drawer-body').innerHTML = sections.join('');
 
+  // Async DB column enrichment for bound properties
+  if (row.ColumnName && row.ColumnTableName) loadDbColumn(row);
+
   // Wire up clickable references inside the drawer
   $('#prop-drawer-body')
     .querySelectorAll('.prop-ref')
@@ -783,7 +960,7 @@ function openPropertyDrawer(propName) {
     .querySelectorAll('.ido-link')
     .forEach((btn) =>
       btn.addEventListener('click', () => {
-        $('#prop-drawer').classList.remove('open');
+        closeDrawer($('#prop-drawer'));
         selectIdo(btn.dataset.ido);
       }),
     );
@@ -822,7 +999,7 @@ function renderMethods() {
 async function openMethodDrawer(method) {
   setUrl('method', method);
   const drawer = $('#drawer');
-  drawer.classList.add('open');
+  openDrawer(drawer);
   $('#drawer-title').textContent = method;
   $('#drawer-sub').textContent = state.selected;
   const wrap = $('#drawer-body-wrap');
@@ -1034,14 +1211,12 @@ function wire() {
   $('#search-close').addEventListener('click', () =>
     $('#search-results-wrap').classList.add('hidden'),
   );
-  $('#drawer-close').addEventListener('click', () => { $('#drawer').classList.remove('open'); setUrl(); });
-  $('#prop-drawer-close').addEventListener('click', () => { $('#prop-drawer').classList.remove('open'); setUrl(); });
+  $('#drawer-close').addEventListener('click', () => { closeDrawer($('#drawer')); setUrl(); });
+  $('#prop-drawer-close').addEventListener('click', () => { closeDrawer($('#prop-drawer')); setUrl(); });
+  $('#table-drawer-close').addEventListener('click', () => closeDrawer($('#table-drawer')));
+  $('#drawer-backdrop').addEventListener('click', () => { closeAllDrawers(); setUrl(); });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      $('#drawer').classList.remove('open');
-      $('#prop-drawer').classList.remove('open');
-      setUrl();
-    }
+    if (e.key === 'Escape') { closeAllDrawers(); setUrl(); }
   });
 }
 
