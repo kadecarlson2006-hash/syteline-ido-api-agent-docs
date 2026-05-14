@@ -76,3 +76,7 @@ See [docs/README.md](docs/README.md) for the full table of contents.
 | [Background Tasks](docs/04_BGTASK_SUBMISSION.md) | Submitting and monitoring background tasks |
 | [Discovery Guide](docs/05_DISCOVERY_GUIDE.md) | How to find any IDO, its properties, methods, and parameters |
 | [Gotchas](docs/06_GOTCHAS.md) | Common pitfalls and troubleshooting |
+
+## MCP Server
+
+[`mcp/`](mcp/) contains a Dockerized MCP server that exposes the IDO REST API to Claude (find/describe IDOs, load/invoke/update). See [`mcp/README.md`](mcp/README.md) for build and registration steps.
