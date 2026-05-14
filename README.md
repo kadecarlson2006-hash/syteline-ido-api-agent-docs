@@ -76,9 +76,3 @@ See [docs/README.md](docs/README.md) for the full table of contents.
 | [Background Tasks](docs/04_BGTASK_SUBMISSION.md) | Submitting and monitoring background tasks |
 | [Discovery Guide](docs/05_DISCOVERY_GUIDE.md) | How to find any IDO, its properties, methods, and parameters |
 | [Gotchas](docs/06_GOTCHAS.md) | Common pitfalls and troubleshooting |
-
-## Hermes Agent Skills
-
-The [`skills/`](skills/) directory contains **51 Hermes Agent skills** covering the full breadth of official Infor Mongoose/Syteline documentation — far beyond just the REST API. Skills cover form development, IDO development, core extensibility, AES, administration, App Builder, and more.
-
-See [skills/README.md](skills/README.md) for the complete catalog and installation instructions.
