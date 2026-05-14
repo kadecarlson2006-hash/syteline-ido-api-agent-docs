@@ -23,14 +23,11 @@ set -a; . ./.env; set +a   # bash
 ## Run
 
 ```bash
-# All Tier A + B skills (~22), 5-wide pool of claude1..claude5
+# Every skill directory under ../skills, 5-wide pool of claude1..claude5
 python validate_all.py --skills-dir ../skills
 
 # A single skill
 python validate_skill.py ../skills/syteline-rest-api-playbook
-
-# Just Tier A
-python validate_all.py --skills-dir ../skills --tier A
 ```
 
 Per-skill JSON lands in `results/<skill>.json`; aggregated `MANIFEST.md` lands next to this README.
@@ -43,7 +40,6 @@ Per-skill JSON lands in `results/<skill>.json`; aggregated `MANIFEST.md` lands n
 | `extract_claims.py` | Parse SKILL.md → concrete IDO/method/table claims |
 | `validate_skill.py` | Per-skill validator (CLI) |
 | `validate_all.py` | Orchestrator — fans out across claude1..claude5 |
-| `skill-inventory.md` | Static inventory of the current skills PR (regenerate per snapshot) |
 
 ## What "PASS / PARTIAL / FAIL / no-claims" mean
 

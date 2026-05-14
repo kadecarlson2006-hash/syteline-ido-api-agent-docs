@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """Orchestrate per-skill validation across the claude1..claude5 user pool.
 
-Filters skills to Tier A+B (per skill-inventory.md) by default. Runs N=5
+By default, validates every skill directory under --skills-dir. Runs N=5
 parallel processes, each pinned to one claude{N} user. Aggregates results
 into MANIFEST.md.
 
 Usage:
   validate_all.py --skills-dir ../skills
   validate_all.py --skills-dir ../skills --skill syteline-rest-api-playbook
-  validate_all.py --skills-dir ../skills --tier A
 """
 
 from __future__ import annotations
@@ -25,44 +24,11 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).parent))
 
 
-TIER_A = [
-    "syteline-rest-api-playbook",
-    "syteline-rest-api-v1",
-    "syteline-rest-api-v2",
-    "syteline-ido-request-interface",
-    "syteline-ido-samples",
-    "syteline-soap-api",
-]
-TIER_B = [
-    "syteline-ido-api",
-    "syteline-ido-definitions",
-    "syteline-collections",
-    "syteline-custom-ido",
-    "syteline-extension-classes",
-    "syteline-sql-schema",
-    "syteline-critical-numbers",
-    "syteline-dataviews",
-    "syteline-admin-architecture",
-    "syteline-admin-config",
-    "syteline-admin-licensing",
-    "syteline-admin-processes",
-    "syteline-admin-replication",
-    "syteline-admin-reports",
-    "syteline-admin-transport",
-    "syteline-customization",
-]
-
-
-def pick_skills(skills_dir: Path, tiers: list[str], single: str | None) -> list[Path]:
+def pick_skills(skills_dir: Path, single: str | None) -> list[Path]:
     if single:
         cand = skills_dir / single
         return [cand] if cand.is_dir() else []
-    pool: list[str] = []
-    if "A" in tiers:
-        pool += TIER_A
-    if "B" in tiers:
-        pool += TIER_B
-    return [skills_dir / name for name in pool if (skills_dir / name).is_dir()]
+    return sorted(p for p in skills_dir.iterdir() if p.is_dir() and (p / "SKILL.md").is_file())
 
 
 def run_one(
@@ -136,7 +102,6 @@ def write_manifest(path: Path, reports: list[dict[str, Any]]) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--skills-dir", type=Path, required=True)
-    parser.add_argument("--tier", default="A,B")
     parser.add_argument("--skill", default=None, help="validate just this one skill")
     parser.add_argument("--workers", type=int, default=5)
     parser.add_argument("--results-dir", type=Path, default=None)
@@ -150,8 +115,7 @@ def main() -> int:
         print("error: SYTELINE_BASE_URL and SYTELINE_AGENT_PASSWORD must be set", file=sys.stderr)
         return 2
 
-    tiers = [t.strip() for t in args.tier.split(",") if t.strip()]
-    skills = pick_skills(args.skills_dir, tiers, args.skill)
+    skills = pick_skills(args.skills_dir, args.skill)
     if not skills:
         print("no skills selected", file=sys.stderr)
         return 1
