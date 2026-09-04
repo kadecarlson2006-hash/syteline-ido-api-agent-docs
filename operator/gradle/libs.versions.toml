@@ -1,10 +1,11 @@
 # Version catalog for OPERATOR.
 #
-# Toolchain choice (2026-09): Kotlin 2.4.10 is officially tested against Gradle 7.6.3–9.5.0.
-# AGP 9.3.x requires Gradle >= 9.5.0, so Gradle 9.5.0 sits at the intersection.
+# Toolchain choice (2026-09): AGP 9.4.0 (supports compileSdk 37, which current AndroidX
+# requires) needs Gradle >= 9.6.0. Kotlin 2.4.10's officially tested Gradle range ends at
+# 9.5.0, but KGP runs on newer Gradle (Google's nowinandroid runs Kotlin 2.3 on Gradle 9.7).
 # See docs/DECISIONS.md ADR-006.
 [versions]
-agp = "9.3.2"
+agp = "9.4.0"
 kotlin = "2.4.10"
 kotlinxCoroutines = "1.11.0"
 composeBom = "2026.08.00"
@@ -16,7 +17,7 @@ turbine = "1.2.1"
 junit4 = "4.13.2"
 
 # Android SDK levels
-compileSdk = "36"
+compileSdk = "37"
 targetSdk = "36"
 minSdk = "29"
 

@@ -47,15 +47,20 @@ holds only non-secret defaults (mode, wit, model *IDs*, test durations) and feed
 `BuildConfig`. Secrets go in the backend `.env`. Both files are git-ignored with committed
 `.example` templates.
 
-## ADR-006: Toolchain — AGP 9.3.x, Gradle 9.5.0, Kotlin 2.4.10, Compose BOM 2026.08.00
+## ADR-006: Toolchain — AGP 9.4.0, Gradle 9.6.0, Kotlin 2.4.10, Compose BOM 2026.08.00, compileSdk 37
 
 **Status:** Accepted (Milestone 0, 2026-09)
 
 - AGP 9.x provides built-in Kotlin: the `org.jetbrains.kotlin.android` plugin is *not*
   applied. Only `com.android.application` + `org.jetbrains.kotlin.plugin.compose`.
-- Kotlin 2.4.10 is officially tested with Gradle up to 9.5.0; AGP 9.3 requires ≥ 9.5.0. So
-  Gradle 9.5.0 is the pinned intersection. Upgrade path: bump Gradle/AGP together once the
-  Kotlin compatibility table catches up (AGP 9.4 needs Gradle 9.6).
+- Current AndroidX (core 1.19, lifecycle 2.11, Compose 1.12 via BOM 2026.08.00) refuses to
+  compile against anything below compileSdk 37 (second CI run failed on exactly this), and
+  AGP 9.4 is the release that supports API 37. AGP 9.4 requires Gradle ≥ 9.6.0.
+- Kotlin 2.4.10's *tested* Gradle range ends at 9.5.0; it runs on 9.6 with at most a warning
+  (Google's nowinandroid runs Kotlin 2.3 on Gradle 9.7). Re-check the Kotlin compatibility
+  table on the next Kotlin bump.
+- targetSdk stays at 36 for now: compileSdk only unlocks APIs, targetSdk opts into new
+  runtime behaviour, which is a deliberate later step.
 - Versions are centralised in `gradle/libs.versions.toml`. Plugins are placed on the root
   `buildscript` classpath (not per-module `plugins { alias(...) }`) so AGP, KGP, and the Compose
   compiler plugin share one class loader; the first CI run failed with

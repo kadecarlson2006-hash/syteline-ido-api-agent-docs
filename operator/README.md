@@ -34,7 +34,7 @@ pgvector memory, and streaming endpoints. The app never holds provider secrets.
 
 ## Setup
 
-Requirements: JDK 17+, Android Studio (current stable) with SDK Platform 36, a device or
+Requirements: JDK 17+, Android Studio (current stable) with SDK Platform 37, a device or
 emulator running Android 10+.
 
 ```bash

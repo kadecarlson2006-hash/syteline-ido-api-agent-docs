@@ -16,7 +16,7 @@ Update this file whenever a test answers a question.
 | 9 | Voice interruption behaviour (barge-in while Operator speaks) | UNKNOWN TO VERIFY | Milestone 9/11. |
 | 10 | BLE ring compatibility (HID vs custom GATT) | UNKNOWN TO VERIFY | Milestone 15. Design around generic Android HID first. |
 | 11 | Android microphone capture/playback on the phone itself | PARTIALLY VERIFIED | Milestone 1 code compiles (CI) but has not yet been run on a device — see CURRENT_STATUS.md "next test". |
-| 12 | Build toolchain compatibility (AGP 9.3 + Kotlin 2.4.10 + Gradle 9.5.0) | PARTIALLY VERIFIED | `:core` builds and tests pass locally; `:app` is verified only via the GitHub Actions workflow. |
+| 12 | Build toolchain compatibility (AGP 9.4 + Kotlin 2.4.10 + Gradle 9.6.0) | PARTIALLY VERIFIED | `:core` builds and tests pass locally; `:app` is verified only via the GitHub Actions workflow. |
 | 13 | `AudioRecord.routedDevice` / `AudioTrack.routedDevice` reliability on Samsung | UNKNOWN TO VERIFY | Some OEM builds return null until a few buffers are processed; the recorder polls after each read. |
 | 14 | 16 kHz mono capture support on every input route | UNKNOWN TO VERIFY | Bluetooth SCO is 8/16 kHz; LE Audio may differ. Milestone 2 will display `AudioDeviceInfo.sampleRates`. |
 | 15 | Meta developer documentation host (`wearables.developer.meta.com`) reachable from the dev environment | BLOCKED (in the CI/agent sandbox) | Read the docs from a normal workstation before Milestone 3. |
