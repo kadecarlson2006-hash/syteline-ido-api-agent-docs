@@ -6,8 +6,8 @@
 
 ## What works (verified)
 
-- `:core` compiles and its unit tests pass (state manager, decision model, config parsing,
-  latency timeline, audio loopback state machine with fakes).
+- `:core` compiles and its 29 unit tests pass locally and in CI (state manager, decision model,
+  config parsing, latency timeline, audio loopback state machine with fakes).
 - Project structure, version catalog, Gradle wrapper (9.5.0).
 
 ## What is implemented but NOT yet verified on a device

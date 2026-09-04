@@ -51,7 +51,7 @@ cp local.properties.example local.properties   # optional: tweak defaults, add s
 cd operator
 
 # Core module only — works on any machine with a JDK, no Android SDK needed
-./gradlew :core:test --configure-on-demand
+./gradlew :core:test -Poperator.skipAndroid=true
 
 # Full build (requires Android SDK; set sdk.dir in local.properties or ANDROID_HOME)
 ./gradlew :app:assembleDebug
@@ -70,9 +70,11 @@ adb logcat -s AndroidAudioRecorder AndroidAudioPlayer
 
 ### Building without the Android SDK
 
-`:core` deliberately has no Android dependency, and the Android Gradle Plugin is declared only
-in `:app`. `./gradlew :core:test --configure-on-demand` therefore never resolves AGP or
-AndroidX, so it works on locked-down CI agents and plain laptops.
+`:core` deliberately has no Android dependency. Passing `-Poperator.skipAndroid=true` excludes
+`:app` from the build and keeps the Android Gradle Plugin off the classpath, so
+`./gradlew :core:test -Poperator.skipAndroid=true` never resolves AGP or AndroidX and works on
+locked-down CI agents and plain laptops. (All plugins otherwise share one root classpath — see
+the comment in `build.gradle.kts`.)
 
 ## Testing
 

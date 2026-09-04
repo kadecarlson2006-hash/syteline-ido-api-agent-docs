@@ -1,9 +1,26 @@
 // Root build file.
 //
-// Only JVM-side plugins are declared here (apply false). The Android Gradle Plugin is
-// declared solely in :app so that `:core` can be configured and tested on machines that
-// have no Android SDK (see README "Building without the Android SDK").
-plugins {
-    alias(libs.plugins.kotlin.jvm) apply false
-    alias(libs.plugins.kotlin.compose) apply false
+// All Gradle plugins are put on ONE root classpath here so that the Android Gradle Plugin,
+// the Kotlin Gradle Plugin, and the Compose compiler plugin share a single class loader.
+// (Declaring AGP only in :app while Kotlin sits at the root splits them across parent/child
+// loaders and AGP 9's built-in Kotlin support fails with NoClassDefFoundError.)
+//
+// Subprojects apply plugins by id WITHOUT a version (versions live in gradle/libs.versions.toml).
+//
+// -Poperator.skipAndroid=true leaves AGP off the classpath (and settings.gradle.kts drops :app),
+// which lets :core build and test on machines that cannot reach Google's Maven repository.
+buildscript {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        google()
+    }
+    dependencies {
+        classpath(libs.kotlin.gradlePlugin)
+        classpath(libs.compose.gradlePlugin)
+        val skipAndroid = providers.gradleProperty("operator.skipAndroid").map(String::toBoolean).getOrElse(false)
+        if (!skipAndroid) {
+            classpath(libs.android.gradlePlugin)
+        }
+    }
 }

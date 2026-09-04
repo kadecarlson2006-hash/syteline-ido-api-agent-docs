@@ -2,8 +2,8 @@ import java.util.Properties
 
 // :app — the Android application. AGP 9 provides built-in Kotlin, so no kotlin-android plugin.
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
+    id("com.android.application")             // versions: root build.gradle.kts classpath
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 // Developer configuration comes from local.properties (git-ignored) or the environment.

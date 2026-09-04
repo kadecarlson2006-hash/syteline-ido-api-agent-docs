@@ -45,7 +45,9 @@ junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
-[plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+# Gradle plugins, declared as classpath artifacts in the root build.gradle.kts (see comment there).
+# Subprojects apply them by id without a version:
+#   com.android.application · org.jetbrains.kotlin.jvm · org.jetbrains.kotlin.plugin.compose
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }

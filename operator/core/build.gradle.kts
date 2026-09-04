@@ -5,7 +5,7 @@
 // diagnostics/latency types, and the ResponseDecision model. Everything here is testable
 // with plain JUnit on any machine with a JDK, which keeps the fast feedback loop fast.
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("org.jetbrains.kotlin.jvm") // version: root build.gradle.kts classpath
 }
 
 java {

@@ -56,7 +56,11 @@ holds only non-secret defaults (mode, wit, model *IDs*, test durations) and feed
 - Kotlin 2.4.10 is officially tested with Gradle up to 9.5.0; AGP 9.3 requires ≥ 9.5.0. So
   Gradle 9.5.0 is the pinned intersection. Upgrade path: bump Gradle/AGP together once the
   Kotlin compatibility table catches up (AGP 9.4 needs Gradle 9.6).
-- Versions are centralised in `gradle/libs.versions.toml`.
+- Versions are centralised in `gradle/libs.versions.toml`. Plugins are placed on the root
+  `buildscript` classpath (not per-module `plugins { alias(...) }`) so AGP, KGP, and the Compose
+  compiler plugin share one class loader; the first CI run failed with
+  `NoClassDefFoundError: com/android/build/gradle/api/BaseVariant` when they were split.
+  `-Poperator.skipAndroid=true` omits AGP and `:app` for core-only builds.
 
 ## ADR-007: Two modules from day one: `:core` (pure JVM) and `:app` (Android)
 

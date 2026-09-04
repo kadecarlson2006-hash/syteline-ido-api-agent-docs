@@ -6,11 +6,13 @@
 //   :app   Android application — Jetpack Compose UI, audio, permissions, diagnostics.
 //
 // Backend, memory, and provider modules will be added alongside these in later milestones.
+//
+// Core-only builds (no Android SDK / no access to Google's Maven repository):
+//     ./gradlew :core:test -Poperator.skipAndroid=true
+// The property excludes :app and keeps the Android Gradle Plugin off the build classpath.
 
 pluginManagement {
     repositories {
-        // Maven Central is first so that pure-JVM modules (:core) resolve without ever
-        // touching Google's Maven repository. Android artifacts fall through to google().
         mavenCentral()
         gradlePluginPortal()
         google()
@@ -27,5 +29,9 @@ dependencyResolutionManagement {
 
 rootProject.name = "operator"
 
+val skipAndroid = providers.gradleProperty("operator.skipAndroid").map(String::toBoolean).getOrElse(false)
+
 include(":core")
-include(":app")
+if (!skipAndroid) {
+    include(":app")
+}
