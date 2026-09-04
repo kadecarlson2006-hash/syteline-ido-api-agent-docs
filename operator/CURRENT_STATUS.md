@@ -10,6 +10,10 @@
   config parsing, latency timeline, audio loopback state machine with fakes).
 - Project structure, version catalog, Gradle wrapper (9.5.0).
 
+- `:app` compiles (`assembleDebug`) and its unit tests pass in GitHub Actions
+  (`.github/workflows/operator-android.yml`, run #3). The debug APK is downloadable from that
+  run's artifacts (`operator-debug-apk`).
+
 ## What is implemented but NOT yet verified on a device
 
 - Main screen: OPERATOR / PRIVATE ASSISTANCE SYSTEM / STATUS, seven subsystem indicators,
@@ -20,10 +24,9 @@
 - Display of available input/output devices and the device Android actually routed to.
 - Basic diagnostics panel.
 
-The Android module was written against the documented AGP 9 / Compose APIs but the
-development sandbox used to write it has no Android SDK (dl.google.com is blocked there), so
-compilation of `:app` is verified by the GitHub Actions workflow
-`.github/workflows/operator-android.yml`, not locally. Check the latest run before installing.
+The Android module was written in a sandbox without an Android SDK (dl.google.com is blocked
+there), so `:app` compilation is verified by GitHub Actions rather than locally. It has not yet
+been installed on a phone.
 
 ## What does not work / not started
 
