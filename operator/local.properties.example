@@ -1,0 +1,32 @@
+# Copy to local.properties (git-ignored). Android Studio also writes sdk.dir here.
+#
+# ONLY NON-SECRET VALUES. Provider API keys (OpenRouter, ElevenLabs, database) belong to the
+# Operator backend (.env) and must never be placed in the Android app. See docs/DECISIONS.md ADR-005.
+
+# sdk.dir=/Users/you/Library/Android/sdk
+
+# Startup defaults
+OPERATOR_DEFAULT_MODE=STANDBY
+OPERATOR_DEFAULT_WIT=NORMAL
+
+# Milestone 1 audio loopback (1000..30000)
+OPERATOR_RECORD_TEST_DURATION_MILLIS=4000
+
+# Milestone 4+ (leave empty until the backend exists)
+OPERATOR_BACKEND_URL=
+
+# Milestone 6+ model routing (IDs are never hard-coded; leave empty until configured)
+OPERATOR_FAST_MODEL_ID=
+OPERATOR_DEEP_MODEL_ID=
+OPERATOR_DECISION_MODEL_ID=
+OPERATOR_VISION_MODEL_ID=
+
+# Milestone 8/9 voice
+OPERATOR_TTS_PROVIDER=
+OPERATOR_ELEVENLABS_VOICE_ID=
+OPERATOR_ELEVENLABS_MODEL_ID=
+
+# Milestone 11+ conversation / anti-annoyance
+ROLLING_CONTEXT_SECONDS=60
+MIN_COMMENT_INTERVAL_SECONDS=45
+MAX_COMMENTS_PER_5_MINUTES=3

@@ -1,0 +1,30 @@
+# --- Secrets: never commit ---
+local.properties
+.env
+.env.*
+!.env.example
+*.keystore
+*.jks
+
+# --- Gradle / build output ---
+.gradle/
+build/
+**/build/
+.kotlin/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+captures/
+.cxx/
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+*.hprof
+
+# --- OS ---
+.DS_Store
+Thumbs.db

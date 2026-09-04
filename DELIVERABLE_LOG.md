@@ -300,3 +300,13 @@ curl -s -X POST "https://YOUR-HOST/IDORequestService/ido/invoke/SLItemprices?met
 **Notes:**
 - For n8n/Postman import, use standard bash curl on a single line with a literal token value — PowerShell syntax (`curl.exe`, backtick continuations) is not importable.
 - In the full SQL script, the call was looped over 50 product codes. To replicate the loop via API, run this call once per product code, substituting `FromProductCode` and `ToProductCode` (positions 1 and 2, 0-indexed) each iteration.
+
+---
+
+## 2026-09-04 — OPERATOR smart-glasses companion: Milestones 0 and 1 scaffold
+
+**Request:** Start a new product, OPERATOR (private smart-glasses AI companion), in this repository. Implement Milestone 0 (project skeleton, Compose UI, modes, wit, state manager) and Milestone 1 (phone microphone record/play loopback test) only.
+
+**Where:** Everything lives under `operator/` (Kotlin, Gradle multi-module: `:core` pure JVM, `:app` Android). CI workflow: `.github/workflows/operator-android.yml`. See `operator/README.md`, `operator/CURRENT_STATUS.md`, `operator/docs/`.
+
+**Not related to Syteline.** The Syteline docs in `docs/` are untouched.

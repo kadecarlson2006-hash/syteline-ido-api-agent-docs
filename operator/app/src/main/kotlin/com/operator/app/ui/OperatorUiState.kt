@@ -1,0 +1,20 @@
+package com.operator.app.ui
+
+import com.operator.app.audio.AudioRoutes
+import com.operator.core.audio.AudioLoopbackState
+import com.operator.core.config.OperatorConfig
+import com.operator.core.model.OperatorMode
+import com.operator.core.model.OperatorState
+import com.operator.core.model.WitLevel
+
+/** Everything the main screen renders, as one immutable value. */
+data class OperatorUiState(
+    val operator: OperatorState = OperatorState(OperatorMode.STANDBY, WitLevel.NORMAL),
+    val loopback: AudioLoopbackState = AudioLoopbackState(),
+    val routes: AudioRoutes = AudioRoutes(),
+    val microphonePermissionGranted: Boolean = false,
+    /** Short description of the last state event, for the diagnostics card. */
+    val lastEvent: String? = null,
+    val config: OperatorConfig = OperatorConfig(),
+    val appVersion: String = "",
+)
