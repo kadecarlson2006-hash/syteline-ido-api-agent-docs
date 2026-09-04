@@ -1,0 +1,61 @@
+name: Operator Android
+
+on:
+  push:
+    paths:
+      - "operator/**"
+      - ".github/workflows/operator-android.yml"
+  pull_request:
+    paths:
+      - "operator/**"
+      - ".github/workflows/operator-android.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: operator-android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: operator
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Core tests (pure JVM)
+        run: ./gradlew :core:test --configure-on-demand --no-daemon
+
+      - name: App unit tests
+        run: ./gradlew :app:testDebugUnitTest --no-daemon
+
+      - name: Assemble debug APK
+        run: ./gradlew :app:assembleDebug --no-daemon
+
+      - name: Upload debug APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: operator-debug-apk
+          path: operator/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: operator-test-reports
+          path: |
+            operator/core/build/reports/tests/
+            operator/app/build/reports/tests/
+          if-no-files-found: ignore
