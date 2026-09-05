@@ -7,8 +7,9 @@
 ## What works (verified)
 
 - `:core` compiles and its 39 unit tests pass locally and in CI.
-- `:app` compiles (`assembleDebug`) and its unit tests pass in GitHub Actions; debug APK attached
-  to each green run as `operator-debug-apk`. See the CI note below for `:glasses-meta`.
+- `:app` and `:glasses-meta` compile (`assembleDebug`, SDK pulled from GitHub Packages with the
+  workflow token) and app unit tests pass in GitHub Actions (run #11); debug APK attached to each
+  green run as `operator-debug-apk` (about 21 MB with the Meta SDK).
 
 ## What is implemented but NOT yet verified on a device
 
