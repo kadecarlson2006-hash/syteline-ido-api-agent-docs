@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.operator.core.state.OperatorStateManagerTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-09-05T04:08:34.382Z" hostname="vm" time="0.081">
+  <properties/>
+  <testcase name="cycle mode walks the selectable list and wraps()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.006"/>
+  <testcase name="state flow emits distinct snapshots()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.04"/>
+  <testcase name="comment now is accepted when processing and rejected when muted or off()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.01"/>
+  <testcase name="mute is idempotent and emits exactly one event per transition()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.005"/>
+  <testcase name="wit level is independent of mode()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.001"/>
+  <testcase name="mode change emits event with from and to and no event when unchanged()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.005"/>
+  <testcase name="emergency mute overrides every mode and survives mode changes()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.001"/>
+  <testcase name="activate and standby switch status()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.0"/>
+  <testcase name="initial state is standing by with default subsystems not implemented()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.0"/>
+  <testcase name="quiet mode stands by and never volunteers()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.0"/>
+  <testcase name="subsystem updates are reflected and do not disturb other subsystems()" classname="com.operator.core.state.OperatorStateManagerTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
