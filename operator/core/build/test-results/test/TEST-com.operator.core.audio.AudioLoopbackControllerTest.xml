@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.operator.core.audio.AudioLoopbackControllerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-05T04:08:33.988Z" hostname="vm" time="0.305">
+  <properties/>
+  <testcase name="cancel during recording returns to IDLE and during playback to RECORDED()" classname="com.operator.core.audio.AudioLoopbackControllerTest" time="0.22"/>
+  <testcase name="playback failure keeps the clip()" classname="com.operator.core.audio.AudioLoopbackControllerTest" time="0.011"/>
+  <testcase name="pcm clip reports duration and peak()" classname="com.operator.core.audio.AudioLoopbackControllerTest" time="0.002"/>
+  <testcase name="record then play happy path()" classname="com.operator.core.audio.AudioLoopbackControllerTest" time="0.006"/>
+  <testcase name="route selection is passed to recorder and player()" classname="com.operator.core.audio.AudioLoopbackControllerTest" time="0.01"/>
+  <testcase name="recording failure lands in ERROR and can be retried()" classname="com.operator.core.audio.AudioLoopbackControllerTest" time="0.008"/>
+  <testcase name="discard clip clears the clip but keeps the route selection()" classname="com.operator.core.audio.AudioLoopbackControllerTest" time="0.009"/>
+  <testcase name="a selected device that disappears falls back to default()" classname="com.operator.core.audio.AudioLoopbackControllerTest" time="0.004"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
