@@ -7,15 +7,16 @@ it whispers something useful, corrective, or funny.
 
 > Silence is the default. `NO_RESPONSE` is the most common outcome by design.
 
-**Status:** Milestones 0–2 implemented; see [CURRENT_STATUS.md](CURRENT_STATUS.md).
+**Status:** Milestones 0–3 implemented; see [CURRENT_STATUS.md](CURRENT_STATUS.md) and [docs/META_GLASSES.md](docs/META_GLASSES.md).
 
 ## Hardware target
 
 - Ray-Ban Meta Gen 2 smart glasses (Milestone 3+; isolated behind `MetaGlassesManager`)
-- Samsung Galaxy flagship Android phone (Android 10 / API 29 minimum)
+- Samsung Galaxy flagship Android phone (Android 12 / API 31 minimum)
 
-Until glasses access is proven, Operator works with the phone microphone and any Bluetooth
-audio output.
+The Meta toolkit (0.9.0) has no microphone or speaker API, so Operator's audio always uses
+standard Bluetooth routes: phone mic or glasses mic over HFP → Operator → glasses speakers.
+The SDK adds camera, device state, registration, and a mock device for testing.
 
 ## Architecture
 
@@ -24,6 +25,7 @@ Two Gradle modules today, more later:
 | Module | Purpose |
 |--------|---------|
 | `:core` | Pure Kotlin/JVM. Domain model (`OperatorMode`, `WitLevel`, `OperatorState`), `OperatorStateManager`, provider contracts (`AIProvider`, `TTSProvider`, `TranscriptionProvider`, `MemoryRepository`), `ResponseDecision`, latency timeline, audio loopback state machine. No Android. |
+| `:glasses-meta` | Optional. The only module that touches the Meta Wearables Device Access Toolkit; implements `GlassesProvider`. Included when a GitHub Packages token is present. |
 | `:app` | Android app. Jetpack Compose UI, `AudioRecord`/`AudioTrack` implementations with explicit route selection, Bluetooth communication-link handling, permission handling, diagnostics. |
 
 Full layout and data flow: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
@@ -35,7 +37,9 @@ pgvector memory, and streaming endpoints. The app never holds provider secrets.
 ## Setup
 
 Requirements: JDK 17+, Android Studio (current stable) with SDK Platform 37, a device or
-emulator running Android 10+.
+emulator running Android 12+. For the glasses module: a GitHub personal access token (classic)
+with `read:packages` in `local.properties` as `github_token` (the Meta SDK is on GitHub
+Packages), the Meta AI app on the phone with Developer Mode enabled, and the glasses paired.
 
 ```bash
 cd operator
@@ -108,6 +112,19 @@ the comment in `build.gradle.kts`.)
    encodings, and address, plus the communication-device state. The **Route event log** panel
    (also in logcat) records device changes and the route of every capture/playback.
 
+## Milestone 3 walk-through (Meta glasses)
+
+1. Put `github_token=<PAT with read:packages>` in `local.properties`, rebuild. The Glasses panel
+   shows "SDK present · v0.9.0". Without the token the panel says "not compiled in" and the
+   rest of the app is unaffected.
+2. Enable Developer Mode in the Meta AI app, then **REGISTER WITH META AI**; Registration
+   becomes REGISTERED after the round trip.
+3. Linked devices lists the glasses with type, link state, and compatibility.
+4. **START SESSION** / **STOP SESSION**, **CHECK CAMERA PERMISSION**.
+5. No glasses at hand: **MOCK: ENABLE KIT** → **PAIR RAY-BAN META** → **POWER ON + UNFOLD + DON**.
+6. The capability table at the bottom of the panel is the SUPPORTED / UNSUPPORTED / UNKNOWN
+   verdict from `docs/META_GLASSES.md`.
+
 ## Configuration
 
 All keys are documented in `local.properties.example` (app) and `.env.example` (backend).
@@ -117,6 +134,7 @@ Highlights:
 |-----|---------|
 | `OPERATOR_DEFAULT_MODE`, `OPERATOR_DEFAULT_WIT` | Startup mode/wit |
 | `OPERATOR_RECORD_TEST_DURATION_MILLIS` | Milestone 1 recording length |
+| `github_token`, `MWDAT_APPLICATION_ID`, `MWDAT_CLIENT_TOKEN` | Meta toolkit download token and attestation (0/0 = Developer Mode) |
 | `OPERATOR_*_MODEL_ID` | Fast / deep / decision / vision model IDs (never hard-coded) |
 | `OPERATOR_TTS_PROVIDER`, `OPERATOR_ELEVENLABS_VOICE_ID`, `OPERATOR_ELEVENLABS_MODEL_ID` | Voice |
 | `ROLLING_CONTEXT_SECONDS`, `MIN_COMMENT_INTERVAL_SECONDS`, `MAX_COMMENTS_PER_5_MINUTES` | Anti-annoyance |
@@ -133,15 +151,15 @@ Highlights:
 
 - Explicit Bluetooth SCO selection requires Android 12+ (`setCommunicationDevice`); on
   Android 10–11 only DEFAULT routing is available.
-- No glasses-specific integration yet (Milestone 3).
+- Meta toolkit: no microphone/speaker API; camera not yet wired (Milestone 16); display N/A.
 - No launcher icon.
 - `:app` compilation is verified in CI; the authoring environment lacked the Android SDK.
 - No release signing configuration.
 
 ## Roadmap
 
-0. Project skeleton ✅  1. Phone audio loopback ✅  2. Bluetooth audio diagnostics ✅ (1–2 pending device check)
-3. Meta device access  4. Backend skeleton
+0. Project skeleton ✅  1. Phone audio loopback ✅  2. Bluetooth audio diagnostics ✅
+3. Meta device access ✅ (1–3 pending device check)  4. Backend skeleton
 5. Memory database v1  6. Basic text AI (OpenRouter)  7. Memory-aware text AI
 8. Push to talk  9. ElevenLabs voice  10. Glasses audio  11. Rolling transcription
 12. Response decision engine  13. Active Operator  14. Feedback learning

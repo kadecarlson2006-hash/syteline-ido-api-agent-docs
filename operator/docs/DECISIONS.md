@@ -127,3 +127,39 @@ from `AudioRecord.getRoutedDevice()` / `AudioTrack.getRoutedDevice()`, and every
 playback logs its real route to the in-memory `RouteEventLog` and logcat. Milestone 10's
 glasses questions ("can the app use the Ray-Ban mic?") will be answered from this evidence, not
 from what was requested.
+
+## ADR-013: The Meta toolkit is an optional module resolved from GitHub Packages
+
+**Status:** Accepted (Milestone 3)
+
+`com.meta.wearable:mwdat-*` is published only on GitHub Packages, which rejects anonymous
+downloads. Rather than make every build depend on a personal token, `settings.gradle.kts`
+includes `:glasses-meta` and the Meta repository only when a token is present (or
+`-Poperator.metaSdk=true`), and `:app` reaches the provider through a factory class looked up
+by name. Builds without the token get `NoGlassesProvider` and say so on screen. CI supplies its
+`GITHUB_TOKEN` and forces the module on so the integration is always compiled.
+
+## ADR-014: minSdk 31 (Android 12)
+
+**Status:** Accepted (Milestone 3)
+
+Meta's samples build with `minSdk 31`, and Operator's Bluetooth path already needs
+`setCommunicationDevice` (API 31). Supporting Android 10–11 would mean two audio code paths
+for phones the product never targets.
+
+## ADR-015: Opt out of Meta analytics and crash reporting
+
+**Status:** Accepted (Milestone 3)
+
+The SDK collects usage analytics and SDK crash reports by default. Operator sets
+`ANALYTICS_OPT_OUT=true` and `CRASH_REPORTING_OPT_OUT=true` in the manifest. Operator hears
+other people; the less telemetry leaves the phone, the better. Revisit only if Meta support
+needs crash data for a specific bug.
+
+## ADR-016: Glasses audio never goes through the vendor SDK
+
+**Status:** Accepted (Milestone 3) — documents a finding, not a preference
+
+DAT 0.9.0 has no microphone or speaker API (docs/META_GLASSES.md). `GlassesProvider` therefore
+has no audio methods at all; audio stays in the audio subsystem over standard Bluetooth. If a
+later SDK adds audio, it will be a new capability behind the same interface, not a rewrite.

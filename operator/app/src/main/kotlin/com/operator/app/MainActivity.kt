@@ -1,5 +1,6 @@
 package com.operator.app
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -27,14 +28,14 @@ class MainActivity : ComponentActivity() {
         setContent {
             OperatorTheme {
                 val viewModel: OperatorViewModel = viewModel(factory = OperatorViewModel.factory(container))
-                OperatorRoot(viewModel)
+                OperatorRoot(viewModel, this)
             }
         }
     }
 }
 
 @Composable
-private fun OperatorRoot(viewModel: OperatorViewModel) {
+private fun OperatorRoot(viewModel: OperatorViewModel, activity: Activity) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     val microphoneLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -68,6 +69,7 @@ private fun OperatorRoot(viewModel: OperatorViewModel) {
             onDiscardClip = viewModel::discardClip,
             onRefresh = viewModel::refreshPermissions,
             onClearRouteLog = viewModel::clearRouteLog,
+            onGlassesAction = { action -> viewModel.runGlassesAction(action, activity) },
         )
     }
 

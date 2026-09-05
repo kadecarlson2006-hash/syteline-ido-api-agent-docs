@@ -318,3 +318,11 @@ curl -s -X POST "https://YOUR-HOST/IDORequestService/ido/invoke/SLItemprices?met
 **Request:** Continue Operator with Milestone 2 (detect Bluetooth audio devices, show `AudioDeviceInfo` diagnostics, test phone/Bluetooth mic and Bluetooth output, log actual routing). No AI.
 
 **Where:** `operator/` only. Explicit input/output selection, `setCommunicationDevice`-based SCO/LE link (ADR-011), route event log, Bluetooth diagnostics panel. Device checklist in `operator/CURRENT_STATUS.md`.
+
+---
+
+## 2026-09-05 — OPERATOR Milestone 3: Meta device access
+
+**Request:** Read the official Meta Wearables Device Access Toolkit documentation, integrate supported functionality, document SUPPORTED / UNSUPPORTED / UNKNOWN.
+
+**Where:** `operator/glasses-meta/` (optional module), `operator/docs/META_GLASSES.md` (capability verdict). Key finding: DAT 0.9.0 has no microphone/speaker API; audio stays on Bluetooth. minSdk raised to 31.

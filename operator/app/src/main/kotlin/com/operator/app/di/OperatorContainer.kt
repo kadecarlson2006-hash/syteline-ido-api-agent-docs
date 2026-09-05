@@ -8,6 +8,8 @@ import com.operator.app.audio.AudioSubsystemReporter
 import com.operator.app.audio.CommunicationLink
 import com.operator.app.bluetooth.BluetoothStatusMonitor
 import com.operator.app.config.BuildConfigLoader
+import com.operator.app.glasses.GlassesProviderLoader
+import com.operator.app.glasses.GlassesSubsystemReporter
 import com.operator.app.permissions.BluetoothPermission
 import com.operator.app.permissions.MicrophonePermission
 import com.operator.core.audio.AudioLoopbackController
@@ -17,6 +19,7 @@ import com.operator.core.config.OperatorConfig
 import com.operator.core.decision.ResponseDecisionEngine
 import com.operator.core.decision.SilentDecisionEngine
 import com.operator.core.diagnostics.RouteEventLog
+import com.operator.core.glasses.GlassesProvider
 import com.operator.core.state.OperatorStateManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -66,6 +69,10 @@ class OperatorContainer(app: Application) {
     /** Placeholder until Milestone 12. Always NO_RESPONSE. */
     val decisionEngine: ResponseDecisionEngine = SilentDecisionEngine
 
+    /** Meta Wearables toolkit when compiled in, otherwise an honest no-op (ADR-004 / ADR-013). */
+    val glasses: GlassesProvider = GlassesProviderLoader.load(app, appScope)
+    private val glassesSubsystemReporter = GlassesSubsystemReporter(stateManager, glasses)
+
     private val audioSubsystemReporter = AudioSubsystemReporter(
         stateManager = stateManager,
         permission = microphonePermission,
@@ -77,6 +84,9 @@ class OperatorContainer(app: Application) {
         audioRouteMonitor.start()
         bluetoothStatus.start()
         audioSubsystemReporter.start(appScope)
+        glassesSubsystemReporter.start(appScope)
+        // Initialise the vendor SDK at process start, like Meta's samples do in Application.onCreate.
+        glasses.initialize()
         // A selected device that disconnects must not silently keep being "selected".
         audioRouteMonitor.routes
             .onEach { loopback.onRoutesChanged(it.inputs, it.outputs) }

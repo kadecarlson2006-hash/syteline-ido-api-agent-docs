@@ -1,70 +1,59 @@
 # CURRENT STATUS — OPERATOR
 
-**Current milestone:** 2 — Bluetooth audio diagnostics (implemented; awaiting device verification of Milestones 1 and 2)
+**Current milestone:** 3 — Meta device access (implemented; awaiting device verification of Milestones 1–3)
 
 **Last updated:** 2026-09-05
 
 ## What works (verified)
 
-- `:core` compiles and its 35 unit tests pass locally and in CI (state manager, decision model,
-  config parsing, latency timeline, route selection, route event log, audio loopback state
-  machine with fakes).
-- `:app` compiles (`assembleDebug`) and its unit tests pass in GitHub Actions
-  (`.github/workflows/operator-android.yml`). The debug APK is downloadable from the latest
-  green run's artifacts (`operator-debug-apk`).
+- `:core` compiles and its 39 unit tests pass locally and in CI.
+- `:app` compiles (`assembleDebug`) and its unit tests pass in GitHub Actions; debug APK attached
+  to each green run as `operator-debug-apk`. See the CI note below for `:glasses-meta`.
 
 ## What is implemented but NOT yet verified on a device
 
-Milestone 1 (unchanged):
-- Main screen, mode/wit selectors, ACTIVATE / STANDBY / COMMENT NOW / EMERGENCY MUTE.
-- Microphone permission flow, RECORD TEST into memory, PLAY TEST with audio focus.
+- Milestones 1–2: audio loopback, route selection, Bluetooth diagnostics (see earlier checklist
+  items below).
+- Milestone 3: `:glasses-meta` wraps the Meta Wearables Device Access Toolkit 0.9.0 behind
+  `GlassesProvider`: SDK initialisation, registration with the Meta AI app, linked-device list
+  with metadata, device session start/stop, camera-permission check, firmware-update link, and
+  MockDeviceKit developer actions. Glasses panel + GLASSES subsystem indicator. Capability
+  findings are in `docs/META_GLASSES.md`.
 
-Milestone 2 (new):
-- INPUT / OUTPUT chip selectors in the Audio Test panel listing every `AudioDeviceInfo`
-  Android reports, plus DEFAULT (platform routing).
-- Wired / USB / built-in selections use `setPreferredDevice`.
-- Bluetooth SCO and BLE-headset selections raise the link with
-  `AudioManager.setCommunicationDevice` (API 31+, the documented replacement for
-  `startBluetoothSco`), record with `VOICE_COMMUNICATION`, play with
-  `USAGE_VOICE_COMMUNICATION`, and clear the request afterwards. A2DP output is plain media.
-- "Capture path" / "Playback path" lines say which audio source/usage was used and whether the
-  preferred device or communication link was honoured; "actual" lines come from `routedDevice`.
-- Bluetooth diagnostics panel: adapter state, paired devices (needs BLUETOOTH_CONNECT on
-  API 31+), audio mode, communication-capable outputs, active communication device, and a full
-  input/output device table with sample rates, channel counts, encodings, and addresses.
-- Route event log: device added/removed, communication-device changes, what each capture and
-  playback was actually routed to. Also mirrored to logcat (`AudioRouteMonitor`,
-  `AndroidAudioRecorder`, `AndroidAudioPlayer`, `BluetoothStatusMonitor`).
-- A selected device that disconnects falls back to DEFAULT automatically.
+## Key finding
 
-The Android module is written in a sandbox without an Android SDK, so `:app` compilation is
-verified by GitHub Actions rather than locally. Nothing has been installed on a phone yet.
+The Meta toolkit exposes **no microphone or speaker API** (0.9.0). Glasses audio stays on the
+standard Bluetooth path built in Milestone 2. The SDK contributes camera, device state,
+registration, and mock testing.
+
+## Build notes
+
+- The SDK lives on GitHub Packages and needs a token with `read:packages`. With
+  `github_token` in `local.properties` (or `GITHUB_TOKEN` in the environment) the
+  `:glasses-meta` module is included; without it the app still builds and the Glasses panel
+  says "not compiled in". CI passes `GITHUB_TOKEN` and forces `-Poperator.metaSdk=true`.
+- minSdk is now 31 (Android 12), matching Meta's samples and the communication-device API.
 
 ## What does not work / not started
 
-- Everything from Milestone 3 onward: Meta glasses SDK, backend, memory, AI, TTS,
-  transcription, rolling context, decision engine, BLE ring, camera, integrations.
-- Explicit Bluetooth SCO selection on Android 10–11 (API 29–30): not supported by design; the
-  UI says so. DEFAULT routing still works there.
+- Camera streaming/photo (Milestone 16), backend, memory, AI, TTS, transcription, rolling
+  context, decision engine, BLE ring, integrations.
 - No launcher icon.
 
 ## Current blockers
 
-- None beyond human verification on hardware.
+- Human verification on hardware. Milestone 3 additionally needs: the Meta AI app with
+  Developer Mode enabled, the glasses paired to it, and a GitHub token for the build.
 
-## Next test (required before Milestone 3)
+## Next test (required before Milestone 4)
 
-On a Samsung Galaxy phone, first the Milestone 1 checks (launch, GRANT MICROPHONE, RECORD TEST,
-PLAY TEST, understandable speech, correct actual devices), then with a Bluetooth headset or the
-Ray-Ban Meta glasses paired and connected:
+Milestone 1 (phone audio): launch → GRANT MICROPHONE → RECORD TEST → PLAY TEST → speech
+understandable → actual devices correct.
 
-1. GRANT BLUETOOTH → the paired list shows the headset/glasses with its name, flagged "audio".
-2. The INPUT chips show a Bluetooth SCO (or BLE headset) entry; OUTPUT shows A2DP and SCO/BLE.
-3. OUTPUT = A2DP entry → PLAY TEST → audio in the headset; "Output (actual)" = A2DP device.
-4. INPUT = Bluetooth SCO entry → RECORD TEST → route log shows "Requested communication
-   device…", then "Communication device active…", then "Capture routed to … (Bluetooth SCO)".
-   Speak; PLAY TEST on the phone speaker should reproduce your voice from the headset mic.
-5. OUTPUT = Bluetooth SCO entry → PLAY TEST → playback through the headset via the SCO link.
-6. Disconnect the headset mid-selection → chips fall back to DEFAULT; log shows "Device removed".
-7. Note the time between "Requested communication device" and "active" (SCO bring-up latency)
-   and anything odd in audio quality (SCO is narrow/wide-band voice, not music quality).
+Milestone 2 (Bluetooth): GRANT BLUETOOTH → paired list shows headset/glasses → OUTPUT=A2DP
+PLAY TEST → INPUT=SCO RECORD TEST with route-log "Communication device active" → OUTPUT=SCO
+PLAY TEST → disconnect falls back to DEFAULT → note SCO bring-up time.
+
+Milestone 3 (Meta SDK): follow the device test plan in `docs/META_GLASSES.md` (register,
+device list, session start/stop, camera permission, mock kit) and record the glasses' reported
+device type string.

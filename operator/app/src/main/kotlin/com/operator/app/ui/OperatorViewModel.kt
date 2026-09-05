@@ -12,6 +12,7 @@ import com.operator.app.di.OperatorContainer
 import com.operator.core.audio.AudioLoopbackState
 import com.operator.core.audio.AudioRoute
 import com.operator.core.diagnostics.RouteEvent
+import com.operator.core.glasses.GlassesAction
 import com.operator.core.model.OperatorMode
 import com.operator.core.model.WitLevel
 import com.operator.core.state.OperatorEvent
@@ -51,8 +52,9 @@ class OperatorViewModel(private val container: OperatorContainer) : ViewModel() 
         container.stateManager.state,
         audioSection,
         bluetoothSection,
+        container.glasses.state,
         lastEvent,
-    ) { operator, audio, bt, event ->
+    ) { operator, audio, bt, glasses, event ->
         OperatorUiState(
             operator = operator,
             loopback = audio.loopback,
@@ -62,6 +64,8 @@ class OperatorViewModel(private val container: OperatorContainer) : ViewModel() 
             bluetoothPermissionGranted = bt.granted,
             bluetoothPermissionIsRuntime = container.bluetoothPermission.isRuntimePermission,
             routeEvents = audio.events,
+            glasses = glasses,
+            glassesActions = container.glasses.actions,
             lastEvent = event,
             config = container.config,
             appVersion = BuildConfig.VERSION_NAME,
@@ -112,6 +116,12 @@ class OperatorViewModel(private val container: OperatorContainer) : ViewModel() 
     fun stopAudio() = container.loopback.cancel()
     fun discardClip() = container.loopback.discardClip()
     fun clearRouteLog() = container.routeEventLog.clear()
+
+    // --- Glasses (Milestone 3) ---
+    fun runGlassesAction(action: GlassesAction, activity: Any?) {
+        lastEvent.value = "Glasses: ${action.label}"
+        action.run(if (action.needsActivity) activity else null)
+    }
 
     companion object {
         fun factory(container: OperatorContainer): ViewModelProvider.Factory = viewModelFactory {

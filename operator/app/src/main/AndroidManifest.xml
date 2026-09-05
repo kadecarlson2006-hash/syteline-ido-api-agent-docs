@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- Milestone 3: Meta Wearables toolkit registration talks to Meta AI over the network. -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
@@ -19,6 +21,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Operator">
 
+        <!-- Meta Wearables Device Access Toolkit. 0/0 = Developer Mode attestation placeholders;
+             real values come from the Wearables Developer Center via local.properties. -->
+        <meta-data
+            android:name="com.meta.wearable.mwdat.APPLICATION_ID"
+            android:value="${mwdat_application_id}" />
+        <meta-data
+            android:name="com.meta.wearable.mwdat.CLIENT_TOKEN"
+            android:value="${mwdat_client_token}" />
+        <!-- Privacy: opt out of Meta analytics and SDK crash reporting (ADR-015). -->
+        <meta-data
+            android:name="com.meta.wearable.mwdat.ANALYTICS_OPT_OUT"
+            android:value="true" />
+        <meta-data
+            android:name="com.meta.wearable.mwdat.CRASH_REPORTING_OPT_OUT"
+            android:value="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -27,6 +45,13 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Return deep link from the Meta AI registration flow (scheme mirrors Meta's samples). -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="operator" />
             </intent-filter>
         </activity>
     </application>

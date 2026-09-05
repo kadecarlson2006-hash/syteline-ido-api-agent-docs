@@ -20,6 +20,9 @@ fun configValue(key: String, default: String = ""): String =
 
 fun stringField(key: String, default: String = "") = "\"${configValue(key, default).replace("\"", "\\\"")}\""
 
+// Decided in settings.gradle.kts: true when a GitHub Packages token is available or forced with -Poperator.metaSdk.
+val metaSdkEnabled = (gradle.extra["operatorMetaSdkEnabled"] as Boolean)
+
 android {
     namespace = "com.operator.app"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -29,7 +32,13 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "0.2.0-m2"
+        versionName = "0.3.0-m3"
+
+        // Meta Wearables DAT attestation. "0"/"0" = Developer Mode (Meta AI app must have Developer Mode on).
+        manifestPlaceholders["mwdat_application_id"] = configValue("MWDAT_APPLICATION_ID", "0")
+        manifestPlaceholders["mwdat_client_token"] = configValue("MWDAT_CLIENT_TOKEN", "0")
+        buildConfigField("boolean", "META_SDK_ENABLED", "$metaSdkEnabled")
+        buildConfigField("boolean", "MWDAT_DEVELOPER_MODE", "${configValue("MWDAT_APPLICATION_ID", "0") == "0"}")
 
         buildConfigField("String", "OPERATOR_DEFAULT_MODE", stringField("OPERATOR_DEFAULT_MODE", "STANDBY"))
         buildConfigField("String", "OPERATOR_DEFAULT_WIT", stringField("OPERATOR_DEFAULT_WIT", "NORMAL"))
@@ -71,6 +80,9 @@ android {
 
 dependencies {
     implementation(project(":core"))
+    if (metaSdkEnabled) {
+        implementation(project(":glasses-meta"))
+    }
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.core.ktx)

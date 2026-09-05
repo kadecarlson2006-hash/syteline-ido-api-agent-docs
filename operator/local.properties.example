@@ -12,6 +12,15 @@ OPERATOR_DEFAULT_WIT=NORMAL
 # Milestone 1 audio loopback (1000..30000)
 OPERATOR_RECORD_TEST_DURATION_MILLIS=4000
 
+# Milestone 3: Meta Wearables Device Access Toolkit
+# GitHub personal access token (classic) with read:packages — required to download the SDK from
+# GitHub Packages. Without it the app builds with the glasses subsystem disabled.
+github_token=
+# Attestation from the Wearables Developer Center. Leave 0/0 for Developer Mode (enable Developer
+# Mode in the Meta AI app on the phone).
+MWDAT_APPLICATION_ID=0
+MWDAT_CLIENT_TOKEN=0
+
 # Milestone 4+ (leave empty until the backend exists)
 OPERATOR_BACKEND_URL=
 

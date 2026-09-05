@@ -32,6 +32,8 @@ import com.operator.app.ui.components.SubsystemRow
 import com.operator.app.ui.theme.OperatorColors
 import com.operator.core.audio.AudioRoute
 import com.operator.core.audio.RecordingState
+import com.operator.core.glasses.GlassesAction
+import com.operator.core.glasses.Support
 import com.operator.core.model.OperatorMode
 import com.operator.core.model.OperatorStatus
 import com.operator.core.model.Subsystem
@@ -58,6 +60,7 @@ data class OperatorActions(
     val onDiscardClip: () -> Unit = {},
     val onRefresh: () -> Unit = {},
     val onClearRouteLog: () -> Unit = {},
+    val onGlassesAction: (GlassesAction) -> Unit = {},
 )
 
 @Composable
@@ -78,6 +81,7 @@ fun OperatorScreen(state: OperatorUiState, actions: OperatorActions) {
             WitPanel(state, actions)
             AudioTestPanel(state, actions)
             BluetoothPanel(state, actions)
+            GlassesPanel(state, actions)
             RouteLogPanel(state, actions)
             DiagnosticsPanel(state)
             Spacer(Modifier.height(24.dp))
@@ -328,6 +332,53 @@ private fun BluetoothPanel(state: OperatorUiState, actions: OperatorActions) {
         Spacer(Modifier.height(8.dp))
         OutlinedButton(onClick = actions.onRefresh, modifier = Modifier.fillMaxWidth()) {
             Text("REFRESH DEVICES", style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun GlassesPanel(state: OperatorUiState, actions: OperatorActions) {
+    val g = state.glasses
+    ConsolePanel("Glasses · Milestone 3") {
+        KeyValueRow("Provider", g.providerName)
+        KeyValueRow("SDK", if (g.sdkPresent) "present · v${g.sdkVersion ?: "?"}" else "not compiled in", if (g.sdkPresent) OperatorColors.Cream else OperatorColors.AmberDim)
+        if (g.sdkPresent) {
+            KeyValueRow("Attestation", when (g.developerModeBuild) { true -> "Developer Mode (0/0)"; false -> "Developer Center credentials"; null -> "—" })
+            KeyValueRow("Initialised", if (g.initialized) "yes" else "no")
+            KeyValueRow("Registration", g.registration.name)
+            KeyValueRow("Session", g.session.name)
+            KeyValueRow("Active device", g.activeDeviceId ?: "none")
+            KeyValueRow("Camera permission", g.cameraPermission ?: "— (tap CHECK)")
+            KeyValueRow("Mock kit", if (g.mockEnabled) "enabled · ${g.mockDeviceCount} mock glasses" else "off")
+            Spacer(Modifier.height(6.dp))
+            Text("LINKED DEVICES", style = MaterialTheme.typography.labelSmall, color = OperatorColors.AmberDim)
+            if (g.devices.isEmpty()) KeyValueRow("—", "none")
+            g.devices.forEach { d ->
+                KeyValueRow(d.name, "${d.type} · ${d.linkState} · ${d.compatibility}" + (if (d.isDisplayCapable == true) " · display" else ""), if (d.isConnected) OperatorColors.Signal else OperatorColors.CreamDim)
+            }
+        }
+        g.lastError?.let { KeyValueRow("Last error", it, OperatorColors.Alert) }
+        if (state.glassesActions.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                state.glassesActions.forEach { action ->
+                    OutlinedButton(onClick = { actions.onGlassesAction(action) }, enabled = action.enabled) {
+                        Text(action.label, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+        Text("CAPABILITIES (DAT ${g.sdkVersion ?: "n/a"})", style = MaterialTheme.typography.labelSmall, color = OperatorColors.AmberDim)
+        g.capabilities.forEach { c ->
+            val color = when (c.support) {
+                Support.SUPPORTED -> OperatorColors.Signal
+                Support.UNSUPPORTED -> OperatorColors.Alert
+                Support.UNKNOWN -> OperatorColors.AmberDim
+            }
+            KeyValueRow(c.capability, c.support.label, color)
+            Text(c.note, style = MaterialTheme.typography.bodySmall, color = OperatorColors.CreamDim, modifier = Modifier.padding(start = 12.dp, bottom = 4.dp))
         }
     }
 }

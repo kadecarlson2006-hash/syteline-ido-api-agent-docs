@@ -12,11 +12,14 @@ operator/
 │       ├── audio         AudioRoute, RouteSelection, PcmClip, RecordingState,
 │       │                 AudioRecorder/AudioPlayer ports, AudioLoopbackController
 │       ├── diagnostics   LatencyTimeline, DiagnosticsSnapshot, RouteEventLog
+│       ├── glasses       GlassesProvider contract, GlassesState, NoGlassesProvider (Milestone 3)
 │       ├── decision      ResponseCategory, ResponseDecision, ResponseDecisionEngine, SilentDecisionEngine
 │       ├── ai            AIProvider contract            (Milestone 6)
 │       ├── tts           TTSProvider contract           (Milestone 8/9)
 │       ├── transcription TranscriptionProvider contract (Milestone 8)
 │       └── memory        MemoryRepository contract      (Milestone 5)
+├── glasses-meta/  optional Android library — the only module importing com.meta.wearable.dat.*
+│   └── com.operator.glasses.meta   MetaGlassesManager, MetaGlassesProviderFactory, MetaCapabilities
 └── app/    Android — Jetpack Compose
     └── com.operator.app
         ├── OperatorApplication, MainActivity
@@ -26,6 +29,7 @@ operator/
         ├── audio         AudioRouteMapper, AudioRouteMonitor, CommunicationLink,
         │                 AndroidAudioRecorder, AndroidAudioPlayer, AudioSubsystemReporter
         ├── bluetooth     BluetoothStatusMonitor (adapter state, paired devices)
+        ├── glasses       GlassesProviderLoader (reflective factory lookup), GlassesSubsystemReporter
         └── ui            OperatorViewModel, OperatorUiState, OperatorScreen, theme, components
 ```
 
