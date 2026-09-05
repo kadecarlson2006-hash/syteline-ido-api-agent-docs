@@ -5,7 +5,10 @@ import com.operator.app.audio.AndroidAudioPlayer
 import com.operator.app.audio.AndroidAudioRecorder
 import com.operator.app.audio.AudioRouteMonitor
 import com.operator.app.audio.AudioSubsystemReporter
+import com.operator.app.audio.CommunicationLink
+import com.operator.app.bluetooth.BluetoothStatusMonitor
 import com.operator.app.config.BuildConfigLoader
+import com.operator.app.permissions.BluetoothPermission
 import com.operator.app.permissions.MicrophonePermission
 import com.operator.core.audio.AudioLoopbackController
 import com.operator.core.audio.AudioPlayer
@@ -13,13 +16,16 @@ import com.operator.core.audio.AudioRecorder
 import com.operator.core.config.OperatorConfig
 import com.operator.core.decision.ResponseDecisionEngine
 import com.operator.core.decision.SilentDecisionEngine
+import com.operator.core.diagnostics.RouteEventLog
 import com.operator.core.state.OperatorStateManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 /**
- * Manual dependency container (ADR-007: no DI framework until it earns its keep).
+ * Manual dependency container (ADR-008: no DI framework until it earns its keep).
  * One instance per process, owned by [com.operator.app.OperatorApplication].
  *
  * Everything the UI needs is reachable from here; everything here is replaceable with a
@@ -38,11 +44,17 @@ class OperatorContainer(app: Application) {
         initialWit = config.defaultWit,
     )
 
-    val microphonePermission = MicrophonePermission(app)
-    val audioRouteMonitor = AudioRouteMonitor(app)
+    val routeEventLog = RouteEventLog()
 
-    val audioRecorder: AudioRecorder = AndroidAudioRecorder(app)
-    val audioPlayer: AudioPlayer = AndroidAudioPlayer(app)
+    val microphonePermission = MicrophonePermission(app)
+    val bluetoothPermission = BluetoothPermission(app)
+
+    val audioRouteMonitor = AudioRouteMonitor(app, routeEventLog)
+    val bluetoothStatus = BluetoothStatusMonitor(app, bluetoothPermission, routeEventLog)
+
+    private val communicationLink = CommunicationLink(app, audioRouteMonitor)
+    val audioRecorder: AudioRecorder = AndroidAudioRecorder(app, audioRouteMonitor, communicationLink)
+    val audioPlayer: AudioPlayer = AndroidAudioPlayer(app, audioRouteMonitor, communicationLink)
 
     val loopback = AudioLoopbackController(
         recorder = audioRecorder,
@@ -63,6 +75,11 @@ class OperatorContainer(app: Application) {
 
     init {
         audioRouteMonitor.start()
+        bluetoothStatus.start()
         audioSubsystemReporter.start(appScope)
+        // A selected device that disconnects must not silently keep being "selected".
+        audioRouteMonitor.routes
+            .onEach { loopback.onRoutesChanged(it.inputs, it.outputs) }
+            .launchIn(appScope)
     }
 }

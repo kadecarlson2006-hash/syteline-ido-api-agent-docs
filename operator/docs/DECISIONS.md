@@ -102,3 +102,28 @@ This repository previously contained only Syteline IDO documentation. Operator w
 an `operator/` subdirectory so nothing collides with the existing docs, README, or
 `.gitignore`. The GitHub Actions workflow is scoped to `operator/**`. Moving Operator to its
 own repository later is a `git subtree split` away.
+
+## ADR-011: Bluetooth headset links use `setCommunicationDevice`, never `startBluetoothSco`
+
+**Status:** Accepted (Milestone 2)
+
+`AudioManager.startBluetoothSco()` is deprecated since API 34 in favour of
+`setCommunicationDevice(AudioDeviceInfo)` (API 31), which also covers LE-audio headsets. Per the
+platform reference only *sink* devices from `getAvailableCommunicationDevices()` can be
+selected, the source is picked automatically, and the request must be cleared when done.
+`CommunicationLink` wraps exactly that: set `MODE_IN_COMMUNICATION`, select the sink, wait up
+to 4 s for `getCommunicationDevice()` to confirm, run the capture/playback, then clear and
+restore the mode. Capture uses `VOICE_COMMUNICATION`, playback `USAGE_VOICE_COMMUNICATION`,
+because SCO is a voice link. A2DP output stays `USAGE_MEDIA` with `setPreferredDevice`.
+Consequence: explicit SCO selection is unsupported on API 29–30; DEFAULT routing still works.
+
+## ADR-012: Routing truth comes from `routedDevice`, requests are only requests
+
+**Status:** Accepted (Milestone 2)
+
+`setPreferredDevice` and `setCommunicationDevice` are requests the platform may refuse or
+override. The UI therefore shows both the *selected* route and the *actual* route read back
+from `AudioRecord.getRoutedDevice()` / `AudioTrack.getRoutedDevice()`, and every capture and
+playback logs its real route to the in-memory `RouteEventLog` and logcat. Milestone 10's
+glasses questions ("can the app use the Ray-Ban mic?") will be answered from this evidence, not
+from what was requested.
