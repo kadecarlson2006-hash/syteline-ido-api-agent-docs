@@ -90,16 +90,20 @@ class AudioRouteMonitor(
     fun refresh() {
         val inputs = audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).map(AudioRouteMapper::toRoute)
         val outputs = audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).map(AudioRouteMapper::toRoute)
-        val supportsComm = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-        val commDevices = if (supportsComm) audioManager.availableCommunicationDevices.map(AudioRouteMapper::toRoute) else emptyList()
-        val active = if (supportsComm) audioManager.communicationDevice?.let(AudioRouteMapper::toRoute) else null
+        // Inline SDK_INT checks (not a local flag) so lint's NewApi analysis can see the guard.
+        val commDevices = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            audioManager.availableCommunicationDevices.map(AudioRouteMapper::toRoute)
+        } else emptyList()
+        val active = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            audioManager.communicationDevice?.let(AudioRouteMapper::toRoute)
+        } else null
         _routes.value = AudioRoutes(
             inputs = inputs,
             outputs = outputs,
             communicationDevices = commDevices,
             activeCommunicationDevice = active,
             audioMode = modeLabel(audioManager.mode),
-            supportsCommunicationDeviceApi = supportsComm,
+            supportsCommunicationDeviceApi = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S,
         )
     }
 
