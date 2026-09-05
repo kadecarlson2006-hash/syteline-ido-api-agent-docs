@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.operator.core.audio.RouteSelectionTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-09-05T04:08:34.299Z" hostname="vm" time="0.011">
-  <properties/>
-  <testcase name="capabilities line lists what the platform reported()" classname="com.operator.core.audio.RouteSelectionTest" time="0.003"/>
-  <testcase name="A2DP output is plain media routing but SCO and BLE headset need the communication link()" classname="com.operator.core.audio.RouteSelectionTest" time="0.002"/>
-  <testcase name="default selection needs no communication link()" classname="com.operator.core.audio.RouteSelectionTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
