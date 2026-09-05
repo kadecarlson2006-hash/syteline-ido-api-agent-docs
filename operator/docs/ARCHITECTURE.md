@@ -9,9 +9,9 @@ operator/
 │       ├── model         OperatorMode, WitLevel, OperatorStatus, OperatorState, Subsystem
 │       ├── state         OperatorStateManager (StateFlow + events)
 │       ├── config        OperatorConfig (+ canonical key names)
-│       ├── audio         AudioRoute, PcmClip, RecordingState, AudioRecorder/AudioPlayer ports,
-│       │                 AudioLoopbackController (Milestone 1 state machine)
-│       ├── diagnostics   LatencyTimeline, DiagnosticsSnapshot
+│       ├── audio         AudioRoute, RouteSelection, PcmClip, RecordingState,
+│       │                 AudioRecorder/AudioPlayer ports, AudioLoopbackController
+│       ├── diagnostics   LatencyTimeline, DiagnosticsSnapshot, RouteEventLog
 │       ├── decision      ResponseCategory, ResponseDecision, ResponseDecisionEngine, SilentDecisionEngine
 │       ├── ai            AIProvider contract            (Milestone 6)
 │       ├── tts           TTSProvider contract           (Milestone 8/9)
@@ -22,15 +22,32 @@ operator/
         ├── OperatorApplication, MainActivity
         ├── di            OperatorContainer (manual wiring)
         ├── config        BuildConfigLoader
-        ├── permissions   MicrophonePermission
-        ├── audio         AudioRouteMapper, AudioRouteMonitor, AndroidAudioRecorder,
-        │                 AndroidAudioPlayer, AudioSubsystemReporter
+        ├── permissions   MicrophonePermission, BluetoothPermission
+        ├── audio         AudioRouteMapper, AudioRouteMonitor, CommunicationLink,
+        │                 AndroidAudioRecorder, AndroidAudioPlayer, AudioSubsystemReporter
+        ├── bluetooth     BluetoothStatusMonitor (adapter state, paired devices)
         └── ui            OperatorViewModel, OperatorUiState, OperatorScreen, theme, components
 ```
 
 Future packages, each behind a `core` interface: `meta` (MetaGlassesManager), `remote`
 (OperatorRemoteController), `camera` (CameraContextManager), `usage` (UsageTracker),
 `backend` (HTTP/WebSocket client), plus a separate `backend/` service directory.
+
+## Route selection (Milestone 2)
+
+```
+INPUT / OUTPUT chips ──▶ AudioLoopbackController.selectInput/selectOutput ──▶ RouteSelection
+                                                                                    │
+  no selection ─────────────────▶ platform default                                  │
+  wired / USB / built-in ───────▶ setPreferredDevice(AudioDeviceInfo)               ▼
+  Bluetooth SCO / BLE headset ──▶ CommunicationLink.use(sink) {                AndroidAudioRecorder
+                                    MODE_IN_COMMUNICATION                      AndroidAudioPlayer
+                                    setCommunicationDevice(sink) + wait ≤4 s        │
+                                    capture VOICE_COMMUNICATION /                   ▼
+                                    play USAGE_VOICE_COMMUNICATION            routedDevice ──▶ "actual"
+                                  } finally clearCommunicationDevice()        RouteEventLog ──▶ panel + logcat
+AudioRouteMonitor: device add/remove + OnCommunicationDeviceChangedListener ──▶ AudioRoutes, prunes vanished selections
+```
 
 ## Data flow (Milestone 1)
 

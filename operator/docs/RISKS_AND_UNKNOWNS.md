@@ -7,7 +7,7 @@ Update this file whenever a test answers a question.
 |---|------|--------|-------------------|
 | 1 | Continuous Ray-Ban Meta Gen 2 microphone access for third-party apps | UNKNOWN TO VERIFY | Milestone 3/10. Meta Wearables Device Access Toolkit docs must be read first. Do not assume continuous streaming works. Fallback: phone mic → glasses speakers. |
 | 2 | Meta AI coexistence (does Meta AI grab the mic/speaker or gestures?) | UNKNOWN TO VERIFY | Milestone 10 real-device test. |
-| 3 | Bluetooth audio focus and route flapping between SCO/A2DP/LE Audio | UNKNOWN TO VERIFY | Milestone 2 diagnostics will log actual `routedDevice`; Milestone 10 tests with glasses. |
+| 3 | Bluetooth audio focus and route flapping between SCO/A2DP/LE Audio | UNKNOWN TO VERIFY | Milestone 2 diagnostics log every actual `routedDevice` and communication-device change; run the CURRENT_STATUS.md Milestone 2 checks with a headset, then Milestone 10 with glasses. |
 | 4 | Glasses battery impact of continuous audio | UNKNOWN TO VERIFY | Measure over 1 h sessions in Milestone 10. |
 | 5 | Android background service restrictions (foreground service type `microphone`, Doze) | UNKNOWN TO VERIFY | Milestone 11. Continuous capture needs a foreground service with `FOREGROUND_SERVICE_MICROPHONE`; Android 14+ restricts starting mic FGS from background. |
 | 6 | Ambient transcription cost | UNKNOWN TO VERIFY | Local VAD before cloud; UsageTracker in Milestone 8+. |
@@ -17,6 +17,9 @@ Update this file whenever a test answers a question.
 | 10 | BLE ring compatibility (HID vs custom GATT) | UNKNOWN TO VERIFY | Milestone 15. Design around generic Android HID first. |
 | 11 | Android microphone capture/playback on the phone itself | PARTIALLY VERIFIED | Milestone 1 code compiles and unit-tests in CI but has not yet been run on a device — see CURRENT_STATUS.md "next test". |
 | 12 | Build toolchain compatibility (AGP 9.4 + Kotlin 2.4.10 + Gradle 9.6.0) | VERIFIED | `:core` builds/tests locally and in CI; `:app` assembles and unit-tests in CI (run #3 green). |
-| 13 | `AudioRecord.routedDevice` / `AudioTrack.routedDevice` reliability on Samsung | UNKNOWN TO VERIFY | Some OEM builds return null until a few buffers are processed; the recorder polls after each read. |
-| 14 | 16 kHz mono capture support on every input route | UNKNOWN TO VERIFY | Bluetooth SCO is 8/16 kHz; LE Audio may differ. Milestone 2 will display `AudioDeviceInfo.sampleRates`. |
+| 13 | `AudioRecord.routedDevice` / `AudioTrack.routedDevice` reliability on Samsung | UNKNOWN TO VERIFY | Recorder/player poll after every buffer and log "routedDevice was never reported" if it stays null; look for that line in the route log. |
+| 14 | 16 kHz mono capture support on every input route | UNKNOWN TO VERIFY | Bluetooth SCO is 8/16 kHz; LE Audio may differ. The Bluetooth diagnostics panel now shows `sampleRates`/`channelCounts`/`encodings` per device (empty list = arbitrary rates). |
 | 15 | Meta developer documentation host (`wearables.developer.meta.com`) reachable from the dev environment | BLOCKED (in the CI/agent sandbox) | Read the docs from a normal workstation before Milestone 3. |
+| 16 | `setCommunicationDevice` bring-up time and whether Samsung confirms the device via `getCommunicationDevice()` | UNKNOWN TO VERIFY | `CommunicationLink` waits up to 4 s and logs "NOT confirmed" otherwise; capture proceeds either way so the route log shows what really happened. |
+| 17 | Bluetooth device names in `AudioDeviceInfo.productName` / `getAddress()` without BLUETOOTH_CONNECT | UNKNOWN TO VERIFY | The reference lists no permission for either; if names come back blank, compare against the paired list (which does need BLUETOOTH_CONNECT). |
+| 18 | Ray-Ban Meta appear as classic HFP/A2DP or LE Audio (`TYPE_BLE_HEADSET`) | UNKNOWN TO VERIFY | Determines which link path Milestone 10 uses; read it off the device table. |

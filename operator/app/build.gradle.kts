@@ -29,7 +29,7 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
-        versionName = "0.1.0-m1"
+        versionName = "0.2.0-m2"
 
         buildConfigField("String", "OPERATOR_DEFAULT_MODE", stringField("OPERATOR_DEFAULT_MODE", "STANDBY"))
         buildConfigField("String", "OPERATOR_DEFAULT_WIT", stringField("OPERATOR_DEFAULT_WIT", "NORMAL"))

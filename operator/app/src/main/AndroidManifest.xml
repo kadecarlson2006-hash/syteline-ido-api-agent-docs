@@ -3,7 +3,11 @@
 
     <!-- Milestone 1: microphone capture for the loopback test. Requested at runtime. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!-- Milestone 2 will add BLUETOOTH_CONNECT for device names / SCO control. -->
+    <!-- Milestone 2: Bluetooth diagnostics. BLUETOOTH_CONNECT is a runtime permission on API 31+
+         (bonded device names); BLUETOOTH covers API 29-30. MODIFY_AUDIO_SETTINGS for audio mode changes. -->
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <uses-feature android:name="android.hardware.bluetooth" android:required="false" />

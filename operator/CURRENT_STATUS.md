@@ -1,52 +1,70 @@
 # CURRENT STATUS — OPERATOR
 
-**Current milestone:** 1 — Phone audio loopback (Milestones 0 and 1 implemented, awaiting device verification)
+**Current milestone:** 2 — Bluetooth audio diagnostics (implemented; awaiting device verification of Milestones 1 and 2)
 
-**Last updated:** 2026-09-04
+**Last updated:** 2026-09-05
 
 ## What works (verified)
 
-- `:core` compiles and its 29 unit tests pass locally and in CI (state manager, decision model,
-  config parsing, latency timeline, audio loopback state machine with fakes).
-- Project structure, version catalog, Gradle wrapper (9.5.0).
-
+- `:core` compiles and its 35 unit tests pass locally and in CI (state manager, decision model,
+  config parsing, latency timeline, route selection, route event log, audio loopback state
+  machine with fakes).
 - `:app` compiles (`assembleDebug`) and its unit tests pass in GitHub Actions
-  (`.github/workflows/operator-android.yml`, run #3). The debug APK is downloadable from that
-  run's artifacts (`operator-debug-apk`).
+  (`.github/workflows/operator-android.yml`). The debug APK is downloadable from the latest
+  green run's artifacts (`operator-debug-apk`).
 
 ## What is implemented but NOT yet verified on a device
 
-- Main screen: OPERATOR / PRIVATE ASSISTANCE SYSTEM / STATUS, seven subsystem indicators,
-  ACTIVATE / STANDBY / COMMENT NOW / EMERGENCY MUTE, mode selector, wit selector.
-- Microphone permission request flow.
-- RECORD TEST (4 s default, configurable) into memory with progress bar.
-- PLAY TEST through the current default Android output with audio focus.
-- Display of available input/output devices and the device Android actually routed to.
-- Basic diagnostics panel.
+Milestone 1 (unchanged):
+- Main screen, mode/wit selectors, ACTIVATE / STANDBY / COMMENT NOW / EMERGENCY MUTE.
+- Microphone permission flow, RECORD TEST into memory, PLAY TEST with audio focus.
 
-The Android module was written in a sandbox without an Android SDK (dl.google.com is blocked
-there), so `:app` compilation is verified by GitHub Actions rather than locally. It has not yet
-been installed on a phone.
+Milestone 2 (new):
+- INPUT / OUTPUT chip selectors in the Audio Test panel listing every `AudioDeviceInfo`
+  Android reports, plus DEFAULT (platform routing).
+- Wired / USB / built-in selections use `setPreferredDevice`.
+- Bluetooth SCO and BLE-headset selections raise the link with
+  `AudioManager.setCommunicationDevice` (API 31+, the documented replacement for
+  `startBluetoothSco`), record with `VOICE_COMMUNICATION`, play with
+  `USAGE_VOICE_COMMUNICATION`, and clear the request afterwards. A2DP output is plain media.
+- "Capture path" / "Playback path" lines say which audio source/usage was used and whether the
+  preferred device or communication link was honoured; "actual" lines come from `routedDevice`.
+- Bluetooth diagnostics panel: adapter state, paired devices (needs BLUETOOTH_CONNECT on
+  API 31+), audio mode, communication-capable outputs, active communication device, and a full
+  input/output device table with sample rates, channel counts, encodings, and addresses.
+- Route event log: device added/removed, communication-device changes, what each capture and
+  playback was actually routed to. Also mirrored to logcat (`AudioRouteMonitor`,
+  `AndroidAudioRecorder`, `AndroidAudioPlayer`, `BluetoothStatusMonitor`).
+- A selected device that disconnects falls back to DEFAULT automatically.
+
+The Android module is written in a sandbox without an Android SDK, so `:app` compilation is
+verified by GitHub Actions rather than locally. Nothing has been installed on a phone yet.
 
 ## What does not work / not started
 
-- Everything from Milestone 2 onward: Bluetooth diagnostics, Meta glasses, backend, memory,
-  AI, TTS, transcription, rolling context, decision engine, BLE ring, camera, integrations.
-- No launcher icon yet (system default is used).
+- Everything from Milestone 3 onward: Meta glasses SDK, backend, memory, AI, TTS,
+  transcription, rolling context, decision engine, BLE ring, camera, integrations.
+- Explicit Bluetooth SCO selection on Android 10–11 (API 29–30): not supported by design; the
+  UI says so. DEFAULT routing still works there.
+- No launcher icon.
 
 ## Current blockers
 
-- None for Milestone 1 beyond human verification on hardware.
+- None beyond human verification on hardware.
 
-## Next test (required before Milestone 2)
+## Next test (required before Milestone 3)
 
-On a Samsung Galaxy phone:
+On a Samsung Galaxy phone, first the Milestone 1 checks (launch, GRANT MICROPHONE, RECORD TEST,
+PLAY TEST, understandable speech, correct actual devices), then with a Bluetooth headset or the
+Ray-Ban Meta glasses paired and connected:
 
-1. App launches and shows STATUS: STANDING BY.
-2. Tap GRANT MICROPHONE → system dialog → allow → Microphone subsystem turns READY.
-3. RECORD TEST → progress bar runs ~4 s → state RECORDED, clip shows duration and a peak
-   level above ~5% when you spoke.
-4. PLAY TEST → you hear your recording clearly through the phone speaker.
-5. "Input device (actual)" shows the built-in mic; "Output device (actual)" shows the
-   built-in speaker (or the connected headset if one is attached).
-6. EMERGENCY MUTE during playback stops audio immediately.
+1. GRANT BLUETOOTH → the paired list shows the headset/glasses with its name, flagged "audio".
+2. The INPUT chips show a Bluetooth SCO (or BLE headset) entry; OUTPUT shows A2DP and SCO/BLE.
+3. OUTPUT = A2DP entry → PLAY TEST → audio in the headset; "Output (actual)" = A2DP device.
+4. INPUT = Bluetooth SCO entry → RECORD TEST → route log shows "Requested communication
+   device…", then "Communication device active…", then "Capture routed to … (Bluetooth SCO)".
+   Speak; PLAY TEST on the phone speaker should reproduce your voice from the headset mic.
+5. OUTPUT = Bluetooth SCO entry → PLAY TEST → playback through the headset via the SCO link.
+6. Disconnect the headset mid-selection → chips fall back to DEFAULT; log shows "Device removed".
+7. Note the time between "Requested communication device" and "active" (SCO bring-up latency)
+   and anything odd in audio quality (SCO is narrow/wide-band voice, not music quality).

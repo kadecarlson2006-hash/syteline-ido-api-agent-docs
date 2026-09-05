@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.operator.app.permissions.BluetoothPermission
 import com.operator.app.permissions.MicrophonePermission
 import com.operator.app.ui.OperatorActions
 import com.operator.app.ui.OperatorScreen
@@ -36,13 +37,16 @@ class MainActivity : ComponentActivity() {
 private fun OperatorRoot(viewModel: OperatorViewModel) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
-        viewModel.refreshPermission()
+    val microphoneLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        viewModel.refreshPermissions()
+    }
+    val bluetoothLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        viewModel.refreshPermissions()
     }
 
-    // Re-check permission and routes whenever the screen comes back (e.g. from system settings).
+    // Re-check permissions and routes whenever the screen comes back (e.g. from system settings).
     LifecycleResumeEffect(Unit) {
-        viewModel.refreshPermission()
+        viewModel.refreshPermissions()
         onPauseOrDispose { viewModel.stopAudio() }
     }
 
@@ -54,11 +58,16 @@ private fun OperatorRoot(viewModel: OperatorViewModel) {
             onToggleMute = viewModel::toggleMute,
             onSelectMode = viewModel::setMode,
             onSelectWit = viewModel::setWit,
-            onRequestMicrophone = { permissionLauncher.launch(MicrophonePermission.PERMISSION) },
+            onRequestMicrophone = { microphoneLauncher.launch(MicrophonePermission.PERMISSION) },
+            onRequestBluetooth = { bluetoothLauncher.launch(BluetoothPermission.PERMISSION) },
+            onSelectInput = viewModel::selectInput,
+            onSelectOutput = viewModel::selectOutput,
             onRecordTest = viewModel::recordTest,
             onPlayTest = viewModel::playTest,
             onStopAudio = viewModel::stopAudio,
             onDiscardClip = viewModel::discardClip,
+            onRefresh = viewModel::refreshPermissions,
+            onClearRouteLog = viewModel::clearRouteLog,
         )
     }
 

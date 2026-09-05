@@ -36,6 +36,9 @@ import com.operator.core.model.OperatorMode
 import com.operator.core.model.OperatorStatus
 import com.operator.core.model.Subsystem
 import com.operator.core.model.WitLevel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /** Callbacks the screen can invoke. Kept as a value so previews and tests can pass no-ops. */
 data class OperatorActions(
@@ -46,10 +49,15 @@ data class OperatorActions(
     val onSelectMode: (OperatorMode) -> Unit = {},
     val onSelectWit: (WitLevel) -> Unit = {},
     val onRequestMicrophone: () -> Unit = {},
+    val onRequestBluetooth: () -> Unit = {},
+    val onSelectInput: (AudioRoute?) -> Unit = {},
+    val onSelectOutput: (AudioRoute?) -> Unit = {},
     val onRecordTest: () -> Unit = {},
     val onPlayTest: () -> Unit = {},
     val onStopAudio: () -> Unit = {},
     val onDiscardClip: () -> Unit = {},
+    val onRefresh: () -> Unit = {},
+    val onClearRouteLog: () -> Unit = {},
 )
 
 @Composable
@@ -69,6 +77,8 @@ fun OperatorScreen(state: OperatorUiState, actions: OperatorActions) {
             ModePanel(state, actions)
             WitPanel(state, actions)
             AudioTestPanel(state, actions)
+            BluetoothPanel(state, actions)
+            RouteLogPanel(state, actions)
             DiagnosticsPanel(state)
             Spacer(Modifier.height(24.dp))
         }
@@ -165,10 +175,11 @@ private fun WitPanel(state: OperatorUiState, actions: OperatorActions) {
 }
 
 @Composable
-private fun SelectorChip(label: String, selected: Boolean, onClick: () -> Unit) {
+private fun SelectorChip(label: String, selected: Boolean, enabled: Boolean = true, onClick: () -> Unit) {
     FilterChip(
         selected = selected,
         onClick = onClick,
+        enabled = enabled,
         label = { Text(label, style = MaterialTheme.typography.labelSmall) },
         colors = FilterChipDefaults.filterChipColors(
             selectedContainerColor = OperatorColors.Amber,
@@ -178,11 +189,29 @@ private fun SelectorChip(label: String, selected: Boolean, onClick: () -> Unit) 
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun RouteChips(
+    label: String,
+    routes: List<AudioRoute>,
+    selected: AudioRoute?,
+    enabled: Boolean,
+    onSelect: (AudioRoute?) -> Unit,
+) {
+    Text(label, style = MaterialTheme.typography.labelSmall, color = OperatorColors.CreamDim)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        SelectorChip("DEFAULT", selected = selected == null, enabled = enabled) { onSelect(null) }
+        routes.forEach { route ->
+            SelectorChip(route.summary.uppercase(), selected = selected?.id == route.id, enabled = enabled) { onSelect(route) }
+        }
+    }
+}
+
 @Composable
 private fun AudioTestPanel(state: OperatorUiState, actions: OperatorActions) {
     val loop = state.loopback
     val busy = loop.recordingState.isBusy
-    ConsolePanel("Audio test · Milestone 1") {
+    ConsolePanel("Audio test · Milestones 1–2") {
         if (!state.microphonePermissionGranted) {
             Text(
                 "Microphone permission is required for RECORD TEST.",
@@ -195,6 +224,20 @@ private fun AudioTestPanel(state: OperatorUiState, actions: OperatorActions) {
             }
             Spacer(Modifier.height(8.dp))
         }
+
+        RouteChips("INPUT", state.routes.inputs, loop.selection.input, enabled = !busy, onSelect = actions.onSelectInput)
+        Spacer(Modifier.height(6.dp))
+        RouteChips("OUTPUT", state.routes.outputs, loop.selection.output, enabled = !busy, onSelect = actions.onSelectOutput)
+        if (loop.selection.needsCommunicationLink) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                if (state.routes.supportsCommunicationDeviceApi) "Bluetooth headset link will be raised via setCommunicationDevice (may take a few seconds)."
+                else "Bluetooth headset link needs Android 12+; this device cannot select SCO explicitly.",
+                style = MaterialTheme.typography.bodySmall,
+                color = OperatorColors.AmberDim,
+            )
+        }
+        Spacer(Modifier.height(10.dp))
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(
@@ -238,17 +281,80 @@ private fun AudioTestPanel(state: OperatorUiState, actions: OperatorActions) {
         }
         KeyValueRow("Recording state", loop.recordingState.label, stateColor)
         KeyValueRow("Progress", "${loop.progressMillis} / ${loop.targetMillis} ms")
-        KeyValueRow("Input device (actual)", loop.lastInputRoute?.summary ?: "— (record to detect)")
-        KeyValueRow("Output device (actual)", loop.lastOutputRoute?.summary ?: "— (play to detect)")
-        KeyValueRow("Available inputs", state.routes.inputs.summaryLine())
-        KeyValueRow("Available outputs", state.routes.outputs.summaryLine())
+        KeyValueRow("Input (selected)", loop.selection.describeInput)
+        KeyValueRow("Input (actual)", loop.lastInputRoute?.summary ?: "— (record to detect)")
+        loop.lastCaptureNote?.let { KeyValueRow("Capture path", it) }
+        KeyValueRow("Output (selected)", loop.selection.describeOutput)
+        KeyValueRow("Output (actual)", loop.lastOutputRoute?.summary ?: "— (play to detect)")
+        loop.lastPlaybackNote?.let { KeyValueRow("Playback path", it) }
         loop.clipDurationMillis?.let { KeyValueRow("Clip", "${it} ms · peak ${"%.0f".format((loop.clipPeakLevel ?: 0f) * 100)}%") }
         loop.error?.let { KeyValueRow("Error", it, OperatorColors.Alert) }
     }
 }
 
-private fun List<AudioRoute>.summaryLine(): String =
-    if (isEmpty()) "none" else joinToString(", ") { it.summary }
+@Composable
+private fun BluetoothPanel(state: OperatorUiState, actions: OperatorActions) {
+    val routes = state.routes
+    ConsolePanel("Bluetooth diagnostics · Milestone 2") {
+        if (state.bluetoothPermissionIsRuntime && !state.bluetoothPermissionGranted) {
+            Text(
+                "BLUETOOTH_CONNECT is needed to list paired devices by name.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = OperatorColors.CreamDim,
+            )
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = actions.onRequestBluetooth, modifier = Modifier.fillMaxWidth()) {
+                Text("GRANT BLUETOOTH", style = MaterialTheme.typography.labelSmall)
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+        KeyValueRow("Adapter", state.bluetooth.summary)
+        state.bluetooth.bondedDevices?.forEach { d ->
+            KeyValueRow(if (d.isAudio) "  paired · audio" else "  paired", "${d.name} · ${d.address}")
+        }
+        Spacer(Modifier.height(6.dp))
+        KeyValueRow("Audio mode", routes.audioMode)
+        KeyValueRow("Communication API", if (routes.supportsCommunicationDeviceApi) "setCommunicationDevice (API 31+)" else "unavailable below API 31")
+        KeyValueRow("Active comm device", routes.activeCommunicationDevice?.summary ?: "none")
+        KeyValueRow("Comm-capable outputs", routes.communicationDevices.joinToString { it.summary }.ifEmpty { "none" })
+        Spacer(Modifier.height(6.dp))
+        Text("INPUT DEVICES", style = MaterialTheme.typography.labelSmall, color = OperatorColors.AmberDim)
+        if (routes.inputs.isEmpty()) KeyValueRow("—", "none")
+        routes.inputs.forEach { r -> KeyValueRow("#${r.id} ${r.summary}", r.capabilities, if (r.isBluetooth) OperatorColors.Amber else OperatorColors.Cream) }
+        Spacer(Modifier.height(6.dp))
+        Text("OUTPUT DEVICES", style = MaterialTheme.typography.labelSmall, color = OperatorColors.AmberDim)
+        if (routes.outputs.isEmpty()) KeyValueRow("—", "none")
+        routes.outputs.forEach { r -> KeyValueRow("#${r.id} ${r.summary}", r.capabilities, if (r.isBluetooth) OperatorColors.Amber else OperatorColors.Cream) }
+        Spacer(Modifier.height(8.dp))
+        OutlinedButton(onClick = actions.onRefresh, modifier = Modifier.fillMaxWidth()) {
+            Text("REFRESH DEVICES", style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+private val timeFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
+
+@Composable
+private fun RouteLogPanel(state: OperatorUiState, actions: OperatorActions) {
+    ConsolePanel("Route event log") {
+        if (state.routeEvents.isEmpty()) {
+            Text("No events yet.", style = MaterialTheme.typography.bodySmall, color = OperatorColors.CreamDim)
+        } else {
+            state.routeEvents.asReversed().take(25).forEach { e ->
+                Text(
+                    "${timeFormat.format(Date(e.atMillis))}  ${e.message}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = OperatorColors.Cream,
+                    modifier = Modifier.padding(vertical = 1.dp),
+                )
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+        OutlinedButton(onClick = actions.onClearRouteLog, enabled = state.routeEvents.isNotEmpty(), modifier = Modifier.fillMaxWidth()) {
+            Text("CLEAR LOG", style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
 
 @Composable
 private fun DiagnosticsPanel(state: OperatorUiState) {

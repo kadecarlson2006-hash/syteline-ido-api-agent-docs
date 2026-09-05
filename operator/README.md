@@ -7,7 +7,7 @@ it whispers something useful, corrective, or funny.
 
 > Silence is the default. `NO_RESPONSE` is the most common outcome by design.
 
-**Status:** Milestones 0 and 1 implemented; see [CURRENT_STATUS.md](CURRENT_STATUS.md).
+**Status:** Milestones 0–2 implemented; see [CURRENT_STATUS.md](CURRENT_STATUS.md).
 
 ## Hardware target
 
@@ -24,7 +24,7 @@ Two Gradle modules today, more later:
 | Module | Purpose |
 |--------|---------|
 | `:core` | Pure Kotlin/JVM. Domain model (`OperatorMode`, `WitLevel`, `OperatorState`), `OperatorStateManager`, provider contracts (`AIProvider`, `TTSProvider`, `TranscriptionProvider`, `MemoryRepository`), `ResponseDecision`, latency timeline, audio loopback state machine. No Android. |
-| `:app` | Android app. Jetpack Compose UI, `AudioRecord`/`AudioTrack` implementations, permission handling, diagnostics. |
+| `:app` | Android app. Jetpack Compose UI, `AudioRecord`/`AudioTrack` implementations with explicit route selection, Bluetooth communication-link handling, permission handling, diagnostics. |
 
 Full layout and data flow: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 Decisions: [docs/DECISIONS.md](docs/DECISIONS.md). Unknowns: [docs/RISKS_AND_UNKNOWNS.md](docs/RISKS_AND_UNKNOWNS.md).
@@ -65,7 +65,7 @@ Install and launch on a connected device:
 ```bash
 ./gradlew :app:installDebug
 adb shell am start -n com.operator.app/.MainActivity
-adb logcat -s AndroidAudioRecorder AndroidAudioPlayer
+adb logcat -s AndroidAudioRecorder AndroidAudioPlayer AudioRouteMonitor BluetoothStatusMonitor
 ```
 
 ### Building without the Android SDK
@@ -95,6 +95,19 @@ the comment in `build.gradle.kts`.)
    (`routedDevice`), plus all available inputs/outputs.
 6. **EMERGENCY MUTE** stops playback immediately and blocks further audio until released.
 
+## Milestone 2 walk-through (Bluetooth audio diagnostics)
+
+1. Pair and connect a Bluetooth headset (or the Ray-Ban Meta glasses) in Android settings.
+2. **GRANT BLUETOOTH** (Android 12+) so paired devices are listed by name.
+3. In the Audio Test panel pick an **INPUT** and **OUTPUT** chip. DEFAULT leaves routing to
+   Android; wired/USB entries use `setPreferredDevice`; Bluetooth SCO / BLE-headset entries
+   raise the link with `AudioManager.setCommunicationDevice` for the duration of the test.
+4. RECORD TEST / PLAY TEST as before. "Capture path" and "Playback path" say what was
+   requested; "Input (actual)" and "Output (actual)" say what Android really did.
+5. The **Bluetooth diagnostics** panel lists every `AudioDeviceInfo` with rates, channels,
+   encodings, and address, plus the communication-device state. The **Route event log** panel
+   (also in logcat) records device changes and the route of every capture/playback.
+
 ## Configuration
 
 All keys are documented in `local.properties.example` (app) and `.env.example` (backend).
@@ -118,15 +131,17 @@ Highlights:
 
 ## Known limitations
 
-- Milestone 1 is phone-only: no Bluetooth device selection, no glasses.
+- Explicit Bluetooth SCO selection requires Android 12+ (`setCommunicationDevice`); on
+  Android 10–11 only DEFAULT routing is available.
+- No glasses-specific integration yet (Milestone 3).
 - No launcher icon.
 - `:app` compilation is verified in CI; the authoring environment lacked the Android SDK.
 - No release signing configuration.
 
 ## Roadmap
 
-0. Project skeleton ✅  1. Phone audio loopback ✅ (pending device check)
-2. Bluetooth audio diagnostics  3. Meta device access  4. Backend skeleton
+0. Project skeleton ✅  1. Phone audio loopback ✅  2. Bluetooth audio diagnostics ✅ (1–2 pending device check)
+3. Meta device access  4. Backend skeleton
 5. Memory database v1  6. Basic text AI (OpenRouter)  7. Memory-aware text AI
 8. Push to talk  9. ElevenLabs voice  10. Glasses audio  11. Rolling transcription
 12. Response decision engine  13. Active Operator  14. Feedback learning

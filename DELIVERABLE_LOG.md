@@ -310,3 +310,11 @@ curl -s -X POST "https://YOUR-HOST/IDORequestService/ido/invoke/SLItemprices?met
 **Where:** Everything lives under `operator/` (Kotlin, Gradle multi-module: `:core` pure JVM, `:app` Android). CI workflow: `.github/workflows/operator-android.yml`. See `operator/README.md`, `operator/CURRENT_STATUS.md`, `operator/docs/`.
 
 **Not related to Syteline.** The Syteline docs in `docs/` are untouched.
+
+---
+
+## 2026-09-05 — OPERATOR Milestone 2: Bluetooth audio diagnostics
+
+**Request:** Continue Operator with Milestone 2 (detect Bluetooth audio devices, show `AudioDeviceInfo` diagnostics, test phone/Bluetooth mic and Bluetooth output, log actual routing). No AI.
+
+**Where:** `operator/` only. Explicit input/output selection, `setCommunicationDevice`-based SCO/LE link (ADR-011), route event log, Bluetooth diagnostics panel. Device checklist in `operator/CURRENT_STATUS.md`.

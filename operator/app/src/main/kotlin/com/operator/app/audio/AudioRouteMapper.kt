@@ -1,6 +1,7 @@
 package com.operator.app.audio
 
 import android.media.AudioDeviceInfo
+import android.media.AudioFormat
 import com.operator.core.audio.AudioRoute
 import com.operator.core.audio.AudioRouteKind
 
@@ -15,6 +16,8 @@ object AudioRouteMapper {
         isSink = info.isSink,
         sampleRates = info.sampleRates.toList(),
         channelCounts = info.channelCounts.toList(),
+        encodings = info.encodings.map(::encodingLabel),
+        address = info.address.takeIf { it.isNotBlank() },
     )
 
     /** Pure function over the integer device type so it can be unit-tested without Android. */
@@ -39,5 +42,20 @@ object AudioRouteMapper {
         AudioDeviceInfo.TYPE_BLE_SPEAKER -> AudioRouteKind.BLE_SPEAKER
         AudioDeviceInfo.TYPE_BLE_BROADCAST -> AudioRouteKind.BLE_BROADCAST
         else -> AudioRouteKind.UNKNOWN
+    }
+
+    /** Human label for an [AudioFormat] encoding constant. */
+    fun encodingLabel(encoding: Int): String = when (encoding) {
+        AudioFormat.ENCODING_PCM_8BIT -> "PCM8"
+        AudioFormat.ENCODING_PCM_16BIT -> "PCM16"
+        AudioFormat.ENCODING_PCM_FLOAT -> "PCM_FLOAT"
+        AudioFormat.ENCODING_PCM_24BIT_PACKED -> "PCM24"
+        AudioFormat.ENCODING_PCM_32BIT -> "PCM32"
+        AudioFormat.ENCODING_AC3 -> "AC3"
+        AudioFormat.ENCODING_E_AC3 -> "E-AC3"
+        AudioFormat.ENCODING_DTS -> "DTS"
+        AudioFormat.ENCODING_AAC_LC -> "AAC-LC"
+        AudioFormat.ENCODING_OPUS -> "OPUS"
+        else -> "enc$encoding"
     }
 }

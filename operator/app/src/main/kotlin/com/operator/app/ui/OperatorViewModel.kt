@@ -6,7 +6,12 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.operator.app.BuildConfig
+import com.operator.app.audio.AudioRoutes
+import com.operator.app.bluetooth.BluetoothStatus
 import com.operator.app.di.OperatorContainer
+import com.operator.core.audio.AudioLoopbackState
+import com.operator.core.audio.AudioRoute
+import com.operator.core.diagnostics.RouteEvent
 import com.operator.core.model.OperatorMode
 import com.operator.core.model.WitLevel
 import com.operator.core.state.OperatorEvent
@@ -21,18 +26,42 @@ class OperatorViewModel(private val container: OperatorContainer) : ViewModel() 
 
     private val lastEvent = MutableStateFlow<String?>(null)
 
-    val uiState: StateFlow<OperatorUiState> = combine(
-        container.stateManager.state,
+    private data class AudioSection(
+        val loopback: AudioLoopbackState,
+        val routes: AudioRoutes,
+        val micGranted: Boolean,
+        val events: List<RouteEvent>,
+    )
+
+    private data class BluetoothSection(val status: BluetoothStatus, val granted: Boolean)
+
+    private val audioSection = combine(
         container.loopback.state,
         container.audioRouteMonitor.routes,
         container.microphonePermission.granted,
+        container.routeEventLog.events,
+    ) { loopback, routes, mic, events -> AudioSection(loopback, routes, mic, events) }
+
+    private val bluetoothSection = combine(
+        container.bluetoothStatus.status,
+        container.bluetoothPermission.granted,
+    ) { status, granted -> BluetoothSection(status, granted) }
+
+    val uiState: StateFlow<OperatorUiState> = combine(
+        container.stateManager.state,
+        audioSection,
+        bluetoothSection,
         lastEvent,
-    ) { operator, loopback, routes, permission, event ->
+    ) { operator, audio, bt, event ->
         OperatorUiState(
             operator = operator,
-            loopback = loopback,
-            routes = routes,
-            microphonePermissionGranted = permission,
+            loopback = audio.loopback,
+            routes = audio.routes,
+            microphonePermissionGranted = audio.micGranted,
+            bluetooth = bt.status,
+            bluetoothPermissionGranted = bt.granted,
+            bluetoothPermissionIsRuntime = container.bluetoothPermission.isRuntimePermission,
+            routeEvents = audio.events,
             lastEvent = event,
             config = container.config,
             appVersion = BuildConfig.VERSION_NAME,
@@ -63,11 +92,17 @@ class OperatorViewModel(private val container: OperatorContainer) : ViewModel() 
     fun setMode(mode: OperatorMode) = container.stateManager.setMode(mode)
     fun setWit(wit: WitLevel) = container.stateManager.setWit(wit)
 
-    // --- Milestone 1 audio test ---
-    fun refreshPermission() {
+    // --- Permissions / refresh ---
+    fun refreshPermissions() {
         container.microphonePermission.refresh()
+        container.bluetoothPermission.refresh()
         container.audioRouteMonitor.refresh()
+        container.bluetoothStatus.refresh()
     }
+
+    // --- Audio test (Milestones 1–2) ---
+    fun selectInput(route: AudioRoute?) = container.loopback.selectInput(route)
+    fun selectOutput(route: AudioRoute?) = container.loopback.selectOutput(route)
     fun recordTest() {
         if (!container.loopback.startRecordTest()) lastEvent.value = "RECORD TEST ignored (busy)"
     }
@@ -76,6 +111,7 @@ class OperatorViewModel(private val container: OperatorContainer) : ViewModel() 
     }
     fun stopAudio() = container.loopback.cancel()
     fun discardClip() = container.loopback.discardClip()
+    fun clearRouteLog() = container.routeEventLog.clear()
 
     companion object {
         fun factory(container: OperatorContainer): ViewModelProvider.Factory = viewModelFactory {
